@@ -3,6 +3,7 @@
 ========
 > Thus spake the Lord: Thou shalt indent with four spaces. No more, no less. Four shall be the number of spaces thou shalt indent, and the number of thy indenting shall be four. Eight shalt thou not indent, nor either indent thou two, excepting that thou then proceed to four. Tabs are right out. - Some guy on YouTube
 
+[Have some spec knowledge](http://www.joelonsoftware.com/articles/fog0000000035.html)
 
 I'm told any good spec should have scenarios for possible users and how they use the product, so I suppose here is a good place to put those. 
 
@@ -17,3 +18,11 @@ Nongoals:
 + There will be no money system. There will be points, but you can't trade them for anything. It's just a number. Some might say "No one will play if you can't trade in your points for anything!" They have not played any mobile games recently. 
 + There will not be any mobile apps in this specific repository. Maybe I'll get to an android verison one of these days, but not an iOS version because I don't have a Mac to program on. 
 
+###Overview
++ Homepage (index.html)
+  + Login page
+    + Dashboard 
+    + Ticker page
+    + Trade Page
+    + Other player page
+    + Floor page
