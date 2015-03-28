@@ -35,4 +35,4 @@ The homepage will be dominated by a login box, with a username box and a passwor
 > NB: The specific design and layout of this is subject to change because my design skills are questionable at best. If you think this looks bad and want to change it, do it. With any luck, I'll have a nice picture to explain here soon. 
 
 Here is a mockup of the design. 
-[Image of homepage design](homepageDesign.png "Homepage") 
+![Image of homepage design](homepageDesign.png "Homepage") 
