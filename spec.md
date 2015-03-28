@@ -36,3 +36,4 @@ The homepage will be dominated by a login box, with a username box and a passwor
 
 Here is a mockup of the design. 
 ![Image of homepage design](homepageDesign.png "Homepage") 
+[Here is more explanation of the design](homepage.png "Homepage")
