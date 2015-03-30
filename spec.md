@@ -41,7 +41,9 @@ Here is a mockup of the design.
 
 Both enter buttons only act on their respective boxes. If you fill in one box, then the other, whichever button you click will only send information from its box. If you put in the wrong username or password, it will kick you back to the login page with an angry red message and the username pre-populated with whatever you put in. 
 >Technical note: I'm pretty sure Django has some sort of authentication feature or something built into it, which should help with this a little. 
+
 >Open issue: Should you have a "forgot password" button? That seems difficult to implement, but I suppose it *is* important...
+
 >Technical note: I'd like to avoid inline javascript if at all possible because it's gross. However, it django breaks all the possible relative path stuff that would allow it to be in the file with the html pages or something, I'm willing to put up with it.
 
 ###Dashboard
