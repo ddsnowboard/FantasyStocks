@@ -24,7 +24,8 @@ Nongoals:
   + Login page
     + Dashboard 
     + Ticker page
-	  +>Open issue: can the ticker page just be sucked into the dashboard and removed?
+	  +><strike>Open issue: can the ticker page just be sucked into the dashboard and removed?</strike>
+	  *Solved* There is no need for a ticker page. 
     + Trade Page
     + Other player page
     + Floor page
@@ -54,3 +55,18 @@ It will also have the same title bar as the homepage, but without the "How it Wo
 
 Hey, it's another picture! 
 ![Image of dashboard design](dashboardDesign.png "Dashboard")
+
+###Trade Page
+
+If you click on a stock from the dashboard, or go to a player's page and click "trade", you will come to the trade page. It will have two nearly identical sides. Each side will have a box for a name, with either a dropdown menu or a regular text box that has a suggestions dropdown. 
+>Open issue: Will the name boxes have a dropdown menu or be regular text boxes with a suggestions dropdown?
+
+The left side will always be the same: 
+>%your_username% (You)
+
+The right side will 99 times out of 100 be pre-populated. If you come from the dashboard, it will be have the name of the person who owns the stock you clicked on. If you come from someone else's player page, it will be populated by the name of the player from whose page you came. 
+>*Nota haec optime* when you are writing the template for the trade page. 
+
+If and only if you come from your own player page will it be blank. 
+
+Right below that box on both sides will be the place where you will list the stocks to trade. It will be equal in width and the height will be 40-50% of the screen. If you clicked on a stock on the dashboard to get here, that will be pre-populated with that stock, although there can be more. When you type in a stock, a suggestions dropdown will come down to suggest stocks for you. When you press enter to select a stock from the dropdown, it will fill it in, but not just the text. It will be a sort of bubble, with rounded corners, the company logo on the left, next to the full name, next to the symbol in parenthesis. You should be able to search by either symbol or full name. Both sides will have this functionality. In between the banks of boxes there will be some sort of nice arrow image, probably two greenish arrows, one going each way. Finally, there will be a "Send" button in the traditional style below and with its right side lined up with the right side of the right bank of boxes. 
