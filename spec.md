@@ -23,9 +23,9 @@ Nongoals:
 + Homepage (index.html)
   + Login page
     + Dashboard 
-    + Ticker page
-	  +><strike>Open issue: can the ticker page just be sucked into the dashboard and removed?</strike>
-	  *Solved* There is no need for a ticker page. 
+    + <strike>Ticker page
+	  + >Open issue: can the ticker page just be sucked into the dashboard and removed?
+	  + *Solved* There is no need for a ticker page.</strike>
     + Trade Page
     + Other player page
     + Floor page
