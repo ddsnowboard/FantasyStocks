@@ -60,7 +60,6 @@ Hey, it's another picture!
 ![Image of dashboard design](specResources/dashboardDesign.png "Dashboard")
 
 ###Trade Page
->Open issue: **Put a picture here, you lazy bum.**
 
 Design Mockup:
 
