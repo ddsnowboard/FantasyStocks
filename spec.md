@@ -39,11 +39,12 @@ The homepage will be dominated by a login box, with a username box and a passwor
 > NB: The specific design and layout of this is subject to change because my design skills are questionable at best. If you think this looks bad and want to change it, do it. With any luck, I'll have a nice picture to explain here soon. EDIT: Here it is!
 
 Here is a mockup of the design. 
-![Image of homepage design](homepageDesign.png "Homepage") 
-[Here is more explanation of the design](homepage.png "Homepage")
+![Image of homepage design](specResources/homepageDesign.png "Homepage") 
+[Here is more explanation of the design](specResources/homepage.png "Homepage")
 
 Both enter buttons only act on their respective boxes. If you fill in one box, then the other, whichever button you click will only send information from its box. If you put in the wrong username or password, it will kick you back to the login page with an angry red message and the username pre-populated with whatever you put in. 
 >Technical note: I'm pretty sure Django has some sort of authentication feature or something built into it, which should help with this a little. 
+EDIT: It's called contrib.auth.
 
 >Open issue: Should you have a "forgot password" button? That seems difficult to implement, but I suppose it *is* important...
 
@@ -56,11 +57,14 @@ The dashboard will have a few main parts. There will be a stock-board looking pa
 It will also have the same title bar as the homepage, but without the "How it Works" button, and with a "Dashboard" button in its place.
 
 Hey, it's another picture! 
-![Image of dashboard design](dashboardDesign.png "Dashboard")
+![Image of dashboard design](specResources/dashboardDesign.png "Dashboard")
 
 ###Trade Page
 >Open issue: **Put a picture here, you lazy bum.**
 
+Design Mockup:
+
+![Image of trade page design](specResources/tradePageDesign.png "Trade Page")
 
 If you click on a stock from the dashboard, or go to a player's page and click "trade", you will come to the trade page. It will have two nearly identical sides. Each side will have a box for a name, with <strike>either a dropdown menu or</strike> a regular text box that has a suggestions dropdown. 
 >EDIT: I've decided that it will be a suggestions dropdown, similar to (If I'm being honest, the same as) the way that the Gmail address box works. 
