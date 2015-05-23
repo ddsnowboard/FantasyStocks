@@ -49,7 +49,7 @@ EDIT: It's called contrib.auth.
 
 >Open issue: Should you have a "forgot password" button? That seems difficult to implement, but I suppose it *is* important...
 
->Technical note: I'd like to avoid inline javascript if at all possible because it's gross. However, it django breaks all the possible relative path stuff that would allow it to be in the file with the html pages or something, I'm willing to put up with it.
+>Technical note: I'd like to avoid inline javascript if at all possible because it's gross. However, if django breaks all the possible relative path stuff that would allow it to be in the file with the html pages or something, I'm willing to put up with it.
 
 ###Dashboard
 
@@ -81,7 +81,7 @@ If and only if you come from your own player page will it be blank. You will be 
 
 Right below that box on both sides will be the place where you will list the stocks to trade. It will be equal in width to the name boxes, which together will comprise about 70-75% of the screen, and the height will be 40-50% of the screen. If you clicked on a stock on the dashboard to get here, the right lower box, which lists stocks that you wish to receive in the trade, will be pre-populated with that stock, although you can add more. When you type in a stock, a suggestions dropdown will come down to suggest stocks for you. When you press enter to select a stock from the dropdown, it will fill it in, but not just the text.
 
-The items in the list of stocks will have rounded corners, the company logo on the left, followed by the full name, followed by the stock symbol in parenthesis. On the far right side of each stock will be a litle grey "x" (not yet shown in the mockup). This button will remove the stock from the set and therefore from the trade. If you put in more stocks than will fit, there should be a scrollbar. It shouldn't sync with the other or anything, but it should scroll normally. If you type, it should shoot straight to the bottom and show you the text. You should be able to search by either symbol or full name. Both sides will have this functionality.
+The items in the list of stocks will have rounded corners, the company logo on the left, followed by the full name, followed by the stock symbol in parenthesis. On the far right side of each stock will be a litle grey "x". This button will remove the stock from the set and therefore from the trade. If you put in more stocks than will fit, there should be a scrollbar. It shouldn't sync with the other or anything, but it should scroll normally. If you type, it should shoot straight to the bottom and show you the text. You should be able to search by either symbol or full name. Both sides will have this functionality.
 
 In between the banks of boxes there will be some sort of nice arrow image, probably two greenish arrows, one going each way. Finally, there will be a "Send" button in the traditional style below and with its right side lined up with the right side of the right bank of boxes.
 
