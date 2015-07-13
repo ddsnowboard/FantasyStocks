@@ -68,7 +68,9 @@ Design Mockup:
 
 If you click on a stock from the dashboard, or go to a player's page and click "trade", you will come to the trade page. It will have two nearly identical sides. Each side will have a box for a name, with <strike>either a dropdown menu or</strike> a regular text box that has a suggestions dropdown.
 >EDIT: I've decided that it will be a suggestions dropdown, similar to (If I'm being honest, the same as) the way that the Gmail address box works.
+
 >I'm probably going to use [this](https://github.com/twitter/typeahead.js) library for the suggestions functionality. I haven't done that much research on it, but it looks pretty damn good at a glance. 
+
 >Technical Note: The implementation of this will be complicated. I will need to have a way to get the predefined stocks drawn in the box, with a way to move the text box down as that happens, as well as a way to draw more in real time (this isn't actually that hard with javascript) and then send them back. This will be the complicated part. If I can get some way for the javascript to send the http request so it can include a list of some sort with the stocks, that would be nice.
 
 The left side top box will always be the same:
