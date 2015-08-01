@@ -49,7 +49,7 @@ EDIT: It's called contrib.auth.
 
 >Open issue: Should you have a "forgot password" button? That seems difficult to implement, but I suppose it *is* important...
 
->Technical note: I'd like to avoid inline javascript if at all possible because it's gross. However, if django breaks all the possible relative path stuff that would allow it to be in the file with the html pages or something, I'm willing to put up with it.
+>Technical note: I'd like to avoid inline javascript if at all possible because it's gross. However, if django breaks all the possible relative path stuff that would allow it to be in the folder with the html pages or something, I'm willing to put up with it.
 
 ###Dashboard
 
@@ -74,7 +74,8 @@ If you click on a stock from the dashboard, or go to a player's page and click "
 >Technical Note: The implementation of this will be complicated. I will need to have a way to get the predefined stocks drawn in the box, with a way to move the text box down as that happens, as well as a way to draw more in real time (this isn't actually that hard with javascript) and then send them back. This will be the complicated part. If I can get some way for the javascript to send the http request so it can include a list of some sort with the stocks, that would be nice.
 
 The left side top box will always be the same:
->%your_username% (You)
+>ddsnowboard (You)
+(ddsnowboard` will be your username, obviously)
 
 The right side will 99 times out of 100 be pre-populated. If you come from the dashboard, it will be have the name of the person who owns the stock you clicked on. If you come from someone else's player page, it will be populated by the name of the player from whose page you came. If you click on a stock on the ticker that is owned by no one, it will be populated with "Floor" (~free-agency).
 
@@ -101,4 +102,10 @@ This will be aesthetically nearly identical to the Trade Page except the "Send" 
 In the top left corner there will be the avatar of the user. Next to that there will be their name, their username, the date they joined, and a motto or something, maybe a description. Something that they wrote, basically. Their location will also be in there somewhere. Below that will be a "Propose a trade" button. If you click on that, it will go to the trade page, with their name and your name pre-populated. To the right of that will be a box that allows you to send a message to the person, with just a big textbox and a "Send" button.
 
 Below that there will be a table. On the left hand side there will be a list of all the floors that the person is a member of. You can click on one (the highest one in order of most recent activity will be pre-selected) and it will select and next to it it will list the stocks they have on that floor next to their price and how they have been doing. The clicking will be handled in JavaScript. When you click, there will be a visual change on top of the text, similar to the above image. I can't get this to look good in paint.net, but the right hand table should have lines delineating the rows and in between the name and the numbers, in the middle. If you click on a stock, you will go to the Trade Page, and the stock, your name, and their name will be pre-populated.
->Maks sure that there is some sort of feedback that says that clicking on the stock will take you somewhere else. It could get really annoying really quick if there's not. 
+>Make sure that there is some sort of feedback that says that clicking on the stock will take you somewhere else. It could get really annoying really quick if there's not. 
+
+###Floor Page
+
+The floor page will have a left hand column that takes up 20% of the width of the page. At the top will be two tabs, one for "Stocks" and one for "Users." When clicked, the stocks button will show a scrolling list of all the stocks on the floor with their picture on the left and their name to the right of the picture, under which will be written "owned by x" or "available". When clicked, the stock will be highlighted in a similar way to the floors on the player pages. One stock will always be selected, and by default it will be the first one alphabetically. Whatever stock is selected, the remaining width of the page will be filled by a graph showing the stock's historical performance. At the top will be tabs for one day, 5 days, 1 week... year to date, 2 year, etc., which will change the timeframe of the graph. The time will be delimited on the x-axis and it will be formatted differently, depending on which timeframe is selected. If it is one day, it wil just be 12-hour formatted times. If it is more than one day but less than or equal to a week, it will be midnight (signified by the name of a day of the week) and noon (signified by "noon"). Longer than that, it will be written as the standard US-formatted date each day at midnight, or at every interval of 1/10 of the total, whatever requires fewer.
+
+If you click on the users button, it will bring up a list of users with their pictures next to them just like with the stocks. The the winning player will be pre-selected, and the list will be in order of most points. When you click on a player, it will bring up a graph of their points with regard to time, just like with the stocks.
