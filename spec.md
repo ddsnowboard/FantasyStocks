@@ -75,7 +75,7 @@ If you click on a stock from the dashboard, or go to a player's page and click "
 
 The left side top box will always be the same:
 >ddsnowboard (You)
-(ddsnowboard` will be your username, obviously)
+(`ddsnowboard` will the appropriate username, obviously)
 
 The right side will 99 times out of 100 be pre-populated. If you come from the dashboard, it will be have the name of the person who owns the stock you clicked on. If you come from someone else's player page, it will be populated by the name of the player from whose page you came. If you click on a stock on the ticker that is owned by no one, it will be populated with "Floor" (~free-agency).
 
@@ -106,6 +106,10 @@ Below that there will be a table. On the left hand side there will be a list of 
 
 ###Floor Page
 
-The floor page will have a left hand column that takes up 20% of the width of the page. At the top will be two tabs, one for "Stocks" and one for "Users." When clicked, the stocks button will show a scrolling list of all the stocks on the floor with their picture on the left and their name to the right of the picture, under which will be written "owned by x" or "available". When clicked, the stock will be highlighted in a similar way to the floors on the player pages. One stock will always be selected, and by default it will be the first one alphabetically. Whatever stock is selected, the remaining width of the page will be filled by a graph showing the stock's historical performance. At the top will be tabs for one day, 5 days, 1 week... year to date, 2 year, etc., which will change the timeframe of the graph. The time will be delimited on the x-axis and it will be formatted differently, depending on which timeframe is selected. If it is one day, it wil just be 12-hour formatted times. If it is more than one day but less than or equal to a week, it will be midnight (signified by the name of a day of the week) and noon (signified by "noon"). Longer than that, it will be written as the standard US-formatted date each day at midnight, or at every interval of 1/10 of the total, whatever requires fewer.
+![Image of Floor Page](specResources/floor.png "Floor")
+
+The floor page will have a left hand column that takes up 20% of the width of the page. At the top will be two tabs, one for "Stocks" and one for "Users." When clicked, the stocks button will show a scrolling list of all the stocks on the floor with their picture on the left and their name to the right of the picture, under which will be written "owned by x" or "available". When clicked, the stock will be highlighted in a similar way to the floors on the player pages. One stock will always be selected, and by default it will be the first one alphabetically. Whatever stock is selected, the remaining width of the page will be filled by a graph showing the stock's historical performance. At the top will be tabs for one day, 5 days, 1 week... year to date, 2 year, etc., which will change the timeframe of the graph. The time will be delimited on the x-axis and it will be formatted differently, depending on which timeframe is selected. If it is one day, it will just be 12-hour formatted times. If it is more than one day but less than or equal to a week, it will be midnight (signified by the name of a day of the week) and noon (signified by "noon"). Longer than that, it will be written as the standard US-formatted date each day at midnight, or at every interval of 1/10 of the total, whatever requires fewer.
 
 If you click on the users button, it will bring up a list of users with their pictures next to them just like with the stocks. The the winning player will be pre-selected, and the list will be in order of most points. When you click on a player, it will bring up a graph of their points with regard to time, just like with the stocks.
+
+Above all this, but below the navigation pane, will be a horizontal bar that lists the name of the floor. 
