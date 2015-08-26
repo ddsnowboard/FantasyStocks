@@ -113,3 +113,7 @@ The floor page will have a left hand column that takes up 20% of the width of th
 If you click on the users button, it will bring up a list of users with their pictures next to them just like with the stocks. The the winning player will be pre-selected, and the list will be in order of most points. When you click on a player, it will bring up a graph of their points with regard to time, just like with the stocks.
 
 Above all this, but below the navigation pane, will be a horizontal bar that lists the name of the floor. 
+
+###Epilogue: The Game
+
+When you first sign up, you get the option to either make a new Floor or join an existing one. If you make a new one, you pick the name and whether it is public or private. 
