@@ -1,9 +1,7 @@
 #Fantasy Stocks Spec
 ######Will Koster
 =========
-> Thus spake the Lord: Thou shalt indent with four spaces. No more, no less. Four shall be the number of spaces thou shalt indent, and the number of thy indenting shall be four. Eight shalt thou not indent, nor either indent thou two, excepting that thou then proceed to four. Tabs are right out. - Some guy on YouTube
-
-[Have some spec knowledge](http://www.joelonsoftware.com/articles/fog0000000035.html)
+> Thus spake the Lord: Thou shalt indent with four spaces. No more, no less. Four shall be the number of spaces thou shalt indent, and the number of thy indenting shall be four. Eight shalt thou not indent, nor either indent thou two, excepting that thou then proceed to four. Tabs are right out.
 
 [We will probably use this API to get the stock info](http://dev.markitondemand.com/)
 
@@ -53,11 +51,11 @@ EDIT: It's called contrib.auth.
 
 ###Dashboard
 
-The dashboard will have a few main parts. There will be a stock-board looking part which will list off all the stocks are being played on your floor and some information about them (price, change that day, points that day, owner, maybe, etc.). If you click on any of the stocks, a little javascript bubble will pop up asking if you want to trade for that stock, and if you say yes the trade page will come up with the owner of that stock and the stock pre-populated. Next to that will be a leaderboard which lists out all the other people on your floor in order of how many points they have, with their score next to them. You can click on any player and it will take you to their other player page.
+The dashboard will have a few main parts. At the top there will be vertically stacked tabs that show the names of all the floors that you are on. If you click on one, it will select and the rest of the page will change to show the things happening on that floor. By default, the floor that is first in alphabetical order will be selected, although there should probably be a setting somewhere that allows you to change that because if I had to click on a different one every time the page showed up, that would bug the crap out of me, especially if it were slow (although I was planning on doing this with JavaScript so it should be pretty fast). Below that there will be a stock-board looking part which will list off all the stocks are being played on that floor and some information about them (price, change that day, points that day, owner, etc.). If you click on any of the stocks, a little javascript bubble will pop up asking if you want to trade for that stock, and if you say yes the trade page will come up with the owner of that stock and the stock pre-populated. Next to that will be a leaderboard which lists out all the other people on your floor in order of how many points they have, with their score next to them. You can click on any player and it will take you to their other player page.
 >Open issue: I don't know if I should have a list of things you can do (trade, switch with free agent, send message, etc.) below this, or if I should have some sort of floor-wide message board, or just nothing. I'm leaning hard toward the message board because you can do all the actions by either clicking on players or stocks, and nothing seems a little wasteful, but maybe it would work nicely on small screens.
 It will also have the same title bar as the homepage, but without the "How it Works" button, and with a "Dashboard" button in its place.
 
-Hey, it's another picture!
+NB: This image is no longer accurate. It does not include the recent changes regarding the showing of multiple floors. 
 ![Image of dashboard design](specResources/dashboardDesign.png "Dashboard")
 
 ###Trade Page
@@ -116,4 +114,9 @@ Above all this, but below the navigation pane, will be a horizontal bar that lis
 
 ###Epilogue: The Game
 
-When you first sign up, you get the option to either make a new Floor or join an existing one. If you make a new one, you pick the name and whether it is public or private. 
+When you first sign up, you get the option to either make a new Floor or join an existing one. If you make a new one, you pick the name and whether it is public or private. You also pick how many stocks everyone gets. 
+>About how many stocks should everyone get? I guess it should depend on how many stocks there are in the game, and whether you can add more on the fly or there is a set amount that are included. I think I should aim in development to have a team of 30 people have about 15 stocks each, plus or minus 10. That means either having a very wide and large selection of pre-loaded stocks or being able to add more on the fly. If I were king, you would be able to add more whenever you want. Technically it wouldn't be very hard, but that could conceivably ruin the game. Perhaps you should be able to add more only with the consent of the floor owner and before the draft, and after the draft the field is set. I'll have to think about this one for a bit. 
+If the floor is private, you have to invite people to join. If it is public, anyone can join and play. On the player page there should be a search box so you can add more floors. 
+Once you're on a floor, you wait for the draft. At the draft, everyone gets to pick stocks just like in a normal draft. After the draft, you just watch how they do. You can trade with anyone at any time, or with the "free agent pool". 
+
+Scores will be calculated by percentages and previous performance so that big-name stocks that always are rising are underpowered and making risky decisions is rewarded. The exact equation will be figured later, but it is important to note its goals: make risky bets on small or falling stocks more appealing and make sitting on big names with guaranteed gains less appealing to make the game more interesting and differentiate it from just watching the real stock market. For example, betting on Palm right before the Pre came out and winning would net many times more points than betting on Google, even if they both rise by the same percentage, because Palm was on a cold streak. 
