@@ -116,6 +116,7 @@ Above all this, but below the navigation pane, will be a horizontal bar that lis
 
 When you first sign up, you get the option to either make a new Floor or join an existing one. If you make a new one, you pick the name and whether it is public or private. You also pick how many stocks everyone gets. 
 >About how many stocks should everyone get? I guess it should depend on how many stocks there are in the game, and whether you can add more on the fly or there is a set amount that are included. I think I should aim in development to have a team of 30 people have about 15 stocks each, plus or minus 10. That means either having a very wide and large selection of pre-loaded stocks or being able to add more on the fly. If I were king, you would be able to add more whenever you want. Technically it wouldn't be very hard, but that could conceivably ruin the game. Perhaps you should be able to add more only with the consent of the floor owner and before the draft, and after the draft the field is set. I'll have to think about this one for a bit. 
+
 If the floor is private, you have to invite people to join. If it is public, anyone can join and play. On the player page there should be a search box so you can add more floors. 
 Once you're on a floor, you wait for the draft. At the draft, everyone gets to pick stocks just like in a normal draft. After the draft, you just watch how they do. You can trade with anyone at any time, or with the "free agent pool". 
 
