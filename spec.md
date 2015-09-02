@@ -34,24 +34,24 @@ Nongoals:
 ###Homepage
 
 The homepage will be dominated by a login box, with a username box and a password box, with a submit button below them. Beside that will be a box that is used to register, with a username box, a password box, and another password box below that for confirmation. Below that will be a link to a static page explaining how the game works.
-
-> NB: The specific design and layout of this is subject to change because my design skills are questionable at best. If you think this looks bad and want to change it, do it. With any luck, I'll have a nice picture to explain here soon. EDIT: Here it is!
+The theory behind this page is that it is really, really simple. The easier it is to sign up, the idea goes, the more people will do it. 
 
 Here is a mockup of the design.
 ![Image of homepage design](specResources/homepageDesign.png "Homepage")
 [Here is more explanation of the design](specResources/homepage.png "Homepage")
 
-Both enter buttons only act on their respective boxes. If you fill in one box, then the other, whichever button you click will only send information from its box. If you put in the wrong username or password, it will kick you back to the login page with an angry red message and the username pre-populated with whatever you put in.
+Both enter buttons only act on their respective boxes. If you fill in one box, then the other, whichever button you click will only send information from its box. If you put in the wrong username or password, it will kick you back to the login page with an angry red message and the username pre-populated with whatever you put in if and only if that username already exists. If it doesn't, it will say that no username exists and give you an empty page. 
 >Technical note: I'm pretty sure Django has some sort of authentication feature or something built into it, which should help with this a little.
 EDIT: It's called contrib.auth.
 
 >Open issue: Should you have a "forgot password" button? That seems difficult to implement, but I suppose it *is* important...
 
->Technical note: I'd like to avoid inline javascript if at all possible because it's gross. However, if django breaks all the possible relative path stuff that would allow it to be in the folder with the html pages or something, I'm willing to put up with it.
-
 ###Dashboard
 
-The dashboard will have a few main parts. At the top there will be vertically stacked tabs that show the names of all the floors that you are on. If you click on one, it will select and the rest of the page will change to show the things happening on that floor. By default, the floor that is first in alphabetical order will be selected, although there should probably be a setting somewhere that allows you to change that because if I had to click on a different one every time the page showed up, that would bug the crap out of me, especially if it were slow (although I was planning on doing this with JavaScript so it should be pretty fast). Below that there will be a stock-board looking part which will list off all the stocks are being played on that floor and some information about them (price, change that day, points that day, owner, etc.). If you click on any of the stocks, a little javascript bubble will pop up asking if you want to trade for that stock, and if you say yes the trade page will come up with the owner of that stock and the stock pre-populated. Next to that will be a leaderboard which lists out all the other people on your floor in order of how many points they have, with their score next to them. You can click on any player and it will take you to their other player page.
+The dashboard will have a few main parts. On the left side, there will be vertically stacked tabs that show the names of all the floors that you are on. If you click on one, it will select and the rest of the page will change to show the things happening on that floor. By default, the floor that is first in alphabetical order will be selected, although there should probably be a setting somewhere that allows you to change that because if I had to click on a different one every time the page showed up, that would bug the crap out of me, especially if it were slow (although I was planning on doing this with JavaScript so it should be pretty fast).
+>Technical note: The tabs will work by JavaScript, not with links like most of the rest of the site. I'll have to have the first page pre-loaded in the HTML, but the rest will be populated in javascript with and XMLHttpRequest that calls some of the Django API, which will fill in the rest of the JavaScript variables necessary to draw the rest of the tabs. By using JavaScript, I should be able to increase speed both of switching tabs and the original load without having a bunch of gross inline JavaScript. 
+
+Below that there will be a stock-board looking part which will list off all the stocks are being played on that floor and some information about them (price, change that day, points that day, owner, etc.). If you click on any of the stocks, a little javascript bubble will pop up asking if you want to trade for that stock, and if you say yes the trade page will come up with the owner of that stock and the stock pre-populated. Next to that will be a leaderboard which lists out all the other people on your floor in order of how many points they have, with their score next to them. You can click on any player and it will take you to their other player page.
 >Open issue: I don't know if I should have a list of things you can do (trade, switch with free agent, send message, etc.) below this, or if I should have some sort of floor-wide message board, or just nothing. I'm leaning hard toward the message board because you can do all the actions by either clicking on players or stocks, and nothing seems a little wasteful, but maybe it would work nicely on small screens.
 It will also have the same title bar as the homepage, but without the "How it Works" button, and with a "Dashboard" button in its place.
 
