@@ -1,8 +1,6 @@
 #Fantasy Stocks Spec
 ######Will Koster
 =========
-> Thus spake the Lord: Thou shalt indent with four spaces. No more, no less. Four shall be the number of spaces thou shalt indent, and the number of thy indenting shall be four. Eight shalt thou not indent, nor either indent thou two, excepting that thou then proceed to four. Tabs are right out.
-
 [We will probably use this API to get the stock info](http://dev.markitondemand.com/)
 
 I'm told any good spec should have scenarios for possible users and how they use the product, so I suppose here is a good place to put those.
@@ -40,16 +38,18 @@ Here is a mockup of the design.
 ![Image of homepage design](specResources/homepageDesign.png "Homepage")
 [Here is more explanation of the design](specResources/homepage.png "Homepage")
 
-Both enter buttons only act on their respective boxes. If you fill in one box, then the other, whichever button you click will only send information from its box. If you put in the wrong username or password, it will kick you back to the login page with an angry red message and the username pre-populated with whatever you put in if and only if that username already exists. If it doesn't, it will say that no username exists and give you an empty page. 
+Both enter buttons only act on their respective boxes. If you fill in one box, then the other, whichever button you click will only send information from its box. If you put in the wrong username or password, it will kick you back to the login page with an angry red message and the username pre-populated with whatever you put in if and only if that username already exists. If it doesn't exist, it will say that no username exists and give you a set of empty boxes. 
 >Technical note: I'm pretty sure Django has some sort of authentication feature or something built into it, which should help with this a little.
 EDIT: It's called contrib.auth.
 
 >Open issue: Should you have a "forgot password" button? That seems difficult to implement, but I suppose it *is* important...
+There is a module for this in contrib.auth that should make this easier. 
 
 ###Dashboard
 
-The dashboard will have a few main parts. On the left side, there will be vertically stacked tabs that show the names of all the floors that you are on. If you click on one, it will select and the rest of the page will change to show the things happening on that floor. By default, the floor that is first in alphabetical order will be selected, although there should probably be a setting somewhere that allows you to change that because if I had to click on a different one every time the page showed up, that would bug the crap out of me, especially if it were slow (although I was planning on doing this with JavaScript so it should be pretty fast).
->Technical note: The tabs will work by JavaScript, not with links like most of the rest of the site. I'll have to have the first page pre-loaded in the HTML, but the rest will be populated in javascript with and XMLHttpRequest that calls some of the Django API, which will fill in the rest of the JavaScript variables necessary to draw the rest of the tabs. By using JavaScript, I should be able to increase speed both of switching tabs and the original load without having a bunch of gross inline JavaScript. 
+The dashboard will have a few main parts. On the left side, there will be vertically stacked tabs that show the names of all the floors that you are on. If you click on one, it will select and the rest of the page will change to show the things happening on that floor. By default, the floor that is first in alphabetical order will be selected, although there should probably be a setting somewhere that allows you to change that. 
+>Question: I was thinking of having an algorithm that would look at what you usually click on and automatically go to that. The problem is that it is possible that it would be very annoying to load the page and have in muscle memory that you need to click on a certain tab, only to find out that it has already been clicked and you just went to a page that you didn't want to go to. This could be fixed by making sure that the tabs aren't re-ordered by the algorithm. 
+>Technical note: The tabs will work by JavaScript, not with links like most of the rest of the site. I'll have to have the first page pre-loaded in the HTML, but the rest will be populated in javascript with and XMLHttpRequest that calls some of the Django API, which will fill in the rest of the JavaScript variables necessary to draw the rest of the tabs. By using JavaScript, I should be able to increase speed both of switching tabs and the original load without having a bunch of gross inline JavaScript. It might be hard, however, to get the JavaScript to render the page exactly as it is originally rendered. We'll see. 
 
 Below that there will be a stock-board looking part which will list off all the stocks are being played on that floor and some information about them (price, change that day, points that day, owner, etc.). If you click on any of the stocks, a little javascript bubble will pop up asking if you want to trade for that stock, and if you say yes the trade page will come up with the owner of that stock and the stock pre-populated. Next to that will be a leaderboard which lists out all the other people on your floor in order of how many points they have, with their score next to them. You can click on any player and it will take you to their other player page.
 >Open issue: I don't know if I should have a list of things you can do (trade, switch with free agent, send message, etc.) below this, or if I should have some sort of floor-wide message board, or just nothing. I'm leaning hard toward the message board because you can do all the actions by either clicking on players or stocks, and nothing seems a little wasteful, but maybe it would work nicely on small screens.
