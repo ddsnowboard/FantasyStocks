@@ -1,4 +1,5 @@
 from django.db import models
+from django.http import HttpResponse
 from urllib import request
 from urllib.parse import urlencode
 from django.utils import timezone

@@ -2,9 +2,9 @@
 
 from stocks import views
 from django.conf.urls import url
-from django.shortcuts import redirect
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
         url("index.html", views.index),
-        # url("", redirect("index.html", permanent=True)), 
+        url("$", RedirectView.as_view(url="index.html", permanent=True)), 
         ]
