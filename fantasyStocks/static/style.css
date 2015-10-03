@@ -2,4 +2,26 @@
     height: 50px;
     width: 100%;
     background-color: #aaaaaa;
+    position: relative;
+    font-family: monospace;
+}
+.logo {
+    margin-left: 15px;
+    text-align: center;
+    font-size: 1.15em;
+    color: black;
+}
+
+.rightnavbutton {
+    width: 15%;
+    right: 0;
+}
+
+.verticalcenter {
+     position: absolute;
+     top: 50%;
+     transform: translate(0, -50%);
+     -moz-transform: translate(0, -50%);
+     -ms-transform: translate(0, -50%);
+     -webkit-transform: translate(0, -50%);
 }
