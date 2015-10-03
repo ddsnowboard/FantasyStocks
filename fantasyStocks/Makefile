@@ -4,4 +4,4 @@ FILES = fantasyStocks/settings.py fantasyStocks/urls.py stocks/admin.py stocks/m
 vim : 
 	vim $(FILES)
 templates : 
-	vim stocks/templates/*
+	vim stocks/templates/* static/*
