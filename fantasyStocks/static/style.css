@@ -18,6 +18,7 @@
     float: right;
     border-left: 1px solid black;
     height: 100%;
+    margin-right: 15px;
 }
 
 .verticalcenter {
@@ -32,4 +33,5 @@
 div.titlebar td {
     vertical-align: middle;
     width: 50%;
+    margin-top: 0;
 }

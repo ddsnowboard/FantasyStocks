@@ -6,16 +6,24 @@
         <link rel="stylesheet" href="{% static "style.css" %}" type="text/css" />
     </head>
     <div class="titlebar">
-        <table style="height:100%; width: 100%; table-layout: fixed">
+        <table style="height:100%; width: 100%; table-layout: fixed; border-collapse: collapse;">
             <tr>
                 <td>
                     <a style="display: block; width: 100%; text-decoration: none;" href="index.html">
                         <div class="logo">Fantasy Stocks</div>
                     </a>
                 </td>
-                <td>
+                <td style="padding-bottom: 0; padding-top: 0">
                     <div class="rightnavbutton">
-                        {% block rightbutton %}How it Works{% endblock %}
+                        <a href="instructions.html">
+                            <table style="height: 100%">
+                                <tr>
+                                    <td style="width: inherit; color: black;">
+                                        {% block rightbutton %}How it Works{% endblock %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </a>
                     </div>
                 </td>
             </tr>
