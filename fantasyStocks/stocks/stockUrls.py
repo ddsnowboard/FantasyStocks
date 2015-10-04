@@ -5,8 +5,7 @@ from django.conf.urls import url, patterns
 from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse_lazy
 
-urlpatterns = patterns('',
-            url("^$", RedirectView.as_view(url=reverse_lazy("homepage"), permanent=True)), 
-            url("instructions/", views.instructions, name="instructions"),
-            url("index/", views.index, name="homepage"),
-        )
+urlpatterns = [
+            url("^instructions/$", views.instructions, name="howto"),
+            url("^$", views.index, name="home"), 
+        ]

@@ -17,12 +17,12 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from stocks import stockUrls
+from stocks import stockUrls, views
 from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse_lazy
 
 urlpatterns = static(settings.STATIC_URL) + [
         url(r'^admin/', include(admin.site.urls), name="admin"),
-        url(r"^stocks/$", include(stockUrls), name="stocks"), 
-        url(r"^$", RedirectView.as_view(url=reverse_lazy("stocks"), permanent=True)),
+        url(r"^stocks/$", include(stockUrls)),
+        url(r'$^', RedirectView.as_view(url="stocks/", permanent=True), name="redirect")
         ]
