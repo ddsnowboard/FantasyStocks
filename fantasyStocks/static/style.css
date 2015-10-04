@@ -1,8 +1,6 @@
 .titlebar {
     height: 50px;
-    width: 100%;
     background-color: #aaaaaa;
-    position: relative;
     font-family: monospace;
 }
 .logo {
@@ -13,8 +11,6 @@
 
 .rightnavbutton {
     padding-left: 15px;
-    overflow: hidden;
-    white-space: nowrap;
     float: right;
     border-left: 1px solid black;
     height: 100%;
@@ -28,10 +24,4 @@
     -moz-transform: translate(0, -50%);
     -ms-transform: translate(0, -50%);
     -webkit-transform: translate(0, -50%);
-}
-
-div.titlebar td {
-    vertical-align: middle;
-    width: 50%;
-    margin-top: 0;
 }
