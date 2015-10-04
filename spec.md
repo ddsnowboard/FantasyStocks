@@ -27,6 +27,7 @@ Nongoals:
       + Received Trade Page
     + Other player page
     + Floor page
+    + Create Floor Page
 + Epilogue: The Game
 
 ###Homepage
@@ -122,3 +123,8 @@ If the floor is private, you have to invite people to join. If it is public, any
 Once you're on a floor, you wait for the draft. At the draft, everyone gets to pick stocks just like in a normal draft. After the draft, you just watch how they do. You can trade with anyone at any time, or with the "free agent pool". 
 
 Scores will be calculated by percentages and previous performance so that big-name stocks that always are rising are underpowered and making risky decisions is rewarded. The exact equation will be figured later, but it is important to note its goals: make risky bets on small or falling stocks more appealing and make sitting on big names with guaranteed gains less appealing to make the game more interesting and differentiate it from just watching the real stock market. For example, betting on Palm right before the Pre came out and winning would net many times more points than betting on Google, even if they both rise by the same percentage, because Palm was on a cold streak. 
+
+
+### Create Floor Page
+
+There will be two sections. The first ("People") one will dictate whether the floor will be private or public, the limit to how big it can be, and how many stocks each person can have. It should warn you if you set it up such that too many stocks will be necessary. Second ("Stocks") will be the available stocks. It will be a vertical list with real-time suggestions just like the trade page, but here all stocks will be available to choose, not just available ones or ones already on the floor. If a stock is chosen that isn't in the database yet, when the floor is created, we will add it and start tracking it. We can use another one of the markitondemand APIs to look up stocks. That might be slow, but we'll see. You should also be able to put in whole indices at once to speed things up. There will also be a checkbox in this division that says the floor's policy on adding new stocks. There will be "closed", where you can't add new stocks at all, "permission", where the owner of the floor can allow or deny the entrance of new stocks, or "open", where the whole stock market is open. At the bottom there will be a submit button. If you click the submit button and there aren't enough stocks at the beginning to have enough for everyone to fill their quota, it will warn you. Of course, this will never happen if the floor is "open". If the floor is set to "permission", you can ignore it or not. If it is "closed", you have to add stocks until everyone can fill their quota. After you click submit and everything is in order, it will take you to the floor page for that floor. 
