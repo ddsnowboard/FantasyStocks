@@ -1,2 +1,28 @@
 {% extends "base.html" %}
 {% block title %}Fantasy Stocks{% endblock %}
+{% block content %}
+<div id="loginBoxes">
+    <table>
+        <tr>
+            <td>
+                <div class="loginBox">
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        {{ registrationForm }}
+                        <input type="submit" value="Submit" />
+                    </form>
+                </div>
+            </td>
+            <td>
+                <div class="loginBox">
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        {{ loginForm }}
+                        <input type="submit" value="Register" />
+                    </form>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

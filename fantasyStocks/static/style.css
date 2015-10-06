@@ -25,3 +25,13 @@
     -ms-transform: translate(0, -50%);
     -webkit-transform: translate(0, -50%);
 }
+
+#loginBoxes {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.loginBox {
+    border: 2px solid #aaaaaa;
+    border-radius: 5px;
+}

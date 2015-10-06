@@ -28,10 +28,16 @@ class Stock(models.Model):
         self.save()
 
 class Floor(models.Model):
-    PERMISSION = "permission"
-    CLOSED = "closed"
     OPEN = "open"
+    CLOSED = "closed"
+    PERMISSIVE = "permissive"
+    PERMISSIVENESS_CHOICES = (
+            (OPEN, "Open"), 
+            (CLOSED, "Closed"), 
+            (PERMISSIVE, "Permissive")
+            )
     stocks = models.ManyToManyField(Stock)
+    permissiveness = models.CharField(max_length=15, choices=PERMISSIVENESS_CHOICES, default=PERMISSIVE)
 
 # NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
 # object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
