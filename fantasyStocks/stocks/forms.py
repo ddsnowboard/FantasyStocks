@@ -15,3 +15,4 @@ class RegistrationForm(forms.Form):
         if self.cleaned_data["password1"] != self.cleaned_data["password2"]:
             self._errors["dontmatch"] = "Passwords don't match"
             return False
+        return True

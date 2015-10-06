@@ -2,23 +2,27 @@
 {% block title %}Fantasy Stocks{% endblock %}
 {% block content %}
 <div id="loginBoxes">
-    <table>
+    <table class="loginTable">
         <tr>
             <td>
                 <div class="loginBox">
-                    <form action="" method="POST">
+                    <form action="" method="post">
                         {% csrf_token %}
-                        {{ registrationForm }}
-                        <input type="submit" value="Submit" />
+                        <table>
+                            {{ loginForm.as_table }}
+                        </table>
+                        <input type="submit" value="Submit" class="submit" />
                     </form>
                 </div>
             </td>
             <td>
                 <div class="loginBox">
-                    <form action="" method="POST">
+                    <form action="" method="post">
                         {% csrf_token %}
-                        {{ loginForm }}
-                        <input type="submit" value="Register" />
+                        <table>
+                            {{ registrationForm.as_table }}
+                        </table>
+                        <input type="submit" value="Register" class="submit" />
                     </form>
                 </div>
             </td>
