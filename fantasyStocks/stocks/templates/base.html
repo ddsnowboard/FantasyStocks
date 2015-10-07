@@ -15,11 +15,11 @@
                 </td>
                 <td style="padding-bottom: 0; padding-top: 0">
                     <div class="rightnavbutton">
-                         <a href="{% url "instructions" %}">
+                        <a href="{% block rightLink %}{% url "instructions" %}{% endblock %}">
                             <table style="height: 100%">
                                 <tr>
                                     <td style="width: inherit; color: black;">
-                                        {% block rightbutton %}How it Works{% endblock %}
+                                        {% block rightButton %}How it Works{% endblock %}
                                     </td>
                                 </tr>
                             </table>

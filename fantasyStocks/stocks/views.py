@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def dashboard(request):
-    return HttpResponse("We're getting there! The email is {} though".format(request.user.email))
+    return render(request, "dashboard.html", {"email" : request.user.email})
 # Create your views here.
 def index(request):
     # If you're already logged in...

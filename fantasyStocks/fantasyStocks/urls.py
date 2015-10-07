@@ -23,6 +23,6 @@ from django.core.urlresolvers import reverse_lazy
 
 urlpatterns = static(settings.STATIC_URL) + [
         url(r'^admin/', include(admin.site.urls), name="admin"),
-        url(r"^stocks/", include(stockUrls)),
-        url(r'$^', RedirectView.as_view(url="stocks/", permanent=True), name="redirect")
+        url(r"^stocks/", include(stockUrls), name="stocks"),
+        url(r"^$", RedirectView.as_view(url="stocks/", permanent=True), name="redirect")
         ]

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block rightLink %}{% url "logout" %}{% endblock %}
+{% block rightButton %}Logout{% endblock %}
+
+{% block content %}
+{{ email }}
+{% endblock %}
