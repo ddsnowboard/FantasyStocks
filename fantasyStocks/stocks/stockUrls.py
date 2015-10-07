@@ -7,6 +7,7 @@ urlpatterns = [
             url("^instructions/$", views.instructions, name="instructions"),
             url("^auth/", include('django.contrib.auth.urls'), name="login"),
             url("^$", views.index, name="home"), 
+            url("^dashboard/", views.dashboard, name="dashboard"),
         ]
 
 
