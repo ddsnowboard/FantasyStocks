@@ -58,3 +58,12 @@
 .loginBox td {
     border: none;
 }
+
+.error {
+    color: red;
+    font-size: small;
+}
+
+.errorlist {
+    font-size: x-small;
+}

@@ -6,23 +6,29 @@
         <tr>
             <td>
                 <div class="loginBox">
-                    <form action="" method="post">
-                        {% csrf_token %}
-                        <table>
-                            {{ loginForm.as_table }}
-                        </table>
-                        <input type="submit" value="Submit" class="submit" />
-                    </form>
-                </div>
-            </td>
-            <td>
-                <div class="loginBox">
+                    <p class="error">
+                    {{ registrationError }}
+                    </p>
                     <form action="" method="post">
                         {% csrf_token %}
                         <table>
                             {{ registrationForm.as_table }}
                         </table>
                         <input type="submit" value="Register" class="submit" />
+                    </form>
+                </div>
+            </td>
+            <td>
+                <div class="loginBox">
+                    <p class="error">
+                    {{ loginError }}
+                    </p>
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <table>
+                            {{ loginForm.as_table }}
+                        </table>
+                        <input type="submit" value="Submit" class="submit" />
                     </form>
                 </div>
             </td>
