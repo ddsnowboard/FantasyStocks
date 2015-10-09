@@ -6,14 +6,17 @@ from django.contrib.auth import authenticate, login
 from django.core.urlresolvers import reverse
 from django.http import HttpResponsePermanentRedirect
 from django.contrib.auth.decorators import login_required
+import logging
 
+logger = logging.getLogger(__name__)
 @login_required
 def dashboard(request):
     return render(request, "dashboard.html", {"email" : request.user.email})
 # Create your views here.
 def index(request):
     # If you're already logged in...
-    if request.user:
+    if request.user.is_authenticated():
+        logger.error(user)
         return HttpResponsePermanentRedirect(reverse("dashboard"))
     # If we got here through a submission...
     if request.method == "POST":

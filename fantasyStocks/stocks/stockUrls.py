@@ -5,7 +5,8 @@ from django.conf.urls import url, patterns, include
 
 urlpatterns = [
             url("^instructions/$", views.instructions, name="instructions"),
-            url("^auth/", include('django.contrib.auth.urls'), name="login"),
+            url("^login/$", views.login, name="loginpage"),
+            url("^auth/", include('django.contrib.auth.urls'), name="auth"),
             url("^$", views.index, name="home"), 
             url("^dashboard/$", views.dashboard, name="dashboard"),
         ]

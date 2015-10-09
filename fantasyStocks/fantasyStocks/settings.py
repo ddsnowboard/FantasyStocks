@@ -71,8 +71,7 @@ TEMPLATES = [
     },
 ]
 
-# LOGIN_URL = reverse_lazy("home")
-LOGIN_URL = "/admin/"
+LOGIN_URL = reverse_lazy("home")
 
 WSGI_APPLICATION = 'fantasyStocks.wsgi.application'
 
