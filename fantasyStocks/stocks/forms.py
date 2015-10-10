@@ -1,12 +1,15 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse_lazy
 class LoginForm(forms.Form):
     email = forms.EmailField(label="Email", max_length=100)
     password = forms.CharField(label="Password", max_length=50, widget=forms.PasswordInput)
+    nextPage = forms.CharField(label="next page", max_length=30, widget=forms.HiddenInput(), initial=reverse_lazy("dashboard"))
 class RegistrationForm(forms.Form):
     email = forms.EmailField(label="Email", max_length=100)
     password1 = forms.CharField(label="Password", max_length=50, widget=forms.PasswordInput)
     password2 = forms.CharField(label="Confirm", max_length=50, widget=forms.PasswordInput)
+    nextPage = forms.CharField(label="next page", max_length=30, widget=forms.HiddenInput(), initial=reverse_lazy("dashboard"))
     def is_valid(self):
         if not super(RegistrationForm, self).is_valid():
             return False

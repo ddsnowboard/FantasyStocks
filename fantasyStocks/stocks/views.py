@@ -6,9 +6,7 @@ from django.contrib.auth import authenticate, login
 from django.core.urlresolvers import reverse
 from django.http import HttpResponsePermanentRedirect
 from django.contrib.auth.decorators import login_required
-import logging
 
-logger = logging.getLogger(__name__)
 @login_required
 def dashboard(request):
     return render(request, "dashboard.html", {"email" : request.user.email})
@@ -16,7 +14,6 @@ def dashboard(request):
 def index(request):
     # If you're already logged in...
     if request.user.is_authenticated():
-        logger.error(user)
         return HttpResponsePermanentRedirect(reverse("dashboard"))
     # If we got here through a submission...
     if request.method == "POST":
@@ -27,8 +24,8 @@ def index(request):
                 user.save()
                 user = authenticate(username=form.cleaned_data["email"], password=form.cleaned_data["password1"])
                 login(request, user)
-                return HttpResponsePermanentRedirect(reverse("dashboard"))
             else:
+                # I should probably just factor this out to be a method of the form. 
                 if form._errors.get("already_exists", None):
                     error = form._errors["already_exists"]
                 elif form._errors.get("dontmatch", None):
@@ -43,10 +40,15 @@ def index(request):
                 password = form.cleaned_data["password"]
                 user = authenticate(username=email, password=password)
                 login(request, user)
-                return HttpResponsePermanentRedirect(reverse("dashboard"))
+        return HttpResponsePermanentRedirect(form.cleaned_data["nextPage"])
+    # If there is no POST from a prior submission...
     else:
         regForm = forms.RegistrationForm()
         logForm = forms.LoginForm()
+        # If we were redirected here from login_required...
+        if request.GET.get("next", None):
+            for i in (regForm, logForm):
+                i.fields["nextPage"].initial = request.GET.get("next")
         return render(request, "index.html", {"loginForm" : logForm,  "registrationForm" : regForm})
 def instructions(request):
     return render(request, "instructions.html")
