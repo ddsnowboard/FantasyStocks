@@ -25,13 +25,7 @@ def index(request):
                 user = authenticate(username=form.cleaned_data["email"], password=form.cleaned_data["password1"])
                 login(request, user)
             else:
-                # I should probably just factor this out to be a method of the form. 
-                if form._errors.get("already_exists", None):
-                    error = form._errors["already_exists"]
-                elif form._errors.get("dontmatch", None):
-                    error = form._errors["dontmatch"]
-                else:
-                    error = "There was an error with your registration"
+                error = form.get_errors()
                 return render(request, "index.html", {"registrationError" : error, "registrationForm" : form, "loginForm" : forms.LoginForm()})
         elif request.POST.get("password", None) != None:
             form = forms.LoginForm(request.POST)
