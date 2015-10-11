@@ -26,7 +26,7 @@ class RegistrationForm(forms.Form):
     def get_errors(self):
         if not self.is_valid():
             for i in self.POSSIBLE_ERRORS:
-                if self._errors.get(i, None):
+                if i in self._errors:
                     return self._errors[i]
             return "There was an error with your registration"
         return ""
