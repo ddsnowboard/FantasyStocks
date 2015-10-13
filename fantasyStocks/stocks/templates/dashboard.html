@@ -5,5 +5,40 @@
 {% block rightButton %}Logout{% endblock %}
 
 {% block content %}
-{{ email }}
+<table class="dash">
+    <tr>
+        <td style="border-right: 1px solid black">
+            <div class="leftTabs">
+                <ul>
+                    {% for player in players %}
+                    {% if forloop.first %}
+                    <li class="selected">
+                        {% else %}
+                        <li>
+                            {% endif %}
+                            {{ player.floor }}
+                        </li>
+                        {% endfor %}
+                </ul>
+            </div>
+        </td>
+        <td>
+            <table class="dashboardMain">
+                <tr>
+                    <td>
+                        <table class="stockBoard">
+                            <tr>
+                                {% for stock in players.0.floor.stocks.all %}
+                                <span style="display: inline-block; float: left">{{ stock.symbol }}</span><span style="display: inline-block; float: right">{{ stock.get_change }}</span>
+                                {% endfor %}
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 {% endblock %}

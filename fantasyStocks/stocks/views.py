@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from stocks import forms
+from stocks.models import Player
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.core.urlresolvers import reverse
@@ -9,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def dashboard(request):
-    return render(request, "dashboard.html", {"email" : request.user.email})
+    return render(request, "dashboard.html", {"user": request.user, "players": Player.objects.filter(user=request.user)})
 # Create your views here.
 def index(request):
     # If you're already logged in...

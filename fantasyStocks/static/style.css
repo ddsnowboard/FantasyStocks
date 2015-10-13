@@ -67,3 +67,22 @@
 .errorlist {
     font-size: x-small;
 }
+
+.leftTabs {
+    padding-right: 15px;
+}
+
+.leftTabs li {
+    list-style-type: none;
+    margin-bottom: 15px;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    padding: 5px;
+}
+
+.selected {
+    background-color: #cccccc;
+}

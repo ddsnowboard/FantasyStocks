@@ -4,6 +4,13 @@
     <head>
         <title>{% block title %}{% endblock %}</title>
         <link rel="stylesheet" href="{% static "style.css" %}" type="text/css" />
+        {% for src in scripts %}
+        <script src={{ src }}></script>
+        {% empty %}
+        {% endfor %}
+        <script>
+{% block script %}{% endblock %}
+        </script>
     </head>
     <div class="titlebar">
         <table style="height:100%; width: 100%; table-layout: fixed; border-collapse: collapse;">

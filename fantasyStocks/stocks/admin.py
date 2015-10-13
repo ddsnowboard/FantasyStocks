@@ -8,3 +8,11 @@ def update(modeladmin, request, queryset):
 @admin.register(stocks.models.Stock)
 class StockAdmin(admin.ModelAdmin):
     actions = [update]
+
+@admin.register(stocks.models.Player)
+class PlayerAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(stocks.models.Floor)
+class FloorAdmin(admin.ModelAdmin):
+    pass

@@ -5,6 +5,7 @@ from urllib.parse import urlencode
 from django.utils import timezone
 import json
 from django.contrib.auth.models import User
+from datetime import timedelta
 
 
 # This gets the location for the image files for the Stock model. 
@@ -18,14 +19,23 @@ class Stock(models.Model):
     last_updated = models.DateTimeField()
     image = models.ImageField(upload_to=get_upload_location)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    change = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     def __str__(self):
         return "{} ({})".format(self.company_name, self.symbol)
     def update(self):
-        URL = "http://dev.markitondemand.com/Api/v2/Quote/json?"
-        jsonObj = json.loads(request.urlopen(URL + urlencode({"symbol" : self.symbol})).read().decode("UTF-8"))
-        self.price = jsonObj['LastPrice']
-        self.last_updated = timezone.now()
-        self.save()
+        if timezone.now() - self.last_updated > timedelta(minutes=15):
+            URL = "http://dev.markitondemand.com/Api/v2/Quote/json?"
+            jsonObj = json.loads(request.urlopen(URL + urlencode({"symbol" : self.symbol})).read().decode("UTF-8"))
+            self.price = jsonObj['LastPrice']
+            self.change = jsonObj["Change"]
+            self.last_updated = timezone.now()
+            self.save()
+    def get_price(self):
+        self.update()
+        return self.price
+    def get_change(self):
+        self.update()
+        return self.change
 
 class Floor(models.Model):
     OPEN = "open"
@@ -38,6 +48,9 @@ class Floor(models.Model):
             )
     stocks = models.ManyToManyField(Stock)
     permissiveness = models.CharField(max_length=15, choices=PERMISSIVENESS_CHOICES, default=PERMISSIVE)
+    name = models.CharField(max_length=15)
+    def __str__(self):
+        return self.name
 
 # NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
 # object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
@@ -45,4 +58,3 @@ class Floor(models.Model):
 class Player(models.Model):
     user = models.ForeignKey(User)
     floor = models.ForeignKey(Floor)
-
