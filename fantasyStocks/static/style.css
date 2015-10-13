@@ -81,8 +81,47 @@
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
     padding: 5px;
+    padding-right: 15px;
 }
 
 .selected {
     background-color: #cccccc;
+}
+
+.dashboardMain {
+    width: 85%;
+}
+
+.dash {
+    width: 100%;
+}
+
+/* Without this, the tabs on the Dasboard will be too far from the side of the page. */
+.leftTabs > ul {
+    padding-left: 0px;
+    text-align: right;
+}
+
+.green {
+    color: green;
+}
+
+.red { 
+    /* Since this is shown on a black background, it should probably be a little less jarring. I don't know 
+     * how to do that though. I'll do some searching. */ 
+    color: red;
+}
+
+.stockBoard {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid black;
+    border-collapse: collapse;
+    background-color: black;
+    color: white;
+}
+
+.stockBoard td {
+    border: 1px solid white;
+    padding: 3px;
 }

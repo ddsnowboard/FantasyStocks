@@ -7,7 +7,7 @@
 {% block content %}
 <table class="dash">
     <tr>
-        <td style="border-right: 1px solid black">
+        <td style="border-right: 1px solid black; width: 17%;">
             <div class="leftTabs">
                 <ul>
                     {% for player in players %}
@@ -27,18 +27,24 @@
                 <tr>
                     <td>
                         <table class="stockBoard">
+                            {% for stock in players.0.floor.stocks.all %}
                             <tr>
-                                {% for stock in players.0.floor.stocks.all %}
-                                <span style="display: inline-block; float: left">{{ stock.symbol }}</span><span style="display: inline-block; float: right">{{ stock.get_change }}</span>
-                                {% endfor %}
+                                <td>
+                                <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
+                                {% with change=stock.get_change %}
+                                <span class="{% if change > 0%}green{% else %}red{% endif %}" style="display: inline-block; float: right">{{ change }}</span>
+                                {% endwith %}
+                                </td>
                             </tr>
+                            {% endfor %}
+                </tr>
                         </table>
                     </td>
                     <td>
                     </td>
-                </tr>
+    </tr>
             </table>
         </td>
-    </tr>
+        </tr>
 </table>
 {% endblock %}

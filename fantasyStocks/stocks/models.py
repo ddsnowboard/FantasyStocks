@@ -14,10 +14,10 @@ def get_upload_location(instance, filename):
 
 
 class Stock(models.Model):
-    company_name = models.CharField(max_length=50, default="")
+    company_name = models.CharField(max_length=50, default="", blank=True)
     symbol = models.CharField(max_length=4, primary_key=True)
-    last_updated = models.DateTimeField()
-    image = models.ImageField(upload_to=get_upload_location)
+    last_updated = models.DateTimeField(default=timezone.now() - timedelta(minutes=20))
+    image = models.ImageField(upload_to=get_upload_location, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     change = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     def __str__(self):
@@ -29,6 +29,9 @@ class Stock(models.Model):
             self.price = jsonObj['LastPrice']
             self.change = jsonObj["Change"]
             self.last_updated = timezone.now()
+            if self.company_name == "":
+                self.company_name = jsonObj["Name"]
+                self.symbol = self.symbol.upper()
             self.save()
     def get_price(self):
         self.update()
