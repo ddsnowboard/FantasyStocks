@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def dashboard(request):
-    return render(request, "dashboard.html", {"user": request.user, "players": Player.objects.filter(user=request.user)})
+    return render(request, "dashboard.html", {"user": request.user, "players": Player.objects.filter(user=request.user), "floors": [i.floor for i in Player.objects.filter(user=request.user)]})
 # Create your views here.
 def index(request):
     # If you're already logged in...

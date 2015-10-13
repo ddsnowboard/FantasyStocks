@@ -125,3 +125,11 @@
     border: 1px solid white;
     padding: 3px;
 }
+
+.leaderBoard {
+    width: 100%;
+}
+
+.dash td {
+    vertical-align: top;
+}

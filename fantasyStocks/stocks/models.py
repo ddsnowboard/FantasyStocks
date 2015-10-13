@@ -36,10 +36,12 @@ class Stock(models.Model):
             self.save()
     def get_price(self):
         self.update()
-        return self.price
+        # Apparently this number isn't put into the database and rounded until the next page load. 
+        # because that makes sense. 
+        return round(self.price, 2)
     def get_change(self):
         self.update()
-        return self.change
+        return round(self.change, 2)
 
 class Floor(models.Model):
     OPEN = "open"
@@ -55,6 +57,8 @@ class Floor(models.Model):
     permissiveness = models.CharField(max_length=15, choices=PERMISSIVENESS_CHOICES, default=PERMISSIVE)
     def __str__(self):
         return self.name
+    def leaders(self):
+        return Player.objects.filter(floor=self).order_by("-points")
 
 # NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
 # object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
@@ -62,5 +66,6 @@ class Floor(models.Model):
 class Player(models.Model):
     user = models.ForeignKey(User)
     floor = models.ForeignKey(Floor)
+    points = models.IntegerField(default=0)
     def __str__(self):
         return "{} on {}".format(str(self.user), str(self.floor))

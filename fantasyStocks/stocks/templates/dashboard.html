@@ -7,7 +7,7 @@
 {% block content %}
 <table class="dash">
     <tr>
-        <td style="border-right: 1px solid black; width: 17%;">
+        <td style="border-right: 1px solid black; width: 45px;">
             <div class="leftTabs">
                 <ul>
                     {% for player in players %}
@@ -25,15 +25,15 @@
         <td>
             <table class="dashboardMain">
                 <tr>
-                    <td>
+                    <td style="width: 50%">
                         <table class="stockBoard">
                             {% for stock in players.0.floor.stocks.all %}
                             <tr>
                                 <td>
-                                <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
-                                {% with change=stock.get_change %}
-                                <span class="{% if change > 0%}green{% else %}red{% endif %}" style="display: inline-block; float: right">{{ change }}</span>
-                                {% endwith %}
+                                    <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
+                                    {% with change=stock.get_change %}
+                                    <span class="{% if change > 0%}green{% else %}red{% endif %}" style="display: inline-block; float: right">{{ change }}</span>
+                                    {% endwith %}
                                 </td>
                             </tr>
                             {% endfor %}
@@ -41,6 +41,16 @@
                         </table>
                     </td>
                     <td>
+                        <table class="leaderBoard">
+                            {% for player in floors.0.leaders %}
+                            <tr>
+                                <td>
+                                    <span style="display: inline-block; float: left">{{ player.user.email }}</span>
+                                    <span style="display: inline-block; float: right">{{ player.points }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
                     </td>
     </tr>
             </table>
