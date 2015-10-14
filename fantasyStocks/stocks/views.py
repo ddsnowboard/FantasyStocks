@@ -47,3 +47,5 @@ def index(request):
         return render(request, "index.html", {"loginForm" : logForm,  "registrationForm" : regForm})
 def instructions(request):
     return render(request, "instructions.html")
+def logout(request):
+    return logout_then_login(request)
