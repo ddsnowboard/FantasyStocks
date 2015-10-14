@@ -34,9 +34,9 @@ def index(request):
         if "password1" in request.POST:
             form = forms.RegistrationForm(request.POST)
             if form.is_valid():
-                user = User.objects.create_user(username=form.cleaned_data["email"], email=form.cleaned_data["email"], password=form.cleaned_data["password1"])
+                user = User.objects.create_user(username=form.cleaned_data["username"], email=form.cleaned_data["email"], password=form.cleaned_data["password1"])
                 user.save()
-                user = authenticate(username=form.cleaned_data["email"], password=form.cleaned_data["password1"])
+                user = authenticate(username=form.cleaned_data["username"], password=form.cleaned_data["password1"])
                 login(request, user)
             else:
                 error = form.get_errors()
@@ -44,9 +44,9 @@ def index(request):
         elif "password" in request.POST:
             form = forms.LoginForm(request.POST)
             if form.is_valid():
-                email = form.cleaned_data["email"]
+                username = form.cleaned_data["username"]
                 password = form.cleaned_data["password"]
-                user = authenticate(username=email, password=password)
+                user = authenticate(username=username, password=password)
                 login(request, user)
         return HttpResponsePermanentRedirect(form.cleaned_data["nextPage"])
     # If there is no POST from a prior submission...

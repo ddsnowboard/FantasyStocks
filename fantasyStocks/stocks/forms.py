@@ -1,14 +1,16 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse_lazy
+from stocks.models import Floor
 class LoginForm(forms.Form):
-    email = forms.EmailField(label="Email", max_length=100)
+    username = forms.CharField(label="Username", max_length=25)
     password = forms.CharField(label="Password", max_length=50, widget=forms.PasswordInput)
     nextPage = forms.CharField(label="next page", max_length=30, widget=forms.HiddenInput(), initial=reverse_lazy("dashboard"))
 class RegistrationForm(forms.Form):
     # The order of this constant matters. Tripping `already_exists` doesn't make 
     # any sense if `dontmatch` has already been tripped. 
     POSSIBLE_ERRORS = ("dontmatch", "already_exists")
+    username = forms.CharField(label="Username", max_length=25)
     email = forms.EmailField(label="Email", max_length=100)
     password1 = forms.CharField(label="Password", max_length=50, widget=forms.PasswordInput)
     password2 = forms.CharField(label="Confirm", max_length=50, widget=forms.PasswordInput)
@@ -16,8 +18,8 @@ class RegistrationForm(forms.Form):
     def is_valid(self):
         if not super(RegistrationForm, self).is_valid():
             return False
-        if User.objects.filter(email=self.cleaned_data["email"]).exists():
-            self._errors["already_exists"] = "That email is already taken"
+        if User.objects.filter(email=self.cleaned_data["email"]).exists() or User.objects.filter(username=self.cleaned_data["username"]):
+            self._errors["already_exists"] = "That email or username is already taken"
             return False
         if self.cleaned_data["password1"] != self.cleaned_data["password2"]:
             self._errors["dontmatch"] = "Your passwords don't match"
