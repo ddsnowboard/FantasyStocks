@@ -44,8 +44,8 @@
                         <table class="leaderBoard">
                             {% for player in floors.0.leaders %}
                             <tr>
-                                <td>
-                                    <span style="display: inline-block; float: left">{{ player.user.email }}</span>
+                                <td {% if forloop.last %}style="border-bottom: none;"{% endif %}>
+                                    <span style="display: inline-block; float: left">{{ forloop.counter }}. {{ player.user.email }}</span>
                                     <span style="display: inline-block; float: right">{{ player.points }}</span>
                                 </td>
                             </tr>
