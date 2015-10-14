@@ -6,7 +6,7 @@ from django.utils import timezone
 import json
 from django.contrib.auth.models import User
 from datetime import timedelta
-
+from django.conf import settings
 
 # This gets the location for the image files for the Stock model. 
 def get_upload_location(instance, filename):
@@ -18,7 +18,7 @@ class Stock(models.Model):
     symbol = models.CharField(max_length=4, primary_key=True)
     last_updated = models.DateTimeField(default=timezone.now() - timedelta(minutes=20))
     # Set up a default image and maybe a way to get them automatically. 
-    image = models.ImageField(upload_to=get_upload_location, blank=True)
+    image = models.ImageField(upload_to=get_upload_location, blank=True, default=settings.MEDIA_ROOT + "default")
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     change = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     def __str__(self):
@@ -32,6 +32,7 @@ class Stock(models.Model):
             self.last_updated = timezone.now()
             if self.company_name == "":
                 self.company_name = jsonObj["Name"]
+                Stock.objects.get(symbol=self.symbol).delete()
                 self.symbol = self.symbol.upper()
             self.save()
     def get_price(self):
