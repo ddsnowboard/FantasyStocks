@@ -30,3 +30,7 @@ class RegistrationForm(forms.Form):
                     return self._errors[i]
             return "There was an error with your registration"
         return ""
+class FloorForm(forms.ModelForm):
+    class Meta:
+        model = Floor
+        fields = ["name", "stocks", "permissiveness"]

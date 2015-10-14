@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Join Floor{% endblock %}
+{% block rightLink %}{% url "mylogout" %}{% endblock %}
+{% block rightButton %}Logout{% endblock %}
+
+{% block content %}
+<table>
+    {% for floor in floors %}
+    <tr>
+        <td>
+            <a href="{% url "join" floor.pk %}">{{ floor.name }}</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

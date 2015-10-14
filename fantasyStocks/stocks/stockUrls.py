@@ -10,6 +10,9 @@ urlpatterns = [
             url("^auth/", include('django.contrib.auth.urls'), name="auth"),
             url("^$", views.index, name="home"), 
             url("^dashboard/$", views.dashboard, name="dashboard"),
+            url("^createfloor/$", views.create_floor, name="createFloor"), 
+            url("^joinfloor/$", views.join_floor, name="joinFloor"),
+            url("^joinAFloor/(\d+)/%", views.join, name="join"), 
         ]
 
 

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from stocks import forms
-from stocks.models import Player
+from stocks.models import Player, Floor
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import logout_then_login
@@ -14,10 +14,13 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 def dashboard(request):
     # IMPORTANT: Keep jQuery at the beginning or else it won't load first and bad stuff will happen.
     scripts = ["//code.jquery.com/jquery-1.11.3.min.js", static("dashboard.js")]
+    players = Player.objects.filter(user=request.user)
+    if not players:
+        return redirect(reverse("joinFloor"), permanent=True)
     return render(request, "dashboard.html", 
             {
                 "user": request.user, 
-                "players": Player.objects.filter(user=request.user),
+                "players": players,
                 "floors": [i.floor for i in Player.objects.filter(user=request.user)], 
                 "scripts" : scripts,
             })
@@ -59,3 +62,21 @@ def instructions(request):
     return render(request, "instructions.html")
 def logout(request):
     return logout_then_login(request)
+def create_floor(request):
+    if request.method == "POST":
+        form = forms.FloorForm(request.POST)
+        if form.is_valid():
+            floor = form.save()
+            newPlayer = Player.objects.create(user=request.user, floor=floor)
+            newPlayer.save()
+            return redirect(reverse("dashboard"), permanent=True)
+    else:
+        form = forms.FloorForm()
+        return render(request, "createFloor.html", {"form": form})
+def join_floor(request):
+    floors = Floor.objects.all()
+    return render(request, "joinFloor.html", {"floors": floors})
+def join(request, floorNumber):
+    player = Player.objects.create(user=request.user, floor=Floor.objects.get(pk=floorNumber))
+    player.save()
+    return redirect(reverse("dashboard"), permanent=True)
