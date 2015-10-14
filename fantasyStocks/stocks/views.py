@@ -4,13 +4,23 @@ from stocks import forms
 from stocks.models import Player
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.views import logout_then_login
 from django.core.urlresolvers import reverse
 from django.http import HttpResponsePermanentRedirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.staticfiles.templatetags.staticfiles import static
 
 @login_required
 def dashboard(request):
-    return render(request, "dashboard.html", {"user": request.user, "players": Player.objects.filter(user=request.user), "floors": [i.floor for i in Player.objects.filter(user=request.user)]})
+    # IMPORTANT: Keep jQuery at the beginning or else it won't load first and bad stuff will happen.
+    scripts = ["//code.jquery.com/jquery-1.11.3.min.js", static("dashboard.js")]
+    return render(request, "dashboard.html", 
+            {
+                "user": request.user, 
+                "players": Player.objects.filter(user=request.user),
+                "floors": [i.floor for i in Player.objects.filter(user=request.user)], 
+                "scripts" : scripts,
+            })
 # Create your views here.
 def index(request):
     # If you're already logged in...

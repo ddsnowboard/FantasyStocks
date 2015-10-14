@@ -1,60 +1,64 @@
 {% extends "base.html" %}
 
 {% block title %}Dashboard{% endblock %}
-{% block rightLink %}{% url "logout" %}{% endblock %}
+{% block rightLink %}{% url "mylogout" %}{% endblock %}
 {% block rightButton %}Logout{% endblock %}
+{% block script %}
+var floors = {
+{% for player in players %}
+"{{ player.floor.pk }}": {% with count=forloop.counter0 %}'{% spaceless %}
+<tr>
+    <td style="width: 50%">
+        <table class="stockBoard">
+            {% for stock in player.floor.stocks.all %}
+            <tr>
+                <td>
+                    <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
+                    {% with change=stock.get_change %}
+                    <span class="{% if change > 0%}green{% else %}red{% endif %}" style="display: inline-block; float: right">{{ change }}</span>
+                    {% endwith %}
+                </td>
+            </tr>
+            {% endfor %}
+</tr>
+        </table>
+    </td>
+    <td>
+        <table class="leaderBoard">
+            {% for competitor in player.floor.leaders %}
+            <tr>
+                <td {% if forloop.last %}style="border-bottom: none;"{% endif %}>
+                    <span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.user.email }}</span>
+                    <span style="display: inline-block; float: right">{{ competitor.points }}</span>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </td>
+    </tr>
+    {% endspaceless %}{% endwith %}', 
+    {% endfor %}
+    };
+    {% endblock %}
 
-{% block content %}
-<table class="dash">
-    <tr>
-        <td style="border-right: 1px solid black; width: 45px;">
-            <div class="leftTabs">
-                <ul>
-                    {% for player in players %}
-                    {% if forloop.first %}
-                    <li class="selected">
-                        {% else %}
-                        <li>
-                            {% endif %}
+    {% block content %}
+    <table class="dash">
+        <tr>
+            <td style="border-right: 1px solid black; width: 45px;">
+                <div class="leftTabs">
+                    <ul>
+                        {% for player in players %}
+                        <li {% if forloop.first %}class="selected"{% endif %} id="{{ player.floor.pk }}">
                             {{ player.floor }}
                         </li>
                         {% endfor %}
-                </ul>
-            </div>
-        </td>
-        <td>
-            <table class="dashboardMain">
-                <tr>
-                    <td style="width: 50%">
-                        <table class="stockBoard">
-                            {% for stock in players.0.floor.stocks.all %}
-                            <tr>
-                                <td>
-                                    <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
-                                    {% with change=stock.get_change %}
-                                    <span class="{% if change > 0%}green{% else %}red{% endif %}" style="display: inline-block; float: right">{{ change }}</span>
-                                    {% endwith %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                </tr>
-                        </table>
-                    </td>
-                    <td>
-                        <table class="leaderBoard">
-                            {% for player in floors.0.leaders %}
-                            <tr>
-                                <td {% if forloop.last %}style="border-bottom: none;"{% endif %}>
-                                    <span style="display: inline-block; float: left">{{ forloop.counter }}. {{ player.user.email }}</span>
-                                    <span style="display: inline-block; float: right">{{ player.points }}</span>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </table>
-                    </td>
-    </tr>
-            </table>
-        </td>
-        </tr>
-</table>
-{% endblock %}
+                    </ul>
+                </div>
+            </td>
+            <td>
+                <table class="dashboardMain">
+                </table>
+            </td>
+            </tr>
+    </table>
+    {% endblock %}
