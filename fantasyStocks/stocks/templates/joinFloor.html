@@ -8,7 +8,7 @@
     {% for floor in floors %}
     <tr>
         <td>
-            <a href="{% url "join" floor.pk %}">{{ floor.name }}</a>
+            <a href="{% url 'join' floor.pk %}">{{ floor.name }}</a>
         </td>
     </tr>
     {% endfor %}

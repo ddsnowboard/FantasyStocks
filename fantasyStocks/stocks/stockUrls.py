@@ -12,7 +12,7 @@ urlpatterns = [
             url("^dashboard/$", views.dashboard, name="dashboard"),
             url("^createfloor/$", views.create_floor, name="createFloor"), 
             url("^joinfloor/$", views.join_floor, name="joinFloor"),
-            url("^joinAFloor/(\d+)/%", views.join, name="join"), 
+            url("^joinAFloor/([0-9]+)/$", views.join, name="join"), 
         ]
 
 

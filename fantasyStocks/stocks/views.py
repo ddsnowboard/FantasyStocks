@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import logout_then_login
 from django.core.urlresolvers import reverse
-from django.http import HttpResponsePermanentRedirect
+from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
 
@@ -16,7 +16,7 @@ def dashboard(request):
     scripts = ["//code.jquery.com/jquery-1.11.3.min.js", static("dashboard.js")]
     players = Player.objects.filter(user=request.user)
     if not players:
-        return redirect(reverse("joinFloor"), permanent=True)
+        return redirect(reverse("joinFloor"), permanent=False)
     return render(request, "dashboard.html", 
             {
                 "user": request.user, 
@@ -28,7 +28,7 @@ def dashboard(request):
 def index(request):
     # If you're already logged in...
     if request.user.is_authenticated():
-        return HttpResponsePermanentRedirect(reverse("dashboard"))
+        return HttpResponseRedirect(reverse("dashboard"))
     # If we got here through a submission...
     if request.method == "POST":
         if "password1" in request.POST:
@@ -48,7 +48,7 @@ def index(request):
                 password = form.cleaned_data["password"]
                 user = authenticate(username=username, password=password)
                 login(request, user)
-        return HttpResponsePermanentRedirect(form.cleaned_data["nextPage"])
+        return HttpResponseRedirect(form.cleaned_data["nextPage"])
     # If there is no POST from a prior submission...
     else:
         regForm = forms.RegistrationForm()
@@ -69,7 +69,7 @@ def create_floor(request):
             floor = form.save()
             newPlayer = Player.objects.create(user=request.user, floor=floor)
             newPlayer.save()
-            return redirect(reverse("dashboard"), permanent=True)
+            return redirect(reverse("dashboard"), permanent=False)
     else:
         form = forms.FloorForm()
         return render(request, "createFloor.html", {"form": form})
@@ -79,4 +79,4 @@ def join_floor(request):
 def join(request, floorNumber):
     player = Player.objects.create(user=request.user, floor=Floor.objects.get(pk=floorNumber))
     player.save()
-    return redirect(reverse("dashboard"), permanent=True)
+    return redirect(reverse("dashboard"), permanent=False)
