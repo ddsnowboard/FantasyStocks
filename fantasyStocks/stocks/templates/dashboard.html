@@ -44,7 +44,7 @@ var floors = {
     {% block content %}
     <table class="dash">
         <tr>
-            <td style="border-right: 1px solid black; width: 45px;">
+            <td style="border-right: 1px solid black; width: 125px;">
                 <div class="leftTabs">
                     <ul>
                         {% for player in players %}
@@ -52,6 +52,9 @@ var floors = {
                             {{ player.floor }}
                         </li>
                         {% endfor %}
+                        <li>
+                            <a href="{% url "joinFloor" %}" style="text-decoration: none; color: black">Join a floor</a>
+                        </li>
                     </ul>
                 </div>
             </td>

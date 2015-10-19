@@ -4,6 +4,7 @@
 {% block rightButton %}Logout{% endblock %}
 
 {% block content %}
+<p>Pick a floor to join, or you can <a href="{% url "createFloor" %}">create one</a>. 
 <table>
     {% for floor in floors %}
     <tr>
