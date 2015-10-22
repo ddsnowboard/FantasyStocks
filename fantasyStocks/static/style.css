@@ -141,3 +141,32 @@
 .dash td {
     vertical-align: top;
 }
+
+.floorSelection {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+a.full {
+    display: block;
+    height: 100%;
+}
+
+.floorSelection tr {
+    background-color: #CCCCCC;
+    cursor: pointer;
+}
+
+.floorSelection td {
+    padding: 10px;
+    text-align: center;
+}
+
+.floorSelection tr:hover {
+    background-color: #BBBBBB;
+}
+
+a.noUnderline {
+    text-decoration: none;
+    color: black;
+}

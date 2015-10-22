@@ -10,10 +10,11 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
 
+STANDARD_SCRIPTS = ["//code.jquery.com/jquery-1.11.3.min.js"]
 @login_required
 def dashboard(request):
     # IMPORTANT: Keep jQuery at the beginning or else it won't load first and bad stuff will happen.
-    scripts = ["//code.jquery.com/jquery-1.11.3.min.js", static("dashboard.js")]
+    scripts =  STANDARD_SCRIPTS + [static("dashboard.js")]
     players = Player.objects.filter(user=request.user)
     if not players:
         return redirect(reverse("joinFloor"), permanent=False)
@@ -67,6 +68,8 @@ def create_floor(request):
         form = forms.FloorForm(request.POST)
         if form.is_valid():
             floor = form.save()
+            floor.owner = request.user
+            floor.save()
             newPlayer = Player.objects.create(user=request.user, floor=floor)
             newPlayer.save()
             return redirect(reverse("dashboard"), permanent=False)
@@ -74,8 +77,11 @@ def create_floor(request):
         form = forms.FloorForm()
         return render(request, "createFloor.html", {"form": form})
 def join_floor(request):
-    floors = Floor.objects.all()
-    return render(request, "joinFloor.html", {"floors": floors})
+    scripts = STANDARD_SCRIPTS + [static("joinFloor.js")]
+    floors = list(Floor.objects.all())
+    for i in Player.objects.filter(user=request.user):
+        floors.remove(i.floor)
+    return render(request, "joinFloor.html", {"floors": floors, "scripts": scripts})
 def join(request, floorNumber):
     player = Player.objects.create(user=request.user, floor=Floor.objects.get(pk=floorNumber))
     player.save()

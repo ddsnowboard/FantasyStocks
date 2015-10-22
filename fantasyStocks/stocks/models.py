@@ -56,6 +56,7 @@ class Floor(models.Model):
     name = models.CharField(max_length=15)
     stocks = models.ManyToManyField(Stock)
     permissiveness = models.CharField(max_length=15, choices=PERMISSIVENESS_CHOICES, default=PERMISSIVE)
+    owner = models.ForeignKey(User, null=True)
     def __str__(self):
         return self.name
     def leaders(self):

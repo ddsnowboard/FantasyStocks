@@ -5,13 +5,32 @@
 
 {% block content %}
 <p>Pick a floor to join, or you can <a href="{% url "createFloor" %}">create one</a>. 
-<table>
+<table class="floorSelection">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Creator
+            </th>
+        </tr>
+    </thead>
     {% for floor in floors %}
     <tr>
         <td>
-            <a href="{% url 'join' floor.pk %}">{{ floor.name }}</a>
+            <!-- This <a> is captured by javascript and cast over the whole <tr>. It doesn't need to contain anything. 
+                Don't be alarmed -->
+                <a style="display: none" href="{% url 'join' floor.pk %}"></a>{{ floor.name }}
         </td>
-    </tr>
-    {% endfor %}
+        <td>
+            {% if floor.owner %}
+            {{ floor.owner }}
+            {% else %}
+            ddsnowboard
+            {% endif %}
+        </td>
+            </tr>
+            {% endfor %}
 </table>
 {% endblock %}

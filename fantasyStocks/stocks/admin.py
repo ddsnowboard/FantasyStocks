@@ -15,4 +15,4 @@ class PlayerAdmin(admin.ModelAdmin):
 
 @admin.register(stocks.models.Floor)
 class FloorAdmin(admin.ModelAdmin):
-    fields = ("name", "stocks", "permissiveness")
+    fields = ("name", "owner", "stocks", "permissiveness")
