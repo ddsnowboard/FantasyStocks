@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block rightLink %}{% url 'mylogout' %}{% endblock %}
+{% block rightButton %}Logout {{ request.user.username }}{% endblock %}
