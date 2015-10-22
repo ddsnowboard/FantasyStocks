@@ -21,7 +21,7 @@ from stocks import stockUrls, views
 from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse_lazy
 
-urlpatterns = static(settings.STATIC_URL) + [
+urlpatterns = static(settings.STATIC_URL) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + [
         url(r'^admin/', include(admin.site.urls), name="admin"),
         url(r"^stocks/", include(stockUrls), name="stocks"),
         url(r"^$", RedirectView.as_view(url="stocks/", permanent=True), name="redirect")

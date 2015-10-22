@@ -18,7 +18,7 @@ class Stock(models.Model):
     symbol = models.CharField(max_length=4, primary_key=True)
     last_updated = models.DateTimeField(default=timezone.now() - timedelta(minutes=20))
     # Set up a default image and maybe a way to get them automatically. 
-    image = models.ImageField(upload_to=get_upload_location, blank=True, default=settings.MEDIA_ROOT + "default")
+    image = models.ImageField(upload_to=get_upload_location, blank=True, default=settings.MEDIA_URL + "default")
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     change = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     def __str__(self):

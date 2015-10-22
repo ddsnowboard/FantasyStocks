@@ -5,6 +5,7 @@ import stocks
 def update(modeladmin, request, queryset):
     for i in queryset:
         i.update()
+
 @admin.register(stocks.models.Stock)
 class StockAdmin(admin.ModelAdmin):
     actions = [update]
