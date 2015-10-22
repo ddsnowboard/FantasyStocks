@@ -113,6 +113,10 @@
     color: red;
 }
 
+.blue {
+    color: #8A8AE6;
+}
+
 .stockBoard {
     width: 100%;
     border-radius: 5px;

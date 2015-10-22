@@ -48,7 +48,10 @@ def index(request):
                 username = form.cleaned_data["username"]
                 password = form.cleaned_data["password"]
                 user = authenticate(username=username, password=password)
-                login(request, user)
+                if user:
+                    login(request, user)
+                else:
+                    return render(request, "index.html", {"loginError": "That username or password doesn't exist", "loginForm" : form,  "registrationForm" : forms.RegistrationForm()})
         return HttpResponseRedirect(form.cleaned_data["nextPage"])
     # If there is no POST from a prior submission...
     else:
@@ -73,6 +76,8 @@ def create_floor(request):
             newPlayer = Player.objects.create(user=request.user, floor=floor)
             newPlayer.save()
             return redirect(reverse("dashboard"), permanent=False)
+        else:
+            return render(request, "createFloor.html", {"form": form})
     else:
         form = forms.FloorForm()
         return render(request, "createFloor.html", {"form": form})

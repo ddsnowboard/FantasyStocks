@@ -15,7 +15,7 @@ def get_upload_location(instance, filename):
 
 class Stock(models.Model):
     company_name = models.CharField(max_length=50, default="", blank=True)
-    symbol = models.CharField(max_length=4, primary_key=True)
+    symbol = models.CharField(max_length=4)
     last_updated = models.DateTimeField(default=timezone.now() - timedelta(minutes=20))
     # Set up a default image and maybe a way to get them automatically. 
     image = models.ImageField(upload_to=get_upload_location, blank=True, default=settings.MEDIA_URL + "default")
@@ -32,17 +32,16 @@ class Stock(models.Model):
             self.last_updated = timezone.now()
             if self.company_name == "":
                 self.company_name = jsonObj["Name"]
-                Stock.objects.get(symbol=self.symbol).delete()
                 self.symbol = self.symbol.upper()
             self.save()
     def get_price(self):
         self.update()
         # Apparently this number isn't put into the database and rounded until the next page load. 
-        # because that makes sense. 
-        return round(self.price, 2)
+        # Because that makes sense. Anyway, be careful.
+        return self.price
     def get_change(self):
         self.update()
-        return round(self.change, 2)
+        return self.change
 
 class Floor(models.Model):
     OPEN = "open"

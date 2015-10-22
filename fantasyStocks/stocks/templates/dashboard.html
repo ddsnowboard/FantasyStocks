@@ -1,12 +1,10 @@
-{% extends "base.html" %}
+{% extends "loggedIn.html" %}
 
 {% block title %}Dashboard{% endblock %}
-{% block rightLink %}{% url "mylogout" %}{% endblock %}
-{% block rightButton %}Logout{% endblock %}
 {% block script %}
 var floors = {
 {% for player in players %}
-"{{ player.floor.pk }}": {% with count=forloop.counter0 %}'{% spaceless %}
+"{{ player.floor.pk }}": {% with count=forloop.counter0 %}'{% filter escapejs %}
 <tr>
     <td style="width: 50%">
         <table class="stockBoard">
@@ -15,7 +13,9 @@ var floors = {
                 <td>
                     <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
                     {% with change=stock.get_change %}
-                    <span class="{% if change > 0%}green{% else %}red{% endif %}" style="display: inline-block; float: right">{{ change }}</span>
+                    <!-- We need this `floatformat` because the model doesn't put the price through the database before showing it if it is brand new, so this takes care of it. And sometimes, 
+                        bad stuff happens. Never be too careful. -->
+                        <span class="{% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" style="display: inline-block; float: right">{% if change > 0 %}+{% endif %}{{ change|floatformat:2 }}</span>
                     {% endwith %}
                 </td>
             </tr>
@@ -36,7 +36,7 @@ var floors = {
         </table>
     </td>
     </tr>
-    {% endspaceless %}{% endwith %}', 
+    {% endfilter %}{% endwith %}', 
     {% endfor %}
     };
     {% endblock %}
