@@ -166,8 +166,17 @@ a.full {
     text-align: center;
 }
 
+
 .floorSelection tr:hover {
     background-color: #BBBBBB;
+}
+
+.head>tr {
+    cursor: default;
+}
+
+.head>tr:hover {
+    background-color: #CCCCCC;
 }
 
 a.noUnderline {

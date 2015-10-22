@@ -1,18 +1,22 @@
-{% extends "base.html" %}
+{% extends "loggedIn.html" %}
 {% block title %}Join Floor{% endblock %}
-{% block rightLink %}{% url "mylogout" %}{% endblock %}
-{% block rightButton %}Logout{% endblock %}
 
 {% block content %}
 <p>Pick a floor to join, or you can <a href="{% url "createFloor" %}">create one</a>. 
 <table class="floorSelection">
-    <thead>
+    <thead class="head">
         <tr>
             <th>
                 Name
             </th>
             <th>
                 Creator
+            </th>
+            <th>
+                Size
+            </th>
+            <th>
+                Floor Type
             </th>
         </tr>
     </thead>
@@ -24,11 +28,15 @@
                 <a style="display: none" href="{% url 'join' floor.pk %}"></a>{{ floor.name }}
         </td>
         <td>
-            {% if floor.owner %}
-            {{ floor.owner }}
-            {% else %}
-            ddsnowboard
-            {% endif %}
+            {{ floor.owner|default_if_none:"ddsnowboard" }}
+        </td>
+        <td>
+            {% with players=floor.leaders %}
+            {{ players|length }} player{{ players|pluralize }}
+            {% endwith %}
+        </td>
+        <td>
+            {{ floor.permissiveness|capfirst }}
         </td>
             </tr>
             {% endfor %}
