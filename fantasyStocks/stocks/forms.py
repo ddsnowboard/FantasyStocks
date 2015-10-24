@@ -1,7 +1,17 @@
+from django.conf.urls.static import static
 from django import forms
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse_lazy
 from stocks.models import Floor
+
+class StockWidget(forms.widgets.TextInput):
+    CLASS = "stockBox"
+    class Media:
+        js = ("//code.jquery.com/jquery-1.11.3.min.js", "typeahead.bundle.js", "stockWidget.js")
+    def __init__(self, attrs=None):
+        forms.widgets.TextInput.__init__(self, attrs if attrs else {})
+        self.attrs["class"] = StockWidget.CLASS
+
 class LoginForm(forms.Form):
     username = forms.CharField(label="Username", max_length=25)
     password = forms.CharField(label="Password", max_length=50, widget=forms.PasswordInput)
@@ -36,3 +46,4 @@ class FloorForm(forms.ModelForm):
     class Meta:
         model = Floor
         fields = ["name", "stocks", "permissiveness"]
+        widgets = {"stocks": StockWidget}

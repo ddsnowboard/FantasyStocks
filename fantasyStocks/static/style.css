@@ -183,3 +183,7 @@ a.noUnderline {
     text-decoration: none;
     color: black;
 }
+
+.tt-menu {
+    background-color: white;
+}

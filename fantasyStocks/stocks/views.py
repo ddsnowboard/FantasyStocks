@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from urllib import request as py_request
 
 STANDARD_SCRIPTS = ["//code.jquery.com/jquery-1.11.3.min.js"]
 @login_required
@@ -67,6 +68,7 @@ def instructions(request):
 def logout(request):
     return logout_then_login(request)
 def create_floor(request):
+    WILDCARD = "$QUERY"
     if request.method == "POST":
         form = forms.FloorForm(request.POST)
         if form.is_valid():
@@ -80,7 +82,7 @@ def create_floor(request):
             return render(request, "createFloor.html", {"form": form})
     else:
         form = forms.FloorForm()
-        return render(request, "createFloor.html", {"form": form})
+        return render(request, "createFloor.html", {"form": form, "className": forms.StockWidget().CLASS, "stockUrl": reverse("lookup", args=[WILDCARD]), "wildcard": WILDCARD})
 def join_floor(request):
     scripts = STANDARD_SCRIPTS + [static("joinFloor.js")]
     floors = list(Floor.objects.all())
@@ -91,3 +93,6 @@ def join(request, floorNumber):
     player = Player.objects.create(user=request.user, floor=Floor.objects.get(pk=floorNumber))
     player.save()
     return redirect(reverse("dashboard"), permanent=False)
+def stockLookup(request, query):
+    STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
+    return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
