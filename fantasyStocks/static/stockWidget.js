@@ -5,8 +5,12 @@ $(document).ready(function(){
     var $holder = $("<div class=\"holder\"></div>");
     $box.before($holder);
     var stocks_bloodhound = new Bloodhound({
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        datumTokenizer: Bloodhound.tokenizers.whitespace,
+        queryTokenizer: function(s){
+            return [s];
+        },
+        datumTokenizer:  function(s){
+            return [s];
+        },
         initialize: true,
         remote: {
             url: STOCK_API_URL, 
@@ -32,5 +36,14 @@ $(document).ready(function(){
             }, 
         }, 
         limit: 20,
+        rateLimitBy: "throttle",
+        rateLimitWait: 600,
     });
+
+    // This isn't working. So that's interesting. 
+    $box.bind("typeahead:autocomplete", function(event, suggestion)
+            {
+                console.log(suggestion);
+            });
 });
+
