@@ -1,9 +1,9 @@
 "use strict"
 
-
 $(document).ready(function(){
     var $box = $("." + CLASS_NAME);
-
+    var $holder = $("<div class=\"holder\"></div>");
+    $box.before($holder);
     var stocks_bloodhound = new Bloodhound({
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         datumTokenizer: Bloodhound.tokenizers.whitespace,
