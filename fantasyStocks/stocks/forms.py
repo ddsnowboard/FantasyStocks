@@ -20,7 +20,7 @@ class StockWidget(forms.widgets.TextInput):
         forms.widgets.TextInput.__init__(self, attrs if attrs else {})
         self.attrs["class"] = StockWidget.CLASS
     def to_python(self, value):
-        raise Exception("This is an exception. Th")
+        raise Exception("This is an exception.")
         out = []
         for i in value.split(","):
             s = Stock.objects.get(symbol=i)
@@ -66,9 +66,10 @@ class RegistrationForm(forms.Form):
             return "There was an error with your registration"
         return ""
 class FloorForm(forms.ModelForm):
-    def validate(self, value, model_instance):
-        print(self.validators, file=sys.stderr)
-        forms.ModelForm.validate(self, value, model_instance)
+    def is_valid(self):
+        print(self.errors, file=sys.stderr)
+        return True
+
     class Meta:
         model = Floor
         fields = ["name", "stocks", "permissiveness"]
