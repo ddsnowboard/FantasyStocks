@@ -14,6 +14,7 @@ urlpatterns = [
             url("^joinfloor/$", views.join_floor, name="joinFloor"),
             url("^joinAFloor/([0-9]+)/$", views.join, name="join"), 
             url("^stockLookupURL/(.+?)/$", views.stockLookup, name="lookup"), 
+            url("^stockLookupURL/$", views.stockLookup, name="prefetch"), 
         ]
 
 

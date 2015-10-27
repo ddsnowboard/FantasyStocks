@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from stocks import forms
-from stocks.models import Player, Floor
+from stocks.models import Player, Floor, Stock
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import logout_then_login
@@ -10,6 +10,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from urllib import request as py_request
+import json
 
 STANDARD_SCRIPTS = ["//code.jquery.com/jquery-1.11.3.min.js"]
 @login_required
@@ -82,7 +83,12 @@ def create_floor(request):
             return render(request, "createFloor.html", {"form": form})
     else:
         form = forms.FloorForm()
-        return render(request, "createFloor.html", {"form": form, "className": forms.StockWidget().CLASS, "stockUrl": reverse("lookup", args=[WILDCARD]), "wildcard": WILDCARD})
+        return render(request, "createFloor.html", 
+                {"form": form,
+                "className": forms.StockWidget().CLASS,
+                "stockUrl": reverse("lookup", args=[WILDCARD]),
+                "prefetch": reverse("prefetch"), 
+                "wildcard": WILDCARD})
 def join_floor(request):
     scripts = STANDARD_SCRIPTS + [static("joinFloor.js")]
     floors = list(Floor.objects.all())
@@ -93,6 +99,10 @@ def join(request, floorNumber):
     player = Player.objects.create(user=request.user, floor=Floor.objects.get(pk=floorNumber))
     player.save()
     return redirect(reverse("dashboard"), permanent=False)
-def stockLookup(request, query):
-    STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
-    return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
+def stockLookup(request, query=None):
+    if query:
+        STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
+        return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
+    else:
+        output = [{"Name": s.company_name, "Symbol": s.symbol} for s in Stock.objects.all()]
+        return HttpResponse(json.dumps(output), content_type="text/json")

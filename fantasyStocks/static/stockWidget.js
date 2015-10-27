@@ -5,11 +5,10 @@ $(document).ready(function(){
     var $holder = $("<div class=\"holder\"></div>");
     $box.before($holder);
     var stocks_bloodhound = new Bloodhound({
-        queryTokenizer: function(s){
-            return [s];
-        },
-        datumTokenizer:  function(s){
-            return [s];
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        datumTokenizer:  function(datum)
+        {
+            return [datum.Name, datum.Symbol];
         },
         initialize: true,
         remote: {
@@ -20,7 +19,18 @@ $(document).ready(function(){
                 return jsonObj;
             }
         }, 
+        prefetch: {
+            url: PREFETCH_URL,
+            cache: false,
+            transform: function(jsonObj)
+            {
+                console.log(jsonObj);
+                return jsonObj;
+            }, 
+        }
     });
+    stocks_bloodhound.initialize();
+
 
     $box.typeahead({
         minLength: 1,
