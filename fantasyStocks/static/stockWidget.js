@@ -1,9 +1,24 @@
 "use strict"
 
+var TEXTBOX_CLASS = "inputBox";
+var selected_stocks = [];
+
+function setBox($box, arr)
+{
+    $box.val(arr.join(","));
+}
 $(document).ready(function(){
-    var $box = $("." + CLASS_NAME);
+    var $value = $("." + CLASS_NAME);
+    var $box = $("<input type=\"text\" />");
+    $box.addClass(TEXTBOX_CLASS);
+    $box.keydown(function(event) {
+        if(event.which === 13)
+            event.preventDefault();
+    });
     var $holder = $("<div class=\"holder\"></div>");
     $holder.on("mousedown", ".selection", function() {
+        selected_stocks.splice(selected_stocks.indexOf($(this).attr('id')), 1);
+        setBox($value, selected_stocks);
         $(this).remove();
     })
     .on("mouseenter", ".selection", function() {
@@ -12,7 +27,7 @@ $(document).ready(function(){
     .on("mouseleave", ".selection", function() {
         $(this).removeClass("redBackground");
     });
-    $box.before($holder);
+    $value.parent().append($holder).append($box);
     var stocks_bloodhound = new Bloodhound({
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         datumTokenizer:  function(datum)
@@ -60,10 +75,11 @@ $(document).ready(function(){
         display: function(o){ return o.Name; }, 
     });
 
-    // This isn't working. So that's interesting. 
     $box.bind("typeahead:select", function(event, suggestion)
             {
                 $box.typeahead("val", "");
                 $holder.append("<div class=\"selection\" id=\"" + suggestion.Symbol + "\"><span class=\"name\">" + suggestion.Name + "</span><span class=\"symbol\"> (" + suggestion.Symbol + ") </span></div>");
+                selected_stocks.push(suggestion.Symbol);
+                setBox($value, selected_stocks);
             });
 });

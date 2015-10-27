@@ -12,6 +12,8 @@ from django.conf import settings
 def get_upload_location(instance, filename):
     return instance.symbol
 
+class StockAPIError(Exception):
+    pass
 
 class Stock(models.Model):
     company_name = models.CharField(max_length=50, default="", blank=True)

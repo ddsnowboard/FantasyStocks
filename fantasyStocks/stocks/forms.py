@@ -1,16 +1,39 @@
 from django.conf.urls.static import static
 from django import forms
+from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse_lazy
-from stocks.models import Floor
+from stocks.models import Floor, Stock, StockAPIError
+from django.core.exceptions import ValidationError
+import sys
 
 class StockWidget(forms.widgets.TextInput):
+    """
+    This widget allows the user to select any stock, whether or not 
+    it's in the database. It returns a list of Stock objects (it will create
+    the new objects within itself) so it can be used with a ManyToMany field.
+    """
     CLASS = "stockBox"
     class Media:
         js = ("//code.jquery.com/jquery-1.11.3.min.js", "typeahead.bundle.js", "stockWidget.js")
     def __init__(self, attrs=None):
         forms.widgets.TextInput.__init__(self, attrs if attrs else {})
         self.attrs["class"] = StockWidget.CLASS
+    def to_python(self, value):
+        raise Exception("This is an exception. Th")
+        out = []
+        for i in value.split(","):
+            s = Stock.objects.get(symbol=i)
+            if not s:
+                s = Stock(symbol=i)
+                try:
+                    s.update()
+                except StockAPIError:
+                    raise ValidationError
+                s.save()
+            out.append(s)
+    def validate(self, value):
+        return True
 
 class LoginForm(forms.Form):
     username = forms.CharField(label="Username", max_length=25)
@@ -43,6 +66,9 @@ class RegistrationForm(forms.Form):
             return "There was an error with your registration"
         return ""
 class FloorForm(forms.ModelForm):
+    def validate(self, value, model_instance):
+        print(self.validators, file=sys.stderr)
+        forms.ModelForm.validate(self, value, model_instance)
     class Meta:
         model = Floor
         fields = ["name", "stocks", "permissiveness"]

@@ -200,6 +200,10 @@ a.noUnderline {
     background-color: lightgrey !important;
 }
 
+.stockBox {
+    display: none;
+}
+
 .holder .selection {
     text-align: center;
     padding-top: 5px;

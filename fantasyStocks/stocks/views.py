@@ -11,8 +11,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from urllib import request as py_request
 import json
+import sys
 
 STANDARD_SCRIPTS = ["//code.jquery.com/jquery-1.11.3.min.js"]
+
 @login_required
 def dashboard(request):
     # IMPORTANT: Keep jQuery at the beginning or else it won't load first and bad stuff will happen.
@@ -27,6 +29,7 @@ def dashboard(request):
                 "floors": [i.floor for i in Player.objects.filter(user=request.user)], 
                 "scripts" : scripts,
             })
+
 # Create your views here.
 def index(request):
     # If you're already logged in...
@@ -64,10 +67,15 @@ def index(request):
             for i in (regForm, logForm):
                 i.fields["nextPage"].initial = request.GET["next"]
         return render(request, "index.html", {"loginForm" : logForm,  "registrationForm" : regForm})
+
 def instructions(request):
     return render(request, "instructions.html")
+
+@login_required
 def logout(request):
     return logout_then_login(request)
+
+@login_required
 def create_floor(request):
     WILDCARD = "$QUERY"
     if request.method == "POST":
@@ -89,16 +97,21 @@ def create_floor(request):
                 "stockUrl": reverse("lookup", args=[WILDCARD]),
                 "prefetch": reverse("prefetch"), 
                 "wildcard": WILDCARD})
+
+@login_required
 def join_floor(request):
     scripts = STANDARD_SCRIPTS + [static("joinFloor.js")]
     floors = list(Floor.objects.all())
     for i in Player.objects.filter(user=request.user):
         floors.remove(i.floor)
     return render(request, "joinFloor.html", {"floors": floors, "scripts": scripts})
+
+@login_required
 def join(request, floorNumber):
     player = Player.objects.create(user=request.user, floor=Floor.objects.get(pk=floorNumber))
     player.save()
     return redirect(reverse("dashboard"), permanent=False)
+
 def stockLookup(request, query=None):
     if query:
         STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
