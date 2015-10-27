@@ -15,6 +15,21 @@ def get_upload_location(instance, filename):
 class StockAPIError(Exception):
     pass
 
+class RemoteStockData:
+    def __init__(self, symbol, name, price, change):
+        self.symbol = symbol
+        self.name = name
+        self.price = price
+        self.change = change
+    def apply(self, stockObj = None):
+        if not stockObj:
+            stockObj = Stock.objects.get(symbol=self.symbol)
+        stockObj.price = self.price
+        stockObj.change = self.change
+        if stockObj.company_name == "":
+            stockObj.company_name = self.name
+            stockObj.symbol = stockObj.symbol.upper()
+
 class Stock(models.Model):
     company_name = models.CharField(max_length=50, default="", blank=True)
     symbol = models.CharField(max_length=4)
@@ -27,14 +42,8 @@ class Stock(models.Model):
         return "{} ({})".format(self.company_name, self.symbol)
     def update(self):
         if timezone.now() - self.last_updated > timedelta(minutes=15):
-            URL = "http://dev.markitondemand.com/Api/v2/Quote/json?"
-            jsonObj = json.loads(request.urlopen(URL + urlencode({"symbol" : self.symbol})).read().decode("UTF-8"))
-            self.price = jsonObj['LastPrice']
-            self.change = jsonObj["Change"]
+            Stock.remote_load_price(self.symbol).apply(self)
             self.last_updated = timezone.now()
-            if self.company_name == "":
-                self.company_name = jsonObj["Name"]
-                self.symbol = self.symbol.upper()
             self.save()
     def get_price(self):
         self.update()
@@ -44,6 +53,11 @@ class Stock(models.Model):
     def get_change(self):
         self.update()
         return self.change
+    @staticmethod
+    def remote_load_price(symbol):
+        URL = "http://dev.markitondemand.com/Api/v2/Quote/json?"
+        jsonObj = json.loads(request.urlopen(URL + urlencode({"symbol" : symbol})).read().decode("UTF-8"))
+        return RemoteStockData(jsonObj["Symbol"], jsonObj["Name"], jsonObj["LastPrice"], jsonObj["Change"])
 
 class Floor(models.Model):
     OPEN = "open"
