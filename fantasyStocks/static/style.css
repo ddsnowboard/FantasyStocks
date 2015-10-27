@@ -197,5 +197,20 @@ a.noUnderline {
 }
 
 .tt-cursor {
-    background-color: lightgrey; !important
+    background-color: lightgrey !important;
+}
+
+.holder .selection {
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border: 1px solid black;
+    background-color: #9FBCDA;
+    width: 100%;
+    margin-bottom: 5px;
+    cursor: default;
+}
+
+.redBackground {
+    background-color: red !important;
 }

@@ -3,6 +3,15 @@
 $(document).ready(function(){
     var $box = $("." + CLASS_NAME);
     var $holder = $("<div class=\"holder\"></div>");
+    $holder.on("mousedown", ".selection", function() {
+        $(this).remove();
+    })
+    .on("mouseenter", ".selection", function() {
+        $(this).addClass("redBackground");
+    })
+    .on("mouseleave", ".selection", function() {
+        $(this).removeClass("redBackground");
+    });
     $box.before($holder);
     var stocks_bloodhound = new Bloodhound({
         queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -24,7 +33,6 @@ $(document).ready(function(){
             cache: false,
             transform: function(jsonObj)
             {
-                console.log(jsonObj);
                 return jsonObj;
             }, 
         }
@@ -35,6 +43,7 @@ $(document).ready(function(){
     $box.typeahead({
         minLength: 1,
         highlight: false,
+        hint: false,
     }, {
         name: "stocks_dataset", 
         source: stocks_bloodhound,
@@ -48,12 +57,13 @@ $(document).ready(function(){
         limit: 20,
         rateLimitBy: "throttle",
         rateLimitWait: 600,
+        display: function(o){ return o.Name; }, 
     });
 
     // This isn't working. So that's interesting. 
-    $box.bind("typeahead:autocomplete", function(event, suggestion)
+    $box.bind("typeahead:select", function(event, suggestion)
             {
-                console.log(suggestion);
+                $box.typeahead("val", "");
+                $holder.append("<div class=\"selection\" id=\"" + suggestion.Symbol + "\"><span class=\"name\">" + suggestion.Name + "</span><span class=\"symbol\"> (" + suggestion.Symbol + ") </span></div>");
             });
 });
-
