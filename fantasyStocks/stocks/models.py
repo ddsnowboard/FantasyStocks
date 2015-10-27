@@ -55,9 +55,9 @@ class Stock(models.Model):
         return self.change
     @staticmethod
     def remote_load_price(symbol):
-        URL = "http://dev.markitondemand.com/Api/v2/Quote/json?"
-        jsonObj = json.loads(request.urlopen(URL + urlencode({"symbol" : symbol})).read().decode("UTF-8"))
-        return RemoteStockData(jsonObj["Symbol"], jsonObj["Name"], jsonObj["LastPrice"], jsonObj["Change"])
+        URL = "http://finance.yahoo.com/webservice/v1/symbols/{}/quote?format=json&view=detail"
+        jsonObj = json.loads(request.urlopen(URL.format(symbol)).read().decode("UTF-8"))['list']['resources'][0]['resource']['fields']
+        return RemoteStockData(jsonObj["symbol"], jsonObj["name"], jsonObj["price"], jsonObj["change"])
 
 class Floor(models.Model):
     OPEN = "open"
