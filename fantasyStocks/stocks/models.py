@@ -16,6 +16,14 @@ class StockAPIError(Exception):
     pass
 
 class RemoteStockData:
+    """
+    An object that holds the data received when a stock is updated
+    from the web API. 
+    @field symbol The symbol of the stock
+    @field price The newest price available of the stock
+    @field change The last available change of the stock
+    @field name The name of the company
+    """
     def __init__(self, symbol, name, price, change):
         self.symbol = symbol
         self.name = name
@@ -55,6 +63,10 @@ class Stock(models.Model):
         return self.change
     @staticmethod
     def remote_load_price(symbol):
+        """
+        Given a symbol as a string, returns a RemoteStockData object with the given symbol's 
+        name, price, and last change. 
+        """
         URL = "http://finance.yahoo.com/webservice/v1/symbols/{}/quote?format=json&view=detail"
         jsonObj = json.loads(request.urlopen(URL.format(symbol)).read().decode("UTF-8"))['list']['resources'][0]['resource']['fields']
         return RemoteStockData(jsonObj["symbol"], jsonObj["name"], jsonObj["price"], jsonObj["change"])
