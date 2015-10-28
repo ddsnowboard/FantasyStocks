@@ -12,6 +12,7 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 from urllib import request as py_request
 import json
 import sys
+import csv
 
 STANDARD_SCRIPTS = ["//code.jquery.com/jquery-1.11.3.min.js"]
 
@@ -113,9 +114,16 @@ def join(request, floorNumber):
     return redirect(reverse("dashboard"), permanent=False)
 
 def stockLookup(request, query=None):
+    # I don't really use this anymore, but I might need it. 
     if query:
         STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
         return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
+    # This is almost always the part that runs.
     else:
-        output = [{"Name": s.company_name, "Symbol": s.symbol} for s in Stock.objects.all()]
+        with open("static/wholelist.csv") as f:
+            reader = csv.reader(f)
+            output = []
+            for i in reader:
+                output.append({"name": i[1], "symbol": i[0]})
+            # output = [{"name": s.company_name, "symbol": s.symbol} for s in Stock.objects.all()]
         return HttpResponse(json.dumps(output), content_type="text/json")

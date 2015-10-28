@@ -32,17 +32,9 @@ $(document).ready(function(){
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         datumTokenizer:  function(datum)
         {
-            return [datum.Name, datum.Symbol];
+            return [datum.name, datum.symbol];
         },
         initialize: true,
-        remote: {
-            url: STOCK_API_URL, 
-            wildcard: WILDCARD, 
-            transform: function(jsonObj)
-            {
-                return jsonObj;
-            }
-        }, 
         prefetch: {
             url: PREFETCH_URL,
             cache: false,
@@ -66,20 +58,20 @@ $(document).ready(function(){
             pending: " . . . ", 
             suggestion: function(obj)
             {
-                return "<div class=\"suggestion\"><span class=\"name\">" + obj.Name + "</span><span class=\"symbol\"> (" + obj.Symbol + ") </span></div>"
+                return "<div class=\"suggestion\"><span class=\"name\">" + obj.name + "</span><span class=\"symbol\"> (" + obj.symbol + ") </span></div>"
             }, 
         }, 
         limit: 20,
         rateLimitBy: "throttle",
         rateLimitWait: 600,
-        display: function(o){ return o.Name; }, 
+        display: function(o){ return o.name; }, 
     });
 
     $box.bind("typeahead:select", function(event, suggestion)
             {
                 $box.typeahead("val", "");
-                $holder.append("<div class=\"selection\" id=\"" + suggestion.Symbol + "\"><span class=\"name\">" + suggestion.Name + "</span><span class=\"symbol\"> (" + suggestion.Symbol + ") </span></div>");
-                selected_stocks.push(suggestion.Symbol);
+                $holder.append("<div class=\"selection\" id=\"" + suggestion.symbol + "\"><span class=\"name\">" + suggestion.name + "</span><span class=\"symbol\"> (" + suggestion.symbol + ") </span></div>");
+                selected_stocks.push(suggestion.symbol);
                 setBox($value, selected_stocks);
             });
 });
