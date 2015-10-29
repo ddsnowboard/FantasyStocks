@@ -125,5 +125,4 @@ def stockLookup(request, query=None):
             output = []
             for i in reader:
                 output.append({"name": i[1], "symbol": i[0]})
-            # output = [{"name": s.company_name, "symbol": s.symbol} for s in Stock.objects.all()]
         return HttpResponse(json.dumps(output), content_type="text/json")
