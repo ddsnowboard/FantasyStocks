@@ -11,15 +11,35 @@ import sys
 class StockWidget(forms.widgets.TextInput):
     """
     This widget allows the user to select any stock, whether or not 
-    it's in the database. It returns a list of Stock objects (it will create
-    the new objects within itself) so it can be used with a ManyToMany field.
+    it's in the database. It gets the list of stocks from the big JSON
+    list "stocks.json" in the static folder. This `must` be used with a StockChoiceField
+    unless you've done the sufficient work somewhere else. 
+    This also needs some special stuff on the template. You need to include this block of 
+    JavaScript in the `script` block that the template inherits from "loggedIn.html"
+
+    var CLASS_NAME = "{{ className }}";
+    var STOCK_API_URL = "{{ stockUrl }}";
+    var WILDCARD = "{{ wildcard }}";
+    var PREFETCH_URL = "{{ prefetch }}";
+
+    You also need these lines in the view:
+
+    "className": forms.StockWidget().HTML_CLASS,
+    "stockUrl": reverse("lookup", args=[WILDCARD]),
+    "prefetch": reverse("prefetch"), 
+    "wildcard": WILDCARD}
+
+    This is necessary to make the JavaScript work without magic numbers. 
+    See views.create_floor for a specific implementation. 
+    TODO: Make this work without this extra block by rendering the JavaScript through
+    the template engine. 
     """
-    CLASS = "stockBox"
+    HTML_CLASS = "stockBox"
     class Media:
         js = ("//code.jquery.com/jquery-1.11.3.min.js", "typeahead.bundle.js", "stockWidget.js")
     def __init__(self, attrs=None):
         forms.widgets.TextInput.__init__(self, attrs if attrs else {})
-        self.attrs["class"] = StockWidget.CLASS
+        self.attrs["class"] = StockWidget.HTML_CLASS
     def to_python(self, value):
             s = Stock.objects.get(symbol=i)
             if not s:
@@ -60,6 +80,7 @@ class LoginForm(forms.Form):
     username = forms.CharField(label="Username", max_length=25)
     password = forms.CharField(label="Password", max_length=50, widget=forms.PasswordInput)
     nextPage = forms.CharField(label="next page", max_length=30, widget=forms.HiddenInput(), initial=reverse_lazy("dashboard"))
+
 class RegistrationForm(forms.Form):
     # The order of this constant matters. Tripping `already_exists` doesn't make 
     # any sense if `dontmatch` has already been tripped. 
@@ -86,6 +107,7 @@ class RegistrationForm(forms.Form):
                     return self._errors[i]
             return "There was an error with your registration"
         return ""
+
 class FloorForm(forms.Form):
     name = forms.CharField(label="Name", max_length=35)
     stocks = StockChoiceField(label="Stocks")

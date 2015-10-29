@@ -94,7 +94,7 @@ def create_floor(request):
         form = forms.FloorForm()
         return render(request, "createFloor.html", 
                 {"form": form,
-                "className": forms.StockWidget().CLASS,
+                "className": forms.StockWidget().HTML_CLASS,
                 "stockUrl": reverse("lookup", args=[WILDCARD]),
                 "prefetch": reverse("prefetch"), 
                 "wildcard": WILDCARD})
