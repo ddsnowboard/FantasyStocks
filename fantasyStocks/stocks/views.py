@@ -120,9 +120,4 @@ def stockLookup(request, query=None):
         return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
     # This is almost always the part that runs.
     else:
-        with open("static/wholelist.csv") as f:
-            reader = csv.reader(f)
-            output = []
-            for i in reader:
-                output.append({"name": i[1], "symbol": i[0]})
-        return HttpResponse(json.dumps(output), content_type="text/json")
+        return redirect(static("stocks.json"), permanent=True)
