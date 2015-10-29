@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse_lazy
 from stocks.models import Floor, Stock, StockAPIError
 from django.core.exceptions import ValidationError
+from stocks.models import Floor
 import sys
 
 class StockWidget(forms.widgets.TextInput):
@@ -20,9 +21,6 @@ class StockWidget(forms.widgets.TextInput):
         forms.widgets.TextInput.__init__(self, attrs if attrs else {})
         self.attrs["class"] = StockWidget.CLASS
     def to_python(self, value):
-        raise Exception("This is an exception.")
-        out = []
-        for i in value.split(","):
             s = Stock.objects.get(symbol=i)
             if not s:
                 s = Stock(symbol=i)
@@ -34,6 +32,29 @@ class StockWidget(forms.widgets.TextInput):
             out.append(s)
     def validate(self, value):
         return True
+
+class StockChoiceField(forms.Field):
+    widget = StockWidget
+    def __init__(self, *args, **kwargs):
+        forms.Field.__init__(self,  *args, **kwargs)
+    def to_python(self, value):
+        out = []
+        if not value:
+            return out
+        symbols = value.split(",")
+        for i in symbols:
+            s = Stock.objects.filter(symbol=i)
+            if s:
+                s = s[0]
+            else:
+                s = Stock(symbol=i)
+                try:
+                    s.update()
+                except StockAPIError:
+                    raise ValidationError
+                s.save()
+            out.append(s)
+        return out
 
 class LoginForm(forms.Form):
     username = forms.CharField(label="Username", max_length=25)
@@ -65,12 +86,16 @@ class RegistrationForm(forms.Form):
                     return self._errors[i]
             return "There was an error with your registration"
         return ""
-class FloorForm(forms.ModelForm):
+class FloorForm(forms.Form):
+    name = forms.CharField(label="Name", max_length=35)
+    stocks = StockChoiceField(label="Stocks")
+    permissiveness = forms.ChoiceField(label="Permissiveness", choices=Floor.PERMISSIVENESS_CHOICES)
     def is_valid(self):
-        print(self.errors, file=sys.stderr)
-        return True
-
-    class Meta:
-        model = Floor
-        fields = ["name", "stocks", "permissiveness"]
-        widgets = {"stocks": StockWidget}
+        return super(FloorForm, self).is_valid()
+    def save(self):
+        floor = Floor(name=self.cleaned_data['name'], permissiveness=self.cleaned_data['permissiveness'])
+        floor.save()
+        for i in self.cleaned_data['stocks']:
+            floor.stocks.add(i)
+        floor.save()
+        return floor
