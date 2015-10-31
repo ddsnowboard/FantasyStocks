@@ -2,20 +2,60 @@
 
 var TEXTBOX_CLASS = "inputBox";
 var selected_stocks = [];
-
+var $holder;
+var $value;
 function setBox($box, arr)
 {
     $box.val(arr.join(","));
 }
+
+function pushStock(stock, addToArray)
+{
+    if(addToArray === undefined)
+        addToArray = true;
+    $holder.append("<div class=\"selection\" id=\"" + stock.symbol + "\"><span class=\"name\">" + stock.name + "</span><span class=\"symbol\"> (" + stock.symbol + ") </span></div>");
+    if(addToArray){
+        selected_stocks.push(stock.symbol);
+        setBox($value, selected_stocks);
+    }
+}
 $(document).ready(function(){
-    var $value = $("." + CLASS_NAME);
+    $value = $("." + CLASS_NAME);
+    if($value.val())
+    {
+        var DONE = 4;
+        var initValues = $value.val().split(",");
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function(){
+            console.log(this.readyState);
+            if(this.readyState === DONE)
+            {
+                var response = JSON.parse(this.responseText);
+                var curr;
+                for(var i = 0;i<initValues.length;i++)
+                {
+                    curr = initValues[i];
+                    for(var j = 0; j<response.length;j++)
+                    {
+                        if(response[j].symbol === curr)
+                        {
+                            pushStock(response[j], false);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        request.open("GET", PREFETCH_URL, true);
+        request.send();
+    }
     var $box = $("<input type=\"text\" />");
     $box.addClass(TEXTBOX_CLASS);
     $box.keydown(function(event) {
         if(event.which === 13)
             event.preventDefault();
     });
-    var $holder = $("<div class=\"holder\"></div>");
+    $holder = $("<div class=\"holder\"></div>");
     $holder.on("mousedown", ".selection", function() {
         selected_stocks.splice(selected_stocks.indexOf($(this).attr('id')), 1);
         setBox($value, selected_stocks);
@@ -44,8 +84,6 @@ $(document).ready(function(){
             }, 
         }
     });
-    stocks_bloodhound.initialize();
-
 
     $box.typeahead({
         minLength: 1,
@@ -70,8 +108,6 @@ $(document).ready(function(){
     $box.bind("typeahead:select", function(event, suggestion)
             {
                 $box.typeahead("val", "");
-                $holder.append("<div class=\"selection\" id=\"" + suggestion.symbol + "\"><span class=\"name\">" + suggestion.name + "</span><span class=\"symbol\"> (" + suggestion.symbol + ") </span></div>");
-                selected_stocks.push(suggestion.symbol);
-                setBox($value, selected_stocks);
+                pushStock(suggestion);
             });
 });
