@@ -72,7 +72,17 @@ $(document).ready(function(){
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         datumTokenizer:  function(datum)
         {
-            return [datum.name, datum.symbol];
+            var out = [];
+            var FIELDS = [datum.name, datum.symbol];
+            for(var i = 0;i < FIELDS.length;i++)
+            {
+                var curr = FIELDS[i].split(" ");
+                for(var p = 0;p<curr.length;p++)
+                {
+                    out.push(curr[p]);
+                }
+            }
+            return out;
         },
         initialize: true,
         prefetch: {
