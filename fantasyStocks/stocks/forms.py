@@ -22,13 +22,17 @@ class StockWidget(forms.widgets.TextInput):
     var WILDCARD = "{{ wildcard }}";
     var PREFETCH_URL = "{{ prefetch }}";
 
-    You also need these lines in the view:
+    You also need these in context that the view returns:
 
     "className": forms.StockWidget().HTML_CLASS,
     "stockUrl": reverse("lookup", args=[WILDCARD]),
     "prefetch": reverse("prefetch"), 
     "wildcard": WILDCARD}
 
+    Please note that the "prefetch" variable might differ based on where you're using it. 
+    This implementation is unique to the Create Floor page. When I want to use it on the
+    Trade Page, I will have change it and tell Django to give me a JSON string of just
+    the stocks owned by the players in question. 
     This is necessary to make the JavaScript work without magic numbers. 
     See views.create_floor for a specific implementation. 
     TODO: Make this work without this extra block by rendering the JavaScript through
