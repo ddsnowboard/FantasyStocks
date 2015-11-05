@@ -11,12 +11,24 @@ function setBox($box, arr)
 
 function pushStock(stock, addToArray)
 {
+    var WARNING_DURATION = 2000;
+    // The JavaScript eqivalent of a default argument. Brilliant.
     if(addToArray === undefined)
+    {
         addToArray = true;
-    $holder.append("<div class=\"selection\" id=\"" + stock.symbol + "\"><span class=\"name\">" + stock.name + "</span><span class=\"symbol\"> (" + stock.symbol + ") </span></div>");
-    if(addToArray){
-        selected_stocks.push(stock.symbol);
-        setBox($value, selected_stocks);
+    }
+    if(selected_stocks.indexOf(stock.symbol) === -1)
+    {
+        $holder.append("<div class=\"selection\" id=\"" + stock.symbol + "\"><span class=\"name\">" + stock.name + "</span><span class=\"symbol\"> (" + stock.symbol + ") </span></div>");
+        if(addToArray){
+            selected_stocks.push(stock.symbol);
+            setBox($value, selected_stocks);
+        }
+    }
+    else
+    {
+        $holder.append("<div class=\"redBackground selection warning\">You can't include a stock twice!</div>");
+        setTimeout(function(){ $(".warning").fadeOut() }, WARNING_DURATION);
     }
 }
 $(document).ready(function(){
@@ -39,7 +51,7 @@ $(document).ready(function(){
                     {
                         if(response[j].symbol === curr)
                         {
-                            pushStock(response[j], false);
+                            pushStock(response[j], true);
                             break;
                         }
                     }

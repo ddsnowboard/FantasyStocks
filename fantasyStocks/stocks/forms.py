@@ -66,6 +66,8 @@ class StockChoiceField(forms.Field):
         if not value:
             return out
         symbols = value.split(",")
+        if not len(set(symbols)) == len(symbols):
+            raise ValidationError("There was a duplicate stock!")
         for i in symbols:
             s = Stock.objects.filter(symbol=i)
             if s:
