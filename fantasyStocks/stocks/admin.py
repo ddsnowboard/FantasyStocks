@@ -5,14 +5,17 @@ import stocks
 def update(modeladmin, request, queryset):
     for i in queryset:
         i.update()
+def force_update(modeladmin, request, queryset):
+    for i in queryset:
+        i.force_update()
 
 @admin.register(stocks.models.Stock)
 class StockAdmin(admin.ModelAdmin):
-    actions = [update]
+    actions = [update, force_update]
 
 @admin.register(stocks.models.Player)
 class PlayerAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("__str__", "points")
 
 @admin.register(stocks.models.Floor)
 class FloorAdmin(admin.ModelAdmin):
