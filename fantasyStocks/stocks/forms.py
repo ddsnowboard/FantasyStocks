@@ -17,7 +17,7 @@ class StockWidget(forms.widgets.TextInput):
     unless you've done the sufficient work somewhere else. 
     """
     HTML_CLASS = "stockBox"
-    def __init__(self, attrs=None):
+    def __init__(self, prefetchPlayerPk=None, attrs=None):
         forms.widgets.TextInput.__init__(self, attrs if attrs else {})
         self.label = randint(1, 1000)
         self.attrs["class"] = StockWidget.HTML_CLASS
@@ -37,13 +37,13 @@ class StockWidget(forms.widgets.TextInput):
     def _media(self):
         return forms.Media(js=("//code.jquery.com/jquery-1.11.3.min.js",
             "typeahead.bundle.js",
-            reverse("stockWidgetJavascript", kwargs={"identifier" : self.label})))
+            reverse("stockWidgetJavascript", kwargs={"identifier" : self.label, "player": prefetchPlayerPk if prefetchPlayerPk else -1})))
     media = property(_media)
 
 class StockChoiceField(forms.Field):
-    widget = StockWidget
     def __init__(self, *args, **kwargs):
         forms.Field.__init__(self,  *args, **kwargs)
+        self.widget = StockWidget(prefetchPlayerPk=
     def to_python(self, value):
         out = []
         if not value:
@@ -99,7 +99,7 @@ class RegistrationForm(forms.Form):
 
 class FloorForm(forms.Form):
     name = forms.CharField(label="Name", max_length=35)
-    stocks = StockChoiceField(label="Stocks")
+    stocks = StockChoiceField(label="Stocks", prefetchPlayerPk=)
     permissiveness = forms.ChoiceField(label="Permissiveness", choices=Floor.PERMISSIVENESS_CHOICES)
     def is_valid(self):
         return super(FloorForm, self).is_valid()
