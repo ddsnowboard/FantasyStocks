@@ -5,3 +5,5 @@ vim :
 	vim $(FILES)
 templates : 
 	vim stocks/templates/* static/*
+all: 
+	vim stocks/templates/* static/* $(FILES)

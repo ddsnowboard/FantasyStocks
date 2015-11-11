@@ -2,7 +2,7 @@ from django.conf.urls.static import static
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from stocks.models import Floor, Stock, StockAPIError
 from django.core.exceptions import ValidationError
 from stocks.models import Floor
@@ -39,11 +39,10 @@ class StockWidget(forms.widgets.TextInput):
     the template engine. 
     """
     HTML_CLASS = "stockBox"
-    class Media:
-        js = ("//code.jquery.com/jquery-1.11.3.min.js", "typeahead.bundle.js", "stockWidget.js")
     def __init__(self, attrs=None):
         forms.widgets.TextInput.__init__(self, attrs if attrs else {})
         self.attrs["class"] = StockWidget.HTML_CLASS
+        self.attrs["id"] = self.attrs["label"].replace(" ", "_")
     def to_python(self, value):
             s = Stock.objects.get(symbol=i)
             if not s:
@@ -56,6 +55,9 @@ class StockWidget(forms.widgets.TextInput):
             out.append(s)
     def validate(self, value):
         return True
+    def _media(self):
+        return forms.Media(js = ("//code.jquery.com/jquery-1.11.3.min.js", "typeahead.bundle.js", reverse("stockWidgetJavascript", kwargs={"id" : self.label.replace(" ", "_")})))
+    media = property(_media)
 
 class StockChoiceField(forms.Field):
     widget = StockWidget
