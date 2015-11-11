@@ -78,10 +78,10 @@ def logout(request):
 
 @login_required
 def create_floor(request):
-    WILDCARD = "$QUERY"
     if request.method == "POST":
+        # I can't send any arguments to this, so I can't change the prefetch
+        # URL for the widget. That's annoying. 
         form = forms.FloorForm(request.POST)
-        # print(request.POST, file=sys.stderr)
         if form.is_valid():
             floor = form.save()
             floor.owner = request.user
@@ -114,12 +114,15 @@ def join(request, floorNumber):
     player.save()
     return redirect(reverse("dashboard"), permanent=False)
 
-def stockLookup(request, query=None):
+def stockLookup(request, query=None, username=None):
     # I don't really use this anymore, but I might need it. 
     if query:
         STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
         return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
     # This is almost always the part that runs.
+    elif username != "null":
+        # My computer is about to die, but look
+        pass
     else:
         return redirect(static("stocks.json"), permanent=True)
 
