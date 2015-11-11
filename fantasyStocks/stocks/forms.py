@@ -1,3 +1,4 @@
+from random import randint
 from django.conf.urls.static import static
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
@@ -41,8 +42,9 @@ class StockWidget(forms.widgets.TextInput):
     HTML_CLASS = "stockBox"
     def __init__(self, attrs=None):
         forms.widgets.TextInput.__init__(self, attrs if attrs else {})
+        self.label = randint(1, 1000)
         self.attrs["class"] = StockWidget.HTML_CLASS
-        self.attrs["id"] = self.attrs["label"].replace(" ", "_")
+        self.attrs["id"] = self.label
     def to_python(self, value):
             s = Stock.objects.get(symbol=i)
             if not s:
@@ -56,7 +58,7 @@ class StockWidget(forms.widgets.TextInput):
     def validate(self, value):
         return True
     def _media(self):
-        return forms.Media(js = ("//code.jquery.com/jquery-1.11.3.min.js", "typeahead.bundle.js", reverse("stockWidgetJavascript", kwargs={"id" : self.label.replace(" ", "_")})))
+        return forms.Media(js = ("//code.jquery.com/jquery-1.11.3.min.js", "typeahead.bundle.js", reverse("stockWidgetJavascript", kwargs={"identifier" : self.label})))
     media = property(_media)
 
 class StockChoiceField(forms.Field):

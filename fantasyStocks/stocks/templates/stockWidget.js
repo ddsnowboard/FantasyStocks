@@ -1,4 +1,6 @@
 "use strict"
+var PREFETCH_URL = "{% url 'prefetch' %}";
+var CLASS_NAME = "{{ class_name }}";
 var stocks_bloodhound = new Bloodhound({
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     datumTokenizer:  function(datum)
@@ -25,7 +27,6 @@ var stocks_bloodhound = new Bloodhound({
         }, 
     }
 });
-var PREFETCH_URL = "{% url 'prefetch' %}";
 var StockWidget = function(id)
 {
     this.$value = $("input." + CLASS_NAME);
@@ -78,14 +79,14 @@ var StockWidget = function(id)
     this.$box = $("<input type=\"text\" />");
     this.$box.addClass(this.TEXTBOX_CLASS);
     this.$box.attr("id", this.id);
-    $box.keydown(function(event) {
+    this.$box.keydown(function(event) {
         if(event.which === 13)
             event.preventDefault();
     });
 
     this.setBox = function(arr)
     {
-        this.$box.val(arr.join(","));
+        this.$value.val(arr.join(","));
     }
     this.pushStock = function(stock, addToArray)
     {
@@ -100,7 +101,7 @@ var StockWidget = function(id)
             that.$holder.append("<div class=\"selection\" id=\"" + stock.symbol + "\"><span class=\"name\">" + stock.name + "</span><span class=\"symbol\"> (" + stock.symbol + ") </span></div>");
             if(addToArray){
                 that.selected_stocks.push(stock.symbol);
-                that.setBox($value, selected_stocks);
+                that.setBox(that.selected_stocks);
             }
         }
         else

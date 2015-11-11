@@ -56,9 +56,9 @@ class Stock(models.Model):
             self.save()
     def force_update(self):
         self.last_updated -= timedelta(minutes=30)
-        print("Started updating {}".format(self.company_name), file=sys.stderr)
+        # print("Started updating {}".format(self.company_name), file=sys.stderr)
         self.update()
-        print("Finished updating {}".format(self.company_name), file=sys.stderr)
+        # print("Finished updating {}".format(self.company_name), file=sys.stderr)
     def get_price(self):
         self.update()
         # Apparently this number isn't put into the database and rounded until the next page load. 
