@@ -95,6 +95,11 @@ def create_floor(request):
         form = forms.FloorForm()
         return render(request, "createFloor.html", {"form": form})
 
+def renderStockWidgetJavascript(request, identifier=None):
+    if not identifier:
+        raise RuntimeException("You didn't pass in a valid identifier. God only knows how that happened.")
+    return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS})
+
 @login_required
 def join_floor(request):
     scripts = STANDARD_SCRIPTS + [static("joinFloor.js")]
@@ -118,5 +123,3 @@ def stockLookup(request, query=None):
     else:
         return redirect(static("stocks.json"), permanent=True)
 
-def renderStockWidgetJavascript(request, identifier=-1):
-    return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS})
