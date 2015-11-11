@@ -79,14 +79,9 @@ def logout(request):
 @login_required
 def create_floor(request):
     WILDCARD = "$QUERY"
-    variableDict = {"className": forms.StockWidget().HTML_CLASS,
-                    "stockUrl": reverse("lookup", args=[WILDCARD]),
-                    "prefetch": reverse("prefetch"), 
-                    "wildcard": WILDCARD}
     if request.method == "POST":
         form = forms.FloorForm(request.POST)
-        print(request.POST, file=sys.stderr)
-        variableDict["form"] = form
+        # print(request.POST, file=sys.stderr)
         if form.is_valid():
             floor = form.save()
             floor.owner = request.user
@@ -98,9 +93,7 @@ def create_floor(request):
             return render(request, "createFloor.html", variableDict)
     else:
         form = forms.FloorForm()
-        variableDict["form"] = form
-        return render(request, "createFloor.html", 
-                variableDict)
+        return render(request, "createFloor.html", {"form": form})
 
 @login_required
 def join_floor(request):
@@ -125,5 +118,5 @@ def stockLookup(request, query=None):
     else:
         return redirect(static("stocks.json"), permanent=True)
 
-def renderStockWidgetJavascript(request, id=-1):
-   render(request, "stockWidget.js", {"id", id})
+def renderStockWidgetJavascript(request, identifier=-1):
+    return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS})

@@ -1,12 +1,6 @@
 {% extends "loggedIn.html" %}
 {% block title %}Create Floor{% endblock %}
 {% block head %}{{ form.media }}{% endblock %}
-{% block script %}
-var CLASS_NAME = "{{ className }}";
-var STOCK_API_URL = "{{ stockUrl }}";
-var WILDCARD = "{{ wildcard }}";
-var PREFETCH_URL = "{{ prefetch }}";
-{% endblock %}
 {% block content %}
 <form action="" method="POST">
     {% csrf_token %}
