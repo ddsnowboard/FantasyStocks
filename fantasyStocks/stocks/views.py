@@ -124,3 +124,6 @@ def stockLookup(request, query=None):
     # This is almost always the part that runs.
     else:
         return redirect(static("stocks.json"), permanent=True)
+
+def renderStockWidgetJavascript(request, id=-1):
+   render(request, "stockWidget.js", {"id", id})
