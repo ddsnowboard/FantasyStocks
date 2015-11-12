@@ -122,7 +122,7 @@ def stockLookup(request, query=None, key=None):
     # This is almost always the part that runs.
     elif key:
         # TODO: Make this actually functional
-        return HttpResponse("This is a list of {}'s stocks".format(Player.objects.get(primary_key=int(key)).user.username))
+        return HttpResponse(json.dumps([s.format_for_json() for s in Player.objects.get(pk=key).stocks.all()]))
     else:
         return redirect(static("stocks.json"), permanent=True)
 
