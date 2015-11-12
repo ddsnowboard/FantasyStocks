@@ -15,7 +15,8 @@ class StockAdmin(admin.ModelAdmin):
 
 @admin.register(stocks.models.Player)
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "points")
+    list_display = ("__str__", "points", "pk")
+    fields = ("user", "floor", "points")
 
 @admin.register(stocks.models.Floor)
 class FloorAdmin(admin.ModelAdmin):
