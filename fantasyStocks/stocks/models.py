@@ -101,6 +101,7 @@ class Floor(models.Model):
 class Player(models.Model):
     user = models.ForeignKey(User)
     floor = models.ForeignKey(Floor)
+    stocks = models.ManyToManyField(Stock)
     points = models.IntegerField(default=0)
     def __str__(self):
         return "{} on {}".format(str(self.user), str(self.floor))
