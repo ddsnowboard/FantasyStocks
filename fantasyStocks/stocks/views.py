@@ -79,8 +79,6 @@ def logout(request):
 @login_required
 def create_floor(request):
     if request.method == "POST":
-        # I can't send any arguments to this, so I can't change the prefetch
-        # URL for the widget. That's annoying. 
         form = forms.FloorForm(request.POST)
         if form.is_valid():
             floor = form.save()
@@ -95,10 +93,12 @@ def create_floor(request):
         form = forms.FloorForm()
         return render(request, "createFloor.html", {"form": form})
 
-def renderStockWidgetJavascript(request, identifier=None):
+def renderStockWidgetJavascript(request, identifier=None, player=0):
     if not identifier:
-        raise RuntimeException("You didn't pass in a valid identifier. God only knows how that happened.")
-    return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS})
+        raise RuntimeError("You didn't pass in a valid identifier. God only knows how that happened.")
+    player = int(player)
+    print(type(player), file=sys.stderr)
+    return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
 
 @login_required
 def join_floor(request):
@@ -114,15 +114,15 @@ def join(request, floorNumber):
     player.save()
     return redirect(reverse("dashboard"), permanent=False)
 
-def stockLookup(request, query=None, username=None):
+def stockLookup(request, query=None, key=None):
     # I don't really use this anymore, but I might need it. 
     if query:
         STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
         return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
     # This is almost always the part that runs.
-    elif username != "null":
-        # My computer is about to die, but look
-        pass
+    elif key:
+        # TODO: Make this actually functional
+        return HttpResponse("This is a list of {}'s stocks".format(Player.objects.get(primary_key=int(key)).user.username))
     else:
         return redirect(static("stocks.json"), permanent=True)
 

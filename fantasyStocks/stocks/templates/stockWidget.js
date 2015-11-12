@@ -1,5 +1,9 @@
 "use strict"
-var PREFETCH_URL = "{% url 'prefetch' player.primary_key %}";
+{% if player == 0 %}
+var PREFETCH_URL = "{% url 'prefetch' %}";
+{% else %}
+var PREFETCH_URL = "{% url 'prefetch' key=player.primary_key %}";
+{% endif %}
 var CLASS_NAME = "{{ class_name }}";
 var stocks_bloodhound = new Bloodhound({
     queryTokenizer: Bloodhound.tokenizers.whitespace,
