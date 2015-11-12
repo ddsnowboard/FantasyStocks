@@ -15,8 +15,8 @@ urlpatterns = [
             url("^joinAFloor/([0-9]+)/$", views.join, name="join"), 
             url("^stockLookupURL/stock/(.+?)/$", views.stockLookup, name="lookup"), 
             url("^stockLookupURL/$", views.stockLookup, name="prefetch"), 
-            url("^stockLookupURL/user/(?P<username>[A-Za-z0-9]+)$", views.stockLookup, name="prefetch"), 
-            url("^thisCANbAEASAReallyHardURL/(?P<identifier>[A-Za-z0-9]+)/$", views.renderStockWidgetJavascript, name="stockWidgetJavascript"), 
+            url("^stockLookupURL/user/(?P<key>[0-9]+)$", views.stockLookup, name="prefetch"), 
+            url("^thisCANbAEASAReallyHardURL/(?P<identifier>[A-Za-z0-9]+)/(?P<player>[A-Za-z0-9]+)$", views.renderStockWidgetJavascript, name="stockWidgetJavascript"), 
         ]
 
 

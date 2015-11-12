@@ -22,6 +22,7 @@ class StockWidget(forms.widgets.TextInput):
         self.label = randint(1, 1000)
         self.attrs["class"] = StockWidget.HTML_CLASS
         self.attrs["id"] = self.label
+        self.prefetchPlayerPk = prefetchPlayerPk
     def to_python(self, value):
             s = Stock.objects.get(symbol=i)
             if not s:
@@ -37,13 +38,13 @@ class StockWidget(forms.widgets.TextInput):
     def _media(self):
         return forms.Media(js=("//code.jquery.com/jquery-1.11.3.min.js",
             "typeahead.bundle.js",
-            reverse("stockWidgetJavascript", kwargs={"identifier" : self.label, "player": prefetchPlayerPk if prefetchPlayerPk else -1})))
+            reverse("stockWidgetJavascript", kwargs={"identifier" : self.label, "player": self.prefetchPlayerPk if self.prefetchPlayerPk else 0})))
     media = property(_media)
 
 class StockChoiceField(forms.Field):
+    widget = StockWidget
     def __init__(self, *args, **kwargs):
         forms.Field.__init__(self,  *args, **kwargs)
-        self.widget = StockWidget(prefetchPlayerPk=
     def to_python(self, value):
         out = []
         if not value:
@@ -99,8 +100,16 @@ class RegistrationForm(forms.Form):
 
 class FloorForm(forms.Form):
     name = forms.CharField(label="Name", max_length=35)
-    stocks = StockChoiceField(label="Stocks", prefetchPlayerPk=)
+    stocks = StockChoiceField(label="Stocks")
     permissiveness = forms.ChoiceField(label="Permissiveness", choices=Floor.PERMISSIVENESS_CHOICES)
+    def __init__(self, *args, user=None, floor=None, **kwargs):
+        forms.Form.__init__(self, *args, **kwargs)
+        if user and floor:
+            stocks = StockChoiceField(label="Stocks", widget=StockWidget(prefetchPlayerPk=Player.objects.get(user=user, floor=floor).primary_key))
+        elif not user and not floor:
+            pass
+        else:
+            raise RuntimeError("You have to either pass in a user and a floor, or neither.")
     def is_valid(self):
         return super(FloorForm, self).is_valid()
     def save(self):
