@@ -1,0 +1,29 @@
+{% extends "loggedIn.html" %}
+{% block title %}Trade{% endblock %}
+{% block head %}{{ form.media }}{% endblock %}
+{% block content %}
+<div class="tradeHolder">
+    <form action="" method="POST">
+        {% csrf_token %}
+        <table align="center">
+            <tr>
+                <td>
+                    <input type="text" value="{{ request.user.username }}" disabled>
+                </td>
+                <td>
+                    {{ form.other_picker }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{ form.user_stock_picker }}
+                </td>
+                <td>
+                    {{ form.other_stock_picker }}
+                </td>
+            </tr>
+        </table>
+        <input type="submit">
+    </form>
+</div>
+{% endblock %}

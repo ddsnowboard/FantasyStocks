@@ -34,6 +34,9 @@ var stocks_bloodhound = new Bloodhound({
 // Since id is set every time the server starts up, not every time that code runs, 
 // it really does't do anything. I'm going to write the trade page so I have something
 // to test with, and then try to fix it. 
+
+// TODO: Make this workti right. It is hitting every box twice. Make it know where it came from
+// so it won't do that. 
 var StockWidget = function(id)
 {
     this.$value = $("input." + CLASS_NAME);

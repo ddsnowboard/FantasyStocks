@@ -120,8 +120,31 @@ def stockLookup(request, query=None, key=None):
         return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
     # This is almost always the part that runs.
     elif key:
-        # TODO: Make this actually functional
         return HttpResponse(json.dumps([s.format_for_json() for s in Player.objects.get(pk=key).stocks.all()]))
     else:
         return redirect(static("stocks.json"), permanent=True)
 
+@login_required
+def trade(request, player=None, stock=None, floor=None):
+    if player and not (stock or floor):
+        player = Player.objects.get(pk=player)
+        if player.user == request.user:
+            player = None
+    elif stock and floor and not player:
+        floor = Floor.objects.get(pk=floor)
+        # stocks__id means look for something with this id in the "stocks" many-to-many field. 
+        player = Player.objects.get(floor=floor, stocks__id=stock)
+        stocks = [Stock.objects.get(pk=stock)]
+    else:
+        raise RuntimeError("You passed in the wrong arguments")
+    outputDict = {}
+    if player:
+        outputDict["player"] = player
+    try:
+        outputDict["stocks"] = stocks
+    except IndexError:
+        pass
+    outputDict["request"] = request
+    outputDict["form"] = forms.TradeForm(user=request.user, other=player, floor=floor)
+    print(outputDict, file=sys.stderr)
+    return render(request, "trade.html", outputDict)

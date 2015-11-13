@@ -181,7 +181,7 @@ a.full {
 
 a.noUnderline {
     text-decoration: none;
-    color: black;
+    color: inherit;
 }
 
 .tt-menu {
@@ -217,4 +217,10 @@ a.noUnderline {
 
 .redBackground {
     background-color: red !important;
+}
+
+.tradeHolder {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 }

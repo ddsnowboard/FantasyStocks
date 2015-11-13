@@ -17,6 +17,10 @@ urlpatterns = [
             url("^stockLookupURL/$", views.stockLookup, name="prefetch"), 
             url("^stockLookupURL/user/(?P<key>[0-9]+)/$", views.stockLookup, name="prefetch"), 
             url("^thisCANbAEASAReallyHardURL/(?P<identifier>[A-Za-z0-9]+)/(?P<player>[A-Za-z0-9]+)$", views.renderStockWidgetJavascript, name="stockWidgetJavascript"), 
+            # player is the primary key of the other player involved in the trade
+            url("^trade/(?P<player>[0-9]+)/$", views.trade, name="trade"), 
+            # stock is primary key of the stock that was clicked
+            url("^trade/(?P<stock>[0-9]+)/(?P<floor>[0-9]+)/$", views.trade, name="trade"), 
         ]
 
 
