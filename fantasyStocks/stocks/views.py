@@ -97,7 +97,6 @@ def renderStockWidgetJavascript(request, identifier=None, player=0):
     if not identifier:
         raise RuntimeError("You didn't pass in a valid identifier. God only knows how that happened.")
     player = int(player)
-    print(type(player), file=sys.stderr)
     return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
 
 @login_required

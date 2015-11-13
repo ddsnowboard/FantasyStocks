@@ -20,6 +20,7 @@ class StockWidget(forms.widgets.TextInput):
     def __init__(self, prefetchPlayerPk=None, attrs=None):
         forms.widgets.TextInput.__init__(self, attrs if attrs else {})
         self.label = randint(1, 1000)
+        print(self.label, file=sys.stderr)
         self.attrs["class"] = StockWidget.HTML_CLASS
         self.attrs["id"] = self.label
         self.prefetchPlayerPk = prefetchPlayerPk
