@@ -118,3 +118,19 @@ class FloorForm(forms.Form):
             floor.stocks.add(i)
         floor.save()
         return floor
+
+# TODO: Make this work
+class PlayerField(forms.Field):
+    def __init__(self, floor=None, other=None, *args, **kwargs):
+        forms.Field.__init__(self, *args, **kwargs)
+
+
+class TradeForm(forms.Form):
+    other_picker = PlayerField()
+    user_stock_picker = StockChoiceField()
+    other_stock_picker = StockChoiceField()
+    def __init__(self, *args, user=None, other=None, floor=None, **kwargs):
+        forms.Form.__init__(self, *args, **kwargs)
+        other_picker = PlayerField(floor=floor, other=other)
+        user_stock_picker = StockChoiceField(label="Your Stocks", widget=StockWidget(prefetchPlayerPk=user.pk))
+        other_stock_picker = StockChoiceField(label="{}'s Stocks".format(other.user.username), widget=StockWidget(prefetchPlayerPk=other.pk))

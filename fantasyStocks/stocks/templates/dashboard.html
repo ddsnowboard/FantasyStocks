@@ -11,12 +11,14 @@ var floors = {
             {% for stock in player.floor.stocks.all %}
             <tr>
                 <td>
-                    <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
+                    <a class="noUnderline" href="{% url "trade" stock=stock.pk floor=player.floor.pk %}">
+                        <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
+                    </a>
                     {% with change=stock.get_change %}
                     <!-- We need this `floatformat` because the model doesn't put the price through the database before showing it if it is brand new, so this takes care of it. And sometimes, 
                         bad stuff happens. Never be too careful. -->
                         <span class="{% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" style="display: inline-block; float: right">{% if change > 0 %}+{% endif %}{{ change|floatformat:2 }}</span>
-                    {% endwith %}
+                        {% endwith %}
                 </td>
             </tr>
             {% endfor %}
@@ -28,7 +30,7 @@ var floors = {
             {% for competitor in player.floor.leaders %}
             <tr>
                 <td {% if forloop.last %}style="border-bottom: none;"{% endif %}>
-                    <span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.user.email }}</span>
+                    <a class="noUnderline" href="{% url "trade" player=competitor.pk %}<span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.user.email }}</span></a>
                     <span style="display: inline-block; float: right">{{ competitor.points }}</span>
                 </td>
             </tr>
@@ -41,27 +43,27 @@ var floors = {
     };
     {% endblock %}
 
-    {% block content %}
-    <table class="dash">
-        <tr>
-            <td style="border-right: 1px solid black; width: 125px;">
-                <div class="leftTabs">
-                    <ul>
-                        {% for player in players %}
-                        <li {% if forloop.first %}class="selected"{% endif %} id="{{ player.floor.pk }}">
-                            {{ player.floor }}
-                        </li>
-                        {% endfor %}
-                        <li style="padding: 0;">
-                            <a class="full" style="padding: 5px; margin-right: 10px; text-decoration: none; color: black;" href="{% url "joinFloor" %}" style="text-decoration: none; color: black">Join a floor</a>
-                        </li>
-                    </ul>
-                </div>
-            </td>
-            <td>
-                <table class="dashboardMain">
-                </table>
-            </td>
-        </tr>
-    </table>
-    {% endblock %}
+{% block content %}
+<table class="dash">
+    <tr>
+        <td style="border-right: 1px solid black; width: 125px;">
+            <div class="leftTabs">
+                <ul>
+                {% for player in players %}
+                <li {% if forloop.first %}class="selected"{% endif %} id="{{ player.floor.pk }}">
+                {{ player.floor }}
+                </li>
+                {% endfor %}
+                <li style="padding: 0;">
+                    <a class="full" style="padding: 5px; margin-right: 10px; text-decoration: none; color: black;" href="{% url "joinFloor" %}" style="text-decoration: none; color: black">Join a floor</a>
+                </li>
+                </ul>
+            </div>
+        </td>
+        <td>
+            <table class="dashboardMain">
+            </table>
+        </td>
+    </tr>
+</table>
+{% endblock %}
