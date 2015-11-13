@@ -31,6 +31,9 @@ var stocks_bloodhound = new Bloodhound({
         }, 
     }
 });
+// Since id is set every time the server starts up, not every time that code runs, 
+// it really does't do anything. I'm going to write the trade page so I have something
+// to test with, and then try to fix it. 
 var StockWidget = function(id)
 {
     this.$value = $("input." + CLASS_NAME);
@@ -143,12 +146,5 @@ var StockWidget = function(id)
 }
 
 $(document).ready(function(){
-    if(boxes !== undefined)
-    {
-        boxes.push(new StockWidget("{{ id }}"));
-    }
-    else
-    {
-        var boxes = [new StockWidget("{{ id }}")];
-    }
+    new StockWidget("{{ id }}");
 });
