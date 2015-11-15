@@ -94,9 +94,14 @@ def create_floor(request):
         return render(request, "createFloor.html", {"form": form})
 
 def renderStockWidgetJavascript(request, identifier=None, player=0):
+    """
+    player is the primary key of the player in a database, not a Player object. 
+    """
     if not identifier:
         raise RuntimeError("You didn't pass in a valid identifier. God only knows how that happened.")
     player = int(player)
+    # The id is coming from here. Make it give the right id (eg, "id_other_stock_picker"). I'm not sure how. Ask the form? 
+    # Pass it in the URL?
     return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
 
 @login_required
@@ -140,10 +145,10 @@ def trade(request, player=None, stock=None, floor=None):
     outputDict = {}
     if player:
         outputDict["player"] = player
-    try:
-        outputDict["stocks"] = stocks
-    except IndexError:
-        pass
+        try:
+            outputDict["stocks"] = stocks
+        except UnboundLocalError:
+            pass
     outputDict["request"] = request
     outputDict["form"] = forms.TradeForm(user=request.user, other=player, floor=floor)
     print(outputDict, file=sys.stderr)
