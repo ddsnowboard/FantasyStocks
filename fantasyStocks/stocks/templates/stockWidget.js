@@ -150,4 +150,5 @@ var StockWidget = function(id)
 
 $(document).ready(function(){
     new StockWidget("{{ id }}");
+    console.log("id is {{ id }}");
 });
