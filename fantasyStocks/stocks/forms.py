@@ -13,15 +13,22 @@ class StockWidget(forms.widgets.TextInput):
     """
     This widget allows the user to select any stock, whether or not 
     it's in the database. It gets the list of stocks from the big JSON
-    list "stocks.json" in the static folder. This `must` be used with a StockChoiceField
+    list "stocks.json" in the static folder. This *must* be used with a StockChoiceField
     unless you've done the sufficient work somewhere else. 
     """
     HTML_CLASS = "stockBox"
     def __init__(self, prefetchPlayerPk=None, attrs=None):
-        forms.widgets.TextInput.__init__(self, attrs if attrs else {})
-        self.label = randint(1, 1000)
-        self.attrs["class"] = StockWidget.HTML_CLASS
-        self.prefetchPlayerPk = prefetchPlayerPk
+        newAttrs = attrs.copy() if attrs else {}
+        newAttrs['class'] = self.HTML_CLASS
+        forms.widgets.TextInput.__init__(self, newAttrs)
+        # If there is no attrs object, we can assume we need every stock and keep things simple
+        if self.attrs.get('id', None):
+            self.attrs = attrs
+            self.attrs["class"] = StockWidget.HTML_CLASS
+            self.prefetchPlayerPk = prefetchPlayerPk
+        else:
+            self.attrs["id"] = "StockWidgetId"
+            self.prefetchPlayerPk = None
     def to_python(self, value):
             s = Stock.objects.get(symbol=i)
             if not s:
@@ -35,9 +42,18 @@ class StockWidget(forms.widgets.TextInput):
     def validate(self, value):
         return True
     def _media(self):
-        return forms.Media(js=("//code.jquery.com/jquery-1.11.3.min.js",
-            "typeahead.bundle.js",
-            reverse("stockWidgetJavascript", kwargs={"identifier" : self.label, "player": self.prefetchPlayerPk if self.prefetchPlayerPk else 0})))
+        try:
+            print("attrs is {}".format(self.attrs), file=sys.stdout)
+        except Exception as e:
+            print("Error!; {}".format(e))
+        js = ["//code.jquery.com/jquery-1.11.3.min.js",
+        "typeahead.bundle.js",]
+        # See above comment
+        if not self.prefetchPlayerPk:
+            js.append(reverse("stockWidgetJavascript", kwargs={"identifier" : self.attrs['id']}))
+        else:
+            js.append(reverse("stockWidgetJavascript", kwargs={"identifier" : self.attrs['id'], "player" : self.prefetchPlayerPk}))
+        return forms.Media(js=js)
     media = property(_media)
 
 class StockChoiceField(forms.Field):
@@ -104,7 +120,7 @@ class FloorForm(forms.Form):
     def __init__(self, *args, user=None, floor=None, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
         if user and floor:
-            stocks = StockChoiceField(label="Stocks", widget=StockWidget(prefetchPlayerPk=Player.objects.get(user=user, floor=floor).primary_key))
+            stocks = StockChoiceField(label="Stocks")
         elif not user and not floor:
             pass
         else:
@@ -126,11 +142,14 @@ class PlayerField(forms.Field):
 
 
 class TradeForm(forms.Form):
-    other_picker = PlayerField()
-    user_stock_picker = StockChoiceField()
-    other_stock_picker = StockChoiceField()
+    USER_STOCK_PICKER_ID = "id_user_stock_picker"
+    OTHER_STOCK_PICKER_ID = "id_other_stock_picker"
+    other_picker = PlayerField
+    user_stock_picker = StockChoiceField
+    other_stock_picker = StockChoiceField
     def __init__(self, *args, user=None, other=None, floor=None, **kwargs):
+        print("Media is {}".format(user_stock_picker.media), file=sys.stderr)
         forms.Form.__init__(self, *args, **kwargs)
         other_picker = PlayerField(floor=floor, other=other)
-        user_stock_picker = StockChoiceField(label="Your Stocks", widget=StockWidget(prefetchPlayerPk=user.pk))
-        other_stock_picker = StockChoiceField(label="{}'s Stocks".format(other.user.username), widget=StockWidget(prefetchPlayerPk=other.pk))
+        user_stock_picker = StockChoiceField(label="Your Stocks", widget=StockWidget(prefetchPlayerPk=user.pk, attrs={"id": self.USER_STOCK_PICKER_ID}))
+        other_stock_picker = StockChoiceField(label="{}'s Stocks".format(other.user.username), widget=StockWidget(prefetchPlayerPk=other.pk, attrs={"id": self.OTHER_STOCK_PICKER_ID}))
