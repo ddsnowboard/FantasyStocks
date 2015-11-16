@@ -1,5 +1,5 @@
 "use strict"
-{% if player == 0 %}
+{% if not player %}
 var PREFETCH_URL = "{% url 'prefetch' %}";
 {% else %}
 var PREFETCH_URL = "{% url 'prefetch' key=player.primary_key %}";
@@ -39,7 +39,7 @@ var stocks_bloodhound = new Bloodhound({
 // so it won't do that. 
 var StockWidget = function(id)
 {
-    this.$value = $("input." + CLASS_NAME);
+    this.$value = $("input#{{ id }}");
     if(this.$value.val())
     {
         var DONE = 4;

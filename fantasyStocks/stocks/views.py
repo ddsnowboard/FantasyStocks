@@ -99,6 +99,8 @@ def renderStockWidgetJavascript(request, identifier=None, player=0):
     """
     if not identifier:
         raise RuntimeError("You didn't pass in a valid identifier. God only knows how that happened.")
+    if not player:
+        return render(request, "stockWidget.js", {"class_name" : forms.StockWidget().HTML_CLASS, "id": identifier})
     player = int(player)
     # The id is coming from here. Make it give the right id (eg, "id_other_stock_picker"). I'm not sure how. Ask the form? 
     # Pass it in the URL?
@@ -151,5 +153,5 @@ def trade(request, player=None, stock=None, floor=None):
             pass
     outputDict["request"] = request
     outputDict["form"] = forms.TradeForm(user=request.user, other=player, floor=floor)
-    print(outputDict, file=sys.stderr)
+    # print(outputDict, file=sys.stderr)
     return render(request, "trade.html", outputDict)
