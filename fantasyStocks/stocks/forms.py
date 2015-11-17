@@ -29,6 +29,7 @@ class StockWidget(forms.widgets.TextInput):
         else:
             self.attrs["id"] = "StockWidgetId"
             self.prefetchPlayerPk = None
+        print(self.attrs, file=sys.stderr)
     def to_python(self, value):
             s = Stock.objects.get(symbol=i)
             if not s:
@@ -42,10 +43,6 @@ class StockWidget(forms.widgets.TextInput):
     def validate(self, value):
         return True
     def _media(self):
-        try:
-            print("attrs is {}".format(self.attrs), file=sys.stdout)
-        except Exception as e:
-            print("Error!; {}".format(e))
         js = ["//code.jquery.com/jquery-1.11.3.min.js",
         "typeahead.bundle.js",]
         # See above comment
@@ -55,6 +52,13 @@ class StockWidget(forms.widgets.TextInput):
             js.append(reverse("stockWidgetJavascript", kwargs={"identifier" : self.attrs['id'], "player" : self.prefetchPlayerPk}))
         return forms.Media(js=js)
     media = property(_media)
+    
+    def render(self, name, value, attrs=None):
+        if not attrs:
+            attrs = {}
+        attrs['id'] = self.attrs['id']
+        print(super(StockWidget, self).render(name, value, attrs), file=sys.stderr)
+        return super(StockWidget, self).render(name, value, attrs)
 
 class StockChoiceField(forms.Field):
     widget = StockWidget
@@ -144,11 +148,11 @@ class PlayerField(forms.Field):
 class TradeForm(forms.Form):
     USER_STOCK_PICKER_ID = "id_user_stock_picker"
     OTHER_STOCK_PICKER_ID = "id_other_stock_picker"
-    other_picker = PlayerField
-    user_stock_picker = StockChoiceField
-    other_stock_picker = StockChoiceField
+    other_picker = PlayerField(label="Other Player")
+    user_stock_picker = StockChoiceField(label="Your Stocks")
+    other_stock_picker = StockChoiceField(label="Other player's stocks")
     def __init__(self, *args, user=None, other=None, floor=None, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
-        other_picker = PlayerField(floor=floor, other=other)
-        user_stock_picker = StockChoiceField(label="Your Stocks", widget=StockWidget(prefetchPlayerPk=user.pk, attrs={"id": self.USER_STOCK_PICKER_ID}))
-        other_stock_picker = StockChoiceField(label="{}'s Stocks".format(other.user.username), widget=StockWidget(prefetchPlayerPk=other.pk, attrs={"id": self.OTHER_STOCK_PICKER_ID}))
+        self.other_picker = PlayerField(floor=floor, other=other)
+        self.user_stock_picker = StockChoiceField(label="Your Stocks", widget=StockWidget(prefetchPlayerPk=user.pk, attrs={"id": self.USER_STOCK_PICKER_ID}))
+        self.other_stock_picker = StockChoiceField(label="{}'s Stocks".format(other.user.username), widget=StockWidget(prefetchPlayerPk=other.pk, attrs={"id": self.OTHER_STOCK_PICKER_ID}))
