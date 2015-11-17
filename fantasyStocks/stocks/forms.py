@@ -148,7 +148,6 @@ class TradeForm(forms.Form):
     user_stock_picker = StockChoiceField
     other_stock_picker = StockChoiceField
     def __init__(self, *args, user=None, other=None, floor=None, **kwargs):
-        print("Media is {}".format(user_stock_picker.media), file=sys.stderr)
         forms.Form.__init__(self, *args, **kwargs)
         other_picker = PlayerField(floor=floor, other=other)
         user_stock_picker = StockChoiceField(label="Your Stocks", widget=StockWidget(prefetchPlayerPk=user.pk, attrs={"id": self.USER_STOCK_PICKER_ID}))

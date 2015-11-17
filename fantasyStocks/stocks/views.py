@@ -153,5 +153,4 @@ def trade(request, player=None, stock=None, floor=None):
             pass
     outputDict["request"] = request
     outputDict["form"] = forms.TradeForm(user=request.user, other=player, floor=floor)
-    # print(outputDict, file=sys.stderr)
     return render(request, "trade.html", outputDict)
