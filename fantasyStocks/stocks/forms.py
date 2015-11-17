@@ -20,7 +20,7 @@ class StockWidget(forms.widgets.TextInput):
     def __init__(self, prefetchPlayerPk=None, attrs=None):
         newAttrs = attrs.copy() if attrs else {}
         newAttrs['class'] = self.HTML_CLASS
-        forms.widgets.TextInput.__init__(self, newAttrs)
+        super(StockWidget, self).__init__(newAttrs)
         # If there is no attrs object, we can assume we need every stock and keep things simple
         if self.attrs.get('id', None):
             self.attrs = attrs
@@ -57,13 +57,13 @@ class StockWidget(forms.widgets.TextInput):
         if not attrs:
             attrs = {}
         attrs['id'] = self.attrs['id']
-        print(super(StockWidget, self).render(name, value, attrs), file=sys.stderr)
+        print("rendering {}".format(super(StockWidget, self).render(name, value, attrs)), file=sys.stderr)
         return super(StockWidget, self).render(name, value, attrs)
 
 class StockChoiceField(forms.Field):
     widget = StockWidget
     def __init__(self, *args, **kwargs):
-        forms.Field.__init__(self,  *args, **kwargs)
+        super(StockChoiceField, self).__init__(*args, **kwargs)
     def to_python(self, value):
         out = []
         if not value:
@@ -152,7 +152,8 @@ class TradeForm(forms.Form):
     user_stock_picker = StockChoiceField(label="Your Stocks")
     other_stock_picker = StockChoiceField(label="Other player's stocks")
     def __init__(self, *args, user=None, other=None, floor=None, **kwargs):
-        forms.Form.__init__(self, *args, **kwargs)
+        super(TradeForm, self).__init__(*args, **kwargs)
+        print("initializing fields", file=sys.stderr)
         self.other_picker = PlayerField(floor=floor, other=other)
         self.user_stock_picker = StockChoiceField(label="Your Stocks", widget=StockWidget(prefetchPlayerPk=user.pk, attrs={"id": self.USER_STOCK_PICKER_ID}))
         self.other_stock_picker = StockChoiceField(label="{}'s Stocks".format(other.user.username), widget=StockWidget(prefetchPlayerPk=other.pk, attrs={"id": self.OTHER_STOCK_PICKER_ID}))
