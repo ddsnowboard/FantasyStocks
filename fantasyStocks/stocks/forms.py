@@ -52,7 +52,7 @@ class StockWidget(forms.widgets.TextInput):
             js.append(reverse("stockWidgetJavascript", kwargs={"identifier" : self.attrs['id'], "player" : self.prefetchPlayerPk}))
         return forms.Media(js=js)
     media = property(_media)
-    
+
     def render(self, name, value, attrs=None):
         if not attrs:
             attrs = {}
