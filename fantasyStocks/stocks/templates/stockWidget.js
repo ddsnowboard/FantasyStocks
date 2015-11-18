@@ -1,52 +1,47 @@
 "use strict"
-{% if not player %}
+// This is the default URL that will give you all the stocks.
 var PREFETCH_URL = "{% url 'prefetch' %}";
-{% else %}
-var PREFETCH_URL = "{% url 'prefetch' key=player.primary_key %}";
-{% endif %}
 var CLASS_NAME = "{{ class_name }}";
-var stocks_bloodhound = new Bloodhound({
-    queryTokenizer: Bloodhound.tokenizers.whitespace,
-    datumTokenizer:  function(datum)
-    {
-        var out = [];
-        var FIELDS = [datum.name, datum.symbol];
-        for(var i = 0;i < FIELDS.length;i++)
-        {
-            var curr = FIELDS[i].split(" ");
-            for(var p = 0;p<curr.length;p++)
-            {
-                out.push(curr[p]);
-            }
-        }
-        return out;
-    },
-    initialize: true,
-    prefetch: {
-        url: PREFETCH_URL,
-        cache: false,
-        transform: function(jsonObj)
-        {
-            return jsonObj;
-        }, 
-    }
-});
-// Since id is set every time the server starts up, not every time that code runs, 
-// it really does't do anything. I'm going to write the trade page so I have something
-// to test with, and then try to fix it. 
+var widgets = [];
 
-// TODO: Make this workti right. It is hitting every box twice. Make it know where it came from
-// so it won't do that. 
-var StockWidget = function(id)
+function jsonBloodhound(url){
+    return new Bloodhound({
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        datumTokenizer:  function(datum)
+        {
+            var out = [];
+            var FIELDS = [datum.name, datum.symbol];
+            for(var i = 0;i < FIELDS.length;i++)
+            {
+                var curr = FIELDS[i].split(" ");
+                for(var p = 0;p<curr.length;p++)
+                {
+                    out.push(curr[p]);
+                }
+            }
+            return out;
+        },
+        initialize: true,
+        prefetch: {
+            url: url,
+            cache: false,
+            transform: function(jsonObj)
+            {
+                return jsonObj;
+            }, 
+        }
+    });
+}
+
+var StockWidget = function(inputElement)
 {
-    this.$value = $("input#{{ id }}");
+    this.$value = $(inputElement);
     if(this.$value.val())
     {
         var DONE = 4;
         var initValues = this.$value.val().split(",");
         var request = new XMLHttpRequest();
         request.onreadystatechange = function(){
-            console.log(this.readyState);
             if(this.readyState === DONE)
             {
                 var response = JSON.parse(this.responseText);
@@ -68,7 +63,6 @@ var StockWidget = function(id)
         request.open("GET", PREFETCH_URL, true);
         request.send();
     }
-    this.id = id;
     this.TEXTBOX_CLASS = "inputBox";
     this.selected_stocks = [];
 
@@ -88,7 +82,6 @@ var StockWidget = function(id)
 
     this.$box = $("<input type=\"text\" />");
     this.$box.addClass(this.TEXTBOX_CLASS);
-    this.$box.attr("id", this.id);
     this.$box.keydown(function(event) {
         if(event.which === 13)
             event.preventDefault();
@@ -121,34 +114,42 @@ var StockWidget = function(id)
         }
     }
     this.$value.parent().append(this.$holder).append(this.$box);
-    this.$box.typeahead({
-        minLength: 1,
-        highlight: false,
-        hint: false,
-    }, {
-        name: "stocks_dataset", 
-        source: stocks_bloodhound,
-        templates: {
-            pending: " . . . ", 
-            suggestion: function(obj)
-            {
-                return "<div class=\"suggestion\"><span class=\"name\">" + obj.name + "</span><span class=\"symbol\"> (" + obj.symbol + ") </span></div>"
-            }, 
-        }, 
-        limit: 20,
-        rateLimitBy: "throttle",
-        rateLimitWait: 600,
-        display: function(o){ return o.name; }, 
-    });
 
     this.$box.bind("typeahead:select", function(event, suggestion)
             {
                 that.$box.typeahead("val", "");
                 that.pushStock(suggestion);
             });
+    this.changeURL = function(url, a) 
+    {
+        this.$box.typeahead("destroy");
+        this.$box.typeahead({
+            minLength: 1,
+            highlight: false,
+            hint: false,
+        }, {
+            name: "stocks_dataset", 
+            source: jsonBloodhound(url),
+            templates: {
+                pending: " . . . ", 
+                suggestion: function(obj)
+                {
+                    return "<div class=\"suggestion\"><span class=\"name\">" + obj.name + "</span><span class=\"symbol\"> (" + obj.symbol + ") </span></div>"
+                }, 
+            }, 
+            limit: 20,
+            rateLimitBy: "throttle",
+            rateLimitWait: 600,
+            display: function(o){ return o.name; }, 
+        });
+    }
+    this.changeURL(PREFETCH_URL);
 }
 
 $(document).ready(function(){
-    new StockWidget("{{ id }}");
-    console.log("id is {{ id }}");
+    var $inputs = $("." + CLASS_NAME);
+    for(var i = 0; i < $inputs.length; i++)
+    {
+        widgets.push(new StockWidget($inputs[i]));
+    }
 });

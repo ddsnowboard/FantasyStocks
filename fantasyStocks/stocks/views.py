@@ -121,7 +121,7 @@ def join(request, floorNumber):
     return redirect(reverse("dashboard"), permanent=False)
 
 def stockLookup(request, query=None, key=None):
-    # I don't really use this anymore, but I might need it. 
+    # I don't really use this branch anymore, but I might need it. 
     if query:
         STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
         return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
