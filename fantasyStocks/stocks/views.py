@@ -93,18 +93,6 @@ def create_floor(request):
         form = forms.FloorForm()
         return render(request, "createFloor.html", {"form": form})
 
-def renderStockWidgetJavascript(request, identifier=None, player=0):
-    """
-    player is the primary key of the player in a database, not a Player object. 
-    """
-    if not identifier:
-        raise RuntimeError("You didn't pass in a valid identifier. God only knows how that happened.")
-    if not player:
-        return render(request, "stockWidget.js", {"class_name" : forms.StockWidget().HTML_CLASS, "id": identifier})
-    player = int(player)
-    # The id is coming from here. Make it give the right id (eg, "id_other_stock_picker"). I'm not sure how. Ask the form? 
-    # Pass it in the URL?
-    return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
 
 @login_required
 def join_floor(request):
@@ -120,16 +108,6 @@ def join(request, floorNumber):
     player.save()
     return redirect(reverse("dashboard"), permanent=False)
 
-def stockLookup(request, query=None, key=None):
-    # I don't really use this branch anymore, but I might need it. 
-    if query:
-        STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
-        return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
-    # This is almost always the part that runs.
-    elif key:
-        return HttpResponse(json.dumps([s.format_for_json() for s in Player.objects.get(pk=key).stocks.all()]), content_type="text/json")
-    else:
-        return redirect(static("stocks.json"), permanent=True)
 
 @login_required
 def trade(request, player=None, stock=None, floor=None):
@@ -162,3 +140,27 @@ def playerFieldJavascript(request, identifier):
 
 def userList(request):
     return HttpResponse(json.dumps([{"username": u.username if u.username else u.email, "email": u.email} for u in User.objects.all()]), content_type="text/json")
+
+def stockLookup(request, query=None, key=None):
+    # I don't really use this branch anymore, but I might need it. 
+    if query:
+        STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
+        return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
+    # This is almost always the part that runs.
+    elif key:
+        return HttpResponse(json.dumps([s.format_for_json() for s in Player.objects.get(pk=key).stocks.all()]), content_type="text/json")
+    else:
+        return redirect(static("stocks.json"), permanent=True)
+
+def renderStockWidgetJavascript(request, identifier=None, player=0):
+    """
+    player is the primary key of the player in a database, not a Player object. 
+    """
+    if not identifier:
+        raise RuntimeError("You didn't pass in a valid identifier. God only knows how that happened.")
+    if not player:
+        return render(request, "stockWidget.js", {"class_name" : forms.StockWidget().HTML_CLASS, "id": identifier})
+    player = int(player)
+    # The id is coming from here. Make it give the right id (eg, "id_other_stock_picker"). I'm not sure how. Ask the form? 
+    # Pass it in the URL?
+    return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
