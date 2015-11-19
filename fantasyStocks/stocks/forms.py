@@ -29,7 +29,6 @@ class StockWidget(forms.widgets.TextInput):
         else:
             self.attrs["id"] = "StockWidgetId"
             self.prefetchPlayerPk = None
-        print(self.attrs, file=sys.stderr)
     def to_python(self, value):
             s = Stock.objects.get(symbol=i)
             if not s:
