@@ -43,7 +43,7 @@ class StockWidget(forms.widgets.TextInput):
         return True
     def _media(self):
         js = ["//code.jquery.com/jquery-1.11.3.min.js",
-        "typeahead.bundle.js",]
+        "typeahead.bundle.js", "common.js",]
         # See above comment
         if not self.prefetchPlayerPk:
             js.append(reverse("stockWidgetJavascript", kwargs={"identifier" : self.attrs['id']}))
@@ -56,8 +56,19 @@ class StockWidget(forms.widgets.TextInput):
         if not attrs:
             attrs = {}
         attrs['id'] = self.attrs['id']
-        print("rendering {}".format(super(StockWidget, self).render(name, value, attrs)), file=sys.stderr)
         return super(StockWidget, self).render(name, value, attrs)
+
+class PlayerChoiceWidget(forms.widgets.TextInput):
+    WIDGET_ID = "playerChoiceWidget"
+    def __init__(self, attrs=None):
+        if not attrs:
+            attrs = {}
+        attrs["id"] = self.WIDGET_ID
+        super().__init__(attrs)
+    def _media(self):
+        js = ["//code.jquery.com/jquery-1.11.3.min.js",  "typeahead.bundle.js", "common.js", reverse_lazy("playerFieldJS", kwargs={"identifier" : self.WIDGET_ID}),]
+        return forms.Media(js=js)
+    media = property(_media)
 
 class StockChoiceField(forms.Field):
     widget = StockWidget
@@ -83,6 +94,11 @@ class StockChoiceField(forms.Field):
                 s.save()
             out.append(s)
         return out
+
+class PlayerField(forms.Field):
+    widget = PlayerChoiceWidget
+    def __init__(self, floor=None, other=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 class LoginForm(forms.Form):
     username = forms.CharField(label="Username", max_length=25)
@@ -121,7 +137,7 @@ class FloorForm(forms.Form):
     stocks = StockChoiceField(label="Stocks")
     permissiveness = forms.ChoiceField(label="Permissiveness", choices=Floor.PERMISSIVENESS_CHOICES)
     def __init__(self, *args, user=None, floor=None, **kwargs):
-        forms.Form.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         if user and floor:
             stocks = StockChoiceField(label="Stocks")
         elif not user and not floor:
@@ -138,11 +154,6 @@ class FloorForm(forms.Form):
         floor.save()
         return floor
 
-# TODO: Make this work
-class PlayerField(forms.Field):
-    def __init__(self, floor=None, other=None, *args, **kwargs):
-        forms.Field.__init__(self, *args, **kwargs)
-
 
 class TradeForm(forms.Form):
     USER_STOCK_PICKER_ID = "id_user_stock_picker"
@@ -151,8 +162,5 @@ class TradeForm(forms.Form):
     user_stock_picker = StockChoiceField(label="Your Stocks")
     other_stock_picker = StockChoiceField(label="Other player's stocks")
     def __init__(self, *args, user=None, other=None, floor=None, **kwargs):
-        super(TradeForm, self).__init__(*args, **kwargs)
-        print("initializing fields", file=sys.stderr)
-        self.other_picker = PlayerField(floor=floor, other=other)
-        self.user_stock_picker = StockChoiceField(label="Your Stocks", widget=StockWidget(prefetchPlayerPk=user.pk, attrs={"id": self.USER_STOCK_PICKER_ID}))
-        self.other_stock_picker = StockChoiceField(label="{}'s Stocks".format(other.user.username), widget=StockWidget(prefetchPlayerPk=other.pk, attrs={"id": self.OTHER_STOCK_PICKER_ID}))
+        super().__init__(*args, **kwargs)
+        print(self.media, file=sys.stderr)

@@ -4,34 +4,6 @@ var PREFETCH_URL = "{% url 'prefetch' %}";
 var CLASS_NAME = "{{ class_name }}";
 var widgets = [];
 
-function jsonBloodhound(url){
-    return new Bloodhound({
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        datumTokenizer:  function(datum)
-        {
-            var out = [];
-            var FIELDS = [datum.name, datum.symbol];
-            for(var i = 0;i < FIELDS.length;i++)
-            {
-                var curr = FIELDS[i].split(" ");
-                for(var p = 0;p<curr.length;p++)
-                {
-                    out.push(curr[p]);
-                }
-            }
-            return out;
-        },
-        initialize: true,
-        prefetch: {
-            url: url,
-            cache: false,
-            transform: function(jsonObj)
-            {
-                return jsonObj;
-            }, 
-        }
-    });
-}
 
 var StockWidget = function(inputElement)
 {
@@ -120,7 +92,7 @@ var StockWidget = function(inputElement)
                 that.$box.typeahead("val", "");
                 that.pushStock(suggestion);
             });
-    this.changeURL = function(url, a) 
+    this.changeURL = function(url) 
     {
         this.$box.typeahead("destroy");
         this.$box.typeahead({

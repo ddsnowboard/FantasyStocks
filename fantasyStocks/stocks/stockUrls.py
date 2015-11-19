@@ -18,11 +18,14 @@ urlpatterns = [
             url("^stockLookupURL/user/(?P<key>[0-9]+)/$", views.stockLookup, name="prefetch"), 
             url("^thisCANbAEASAReallyHardURL/(?P<identifier>[A-Za-z0-9_]+)/(?P<player>[A-Za-z0-9]+)/$", views.renderStockWidgetJavascript, name="stockWidgetJavascript"), 
             url("^thisCANbAEASAReallyHardURL/(?P<identifier>[A-Za-z0-9_]+)/$", views.renderStockWidgetJavascript, name="stockWidgetJavascript"), 
+            url("^trade/$", views.trade, name="trade"), 
             # player is the primary key of the other player involved in the trade
             url("^trade/(?P<player>[0-9]+)/$", views.trade, name="trade"), 
             # stock is primary key of the stock that was clicked, and floor is the 
             # primary key of the floor.
-            url("^trade/(?P<stock>[0-9]+)/(?P<floor>[0-9]+)/$", views.trade, name="trade"), 
+            url("^trade/(?P<floor>[0-9]+)/(?P<stock>[0-9]+)/$", views.trade, name="trade"), 
+            url("^playerFieldJavaScript/(?P<identifier>[A-Za-z0-9]+)/$", views.playerFieldJavascript, name="playerFieldJS"), 
+            url("^userList/$", views.userList, name="users"), 
         ]
 
 
