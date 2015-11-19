@@ -29,18 +29,6 @@ class StockWidget(forms.widgets.TextInput):
         else:
             self.attrs["id"] = "StockWidgetId"
             self.prefetchPlayerPk = None
-    def to_python(self, value):
-            s = Stock.objects.get(symbol=i)
-            if not s:
-                s = Stock(symbol=i)
-                try:
-                    s.update()
-                except StockAPIError:
-                    raise ValidationError
-                s.save()
-            out.append(s)
-    def validate(self, value):
-        return True
     def _media(self):
         js = ["//code.jquery.com/jquery-1.11.3.min.js",
         "typeahead.bundle.js", "common.js",]
@@ -58,7 +46,7 @@ class StockWidget(forms.widgets.TextInput):
         attrs['id'] = self.attrs['id']
         return super(StockWidget, self).render(name, value, attrs)
 
-class PlayerChoiceWidget(forms.widgets.TextInput):
+class UserChoiceWidget(forms.widgets.TextInput):
     WIDGET_ID = "playerChoiceWidget"
     def __init__(self, attrs=None):
         if not attrs:
@@ -95,8 +83,8 @@ class StockChoiceField(forms.Field):
             out.append(s)
         return out
 
-class PlayerField(forms.Field):
-    widget = PlayerChoiceWidget
+class UserField(forms.Field):
+    widget = UserChoiceWidget
     def __init__(self, floor=None, other=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -158,9 +146,8 @@ class FloorForm(forms.Form):
 class TradeForm(forms.Form):
     USER_STOCK_PICKER_ID = "id_user_stock_picker"
     OTHER_STOCK_PICKER_ID = "id_other_stock_picker"
-    other_picker = PlayerField(label="Other Player")
-    user_stock_picker = StockChoiceField(label="Your Stocks")
-    other_stock_picker = StockChoiceField(label="Other player's stocks")
-    def __init__(self, *args, user=None, other=None, floor=None, **kwargs):
+    other_user = UserField(label="Other Player")
+    user_stocks = StockChoiceField(label="Your Stocks")
+    other_stocks = StockChoiceField(label="Other player's stocks")
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print(self.media, file=sys.stderr)
