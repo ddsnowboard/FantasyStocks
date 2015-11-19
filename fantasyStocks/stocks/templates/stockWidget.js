@@ -13,6 +13,7 @@ var StockWidget = function(inputElement)
         var DONE = 4;
         var initValues = this.$value.val().split(",");
         var request = new XMLHttpRequest();
+        var that = this;
         request.onreadystatechange = function(){
             if(this.readyState === DONE)
             {
@@ -25,7 +26,7 @@ var StockWidget = function(inputElement)
                     {
                         if(response[j].symbol === curr)
                         {
-                            this.pushStock(response[j], true);
+                            that.pushStock(response[j], true);
                             break;
                         }
                     }
