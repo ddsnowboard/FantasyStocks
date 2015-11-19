@@ -111,28 +111,38 @@ def join(request, floorNumber):
 
 @login_required
 def trade(request, player=None, stock=None, floor=None):
-    if player and not (stock or floor):
+    outputDict = {}
+    outputDict["request"] = request
+    if request.POST:
+        form = forms.TradeForm(request.POST)
+        if form.isValid():
+            # TODO: Create a trade object and go somewhere else. I'm not there yet
+            pass
+        else:
+            outputDict["form"] = form
+    elif not (player or stock or floor):
+        outputDict["form"] = forms.TradeForm()
+    elif player and not (stock or floor):
         otherPlayer = Player.objects.get(pk=player)
         if otherPlayer.user == request.user:
             otherPlayer = None
+        outputDict["form"] = forms.TradeForm({"other_user" : otherPlayer.user.username})
     elif stock and floor and not player:
         floor = Floor.objects.get(pk=floor)
         # stocks__id means look for something with this id in the "stocks" many-to-many field. 
-        otherPlayer = Player.objects.get(floor=floor, stocks__id=stock)
         stocks = [Stock.objects.get(pk=stock)]
-    elif not (player or stock or floor):
-        pass
+        stocks_string = ",".join([s.symbol for s in stocks])
+        try:
+            otherPlayer = Player.objects.get(floor=floor, stocks__id=stock)
+            if otherPlayer.user == request.user:
+                outputDict["form"] = forms.TradeForm({"user_stocks": stocks_string})
+            else:
+                outputDict["form"] = forms.TradeForm({"other_user": otherPlayer.user.username, "other_stocks": stocks_string})
+        except Player.DoesNotExist:
+            # This should give you the floor player, but I haven't implemented that yet. 
+            outputDict["form"] = forms.TradeForm({"other_stocks": stocks_string})
     else:
         raise RuntimeError("You passed in the wrong arguments")
-    outputDict = {}
-    if player:
-        outputDict["player"] = otherPlayer
-        try:
-            outputDict["stocks"] = stocks
-        except UnboundLocalError:
-            pass
-    outputDict["request"] = request
-    outputDict["form"] = forms.TradeForm(user=request.user, other=player, floor=floor)
     return render(request, "trade.html", outputDict)
 
 def playerFieldJavascript(request, identifier):
