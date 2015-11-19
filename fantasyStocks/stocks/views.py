@@ -134,13 +134,13 @@ def stockLookup(request, query=None, key=None):
 @login_required
 def trade(request, player=None, stock=None, floor=None):
     if player and not (stock or floor):
-        player = Player.objects.get(pk=player)
-        if player.user == request.user:
-            player = None
+        otherPlayer = Player.objects.get(pk=player)
+        if otherPlayer.user == request.user:
+            otherPlayer = None
     elif stock and floor and not player:
         floor = Floor.objects.get(pk=floor)
         # stocks__id means look for something with this id in the "stocks" many-to-many field. 
-        player = Player.objects.get(floor=floor, stocks__id=stock)
+        otherPlayer = Player.objects.get(floor=floor, stocks__id=stock)
         stocks = [Stock.objects.get(pk=stock)]
     elif not (player or stock or floor):
         pass
@@ -148,7 +148,7 @@ def trade(request, player=None, stock=None, floor=None):
         raise RuntimeError("You passed in the wrong arguments")
     outputDict = {}
     if player:
-        outputDict["player"] = player
+        outputDict["player"] = otherPlayer
         try:
             outputDict["stocks"] = stocks
         except UnboundLocalError:
