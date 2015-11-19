@@ -87,6 +87,13 @@ class UserField(forms.Field):
     widget = UserChoiceWidget
     def __init__(self, floor=None, other=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+    def to_python(self, value):
+        try:
+            return User.objects.get(username=value)
+        except User.DoesNotExist:
+            raise ValidationError("That was an invalid user")
+        except MultipleObjectsReturned:
+            raise ValidationError("There is more than one user with that name") 
 
 class LoginForm(forms.Form):
     username = forms.CharField(label="Username", max_length=25)
