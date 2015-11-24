@@ -174,3 +174,5 @@ def renderStockWidgetJavascript(request, identifier=None, player=0):
     # The id is coming from here. Make it give the right id (eg, "id_other_stock_picker"). I'm not sure how. Ask the form? 
     # Pass it in the URL?
     return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
+def tradeFormJavaScript(request):
+    return render(request, "trade.js")

@@ -26,6 +26,7 @@ urlpatterns = [
             url("^trade/(?P<floor>[0-9]+)/(?P<stock>[0-9]+)/$", views.trade, name="trade"), 
             url("^playerFieldJavaScript/(?P<identifier>[A-Za-z0-9]+)/$", views.playerFieldJavascript, name="playerFieldJS"), 
             url("^userList/$", views.userList, name="users"), 
+            url("tradeFormJavaScript/$", views.tradeFormJavaScript, name="tradeFormJavaScript"), 
         ]
 
 

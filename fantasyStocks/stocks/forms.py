@@ -1,5 +1,6 @@
 from random import randint
 from django.conf.urls.static import static
+from functools import reduce
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import User
@@ -158,3 +159,8 @@ class TradeForm(forms.Form):
     other_stocks = StockChoiceField(label="Other player's stocks")
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+    def _media(self):
+        # TODO: Fix this.
+        js = reduce(lambda x, y: x + y, self.fields.values())  + (reverse("tradeFormJavaScript"), )
+        return forms.Media(js=js)
+    media = property(_media)
