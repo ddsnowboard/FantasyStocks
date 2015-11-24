@@ -164,7 +164,8 @@ def stockLookup(request, query=None, key=None):
 
 def renderStockWidgetJavascript(request, identifier=None, player=0):
     """
-    player is the primary key of the player in a database, not a Player object. 
+    player is the primary key of the player in a database, not a Player object,
+    since it has to come from a URL. 
     """
     if not identifier:
         raise RuntimeError("You didn't pass in a valid identifier. God only knows how that happened.")
