@@ -160,7 +160,11 @@ class TradeForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     def _media(self):
-        # TODO: Fix this.
-        js = reduce(lambda x, y: x + y, self.fields.values())  + (reverse("tradeFormJavaScript"), )
-        return forms.Media(js=js)
+        # There is usually such good design in django. I don't know where it went here. O well. 
+        # At least I know that the scripts will be in the order I want. 
+        otherMedia = forms.Media()
+        for i in self.fields.values():
+            otherMedia += i.widget.media
+        js = (reverse("tradeFormJavaScript"), )
+        return otherMedia + forms.Media(js=js)
     media = property(_media)
