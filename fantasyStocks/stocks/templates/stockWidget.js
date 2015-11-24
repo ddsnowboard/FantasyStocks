@@ -2,7 +2,7 @@
 // This is the default URL that will give you all the stocks.
 var PREFETCH_URL = "{% url 'prefetch' %}";
 var CLASS_NAME = "{{ class_name }}";
-var widgets = [];
+var stockWidgets = [];
 
 
 var StockWidget = function(inputElement)
@@ -123,6 +123,6 @@ $(document).ready(function(){
     var $inputs = $("." + CLASS_NAME);
     for(var i = 0; i < $inputs.length; i++)
     {
-        widgets.push(new StockWidget($inputs[i]));
+        stockWidgets.push(new StockWidget($inputs[i]));
     }
 });
