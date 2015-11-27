@@ -121,8 +121,8 @@ def trade(request, player=None, stock=None, floor=None):
         else:
             outputDict["form"] = form
     elif not (player or stock or floor):
-        outputDict["form"] = forms.TradeForm()
-    elif player and not (stock or floor):
+        raise RuntimeError("You need to at least pass in a floor")
+    elif player and floor and not stock:
         otherPlayer = Player.objects.get(pk=player)
         if otherPlayer.user == request.user:
             otherPlayer = None

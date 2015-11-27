@@ -30,7 +30,7 @@ var floors = {
             {% for competitor in player.floor.leaders %}
             <tr>
                 <td {% if forloop.last %}style="border-bottom: none;"{% endif %}>
-                    <a class="noUnderline" href="{% url "trade" player=competitor.pk %}"<span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.user.email }}</span></a>
+                    <a class="noUnderline" href="{% url "trade" player=competitor.pk floor=player.floor.pk %}"<span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.user.email }}</span></a>
                     <span style="display: inline-block; float: right">{{ competitor.points }}</span>
                 </td>
             </tr>
