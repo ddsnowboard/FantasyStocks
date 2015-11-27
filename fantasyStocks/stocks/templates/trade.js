@@ -80,9 +80,9 @@ $(document).ready(function() {
     {
         setOtherStockbox(otherUsername.$box.val(), floor);
     }
-    otherUsername.onSelect = function(event, suggestion)
-    {
-        setOtherStockbox(otherUsername.$box.val(), floor);
-        // TODO: Clear stockbox if you change the name, or, better yet, make it ask you if you really want to do this. 
-    };
+    otherUsername.onSelect(function(event, suggestion)
+            {
+                setOtherStockbox(otherUsername.$box.val(), floor);
+                // TODO: Clear stockbox if you change the name, or, better yet, make it ask you if you really want to do this. 
+            });
 });

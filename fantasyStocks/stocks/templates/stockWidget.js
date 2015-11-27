@@ -88,17 +88,23 @@ var StockWidget = function(inputElement)
     }
     this.$value.parent().append(this.$holder).append(this.$box);
 
-    // TODO: Refactor this to use an array so that you can bind more than 
-    // one thing. 
-    this.onSelect = function(event, suggestion)
+    this.onSelectFunctions = [];
+    this.runOnSelect = function(event, suggestion)
     {
-        // This is a hook method. This one doesn't do anyhing. 
+        for(var i = 0; i < onSelectFunctions; i++)
+        {
+            this.onSelectFunctions[i](event, suggestion);
+        }
+    }
+    this.onSelect = function(func)
+    {
+        this.onSelectFunctions.push(func);
     }
     this.$box.bind("typeahead:select", function(event, suggestion)
             {
                 that.$box.typeahead("val", "");
                 that.pushStock(suggestion);
-                that.onSelect(event, suggestion);
+                that.runOnSelect(event, suggestion);
             });
     this.changeURL = function(url) 
     {

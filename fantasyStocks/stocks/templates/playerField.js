@@ -19,11 +19,17 @@ function PlayerPicker(inputElement){
      * anwhere else in the JavaScript code for a page as long as this is executed 
      * before.
      */
-    // TODO: Refactor this to use an array so that you can bind more than 
-    // one thing. 
-    this.onSelect = function(event, suggestion)
+    this.onSelectFunctions = [];
+    this.runOnSelect = function(event, suggestion)
     {
-        // This is a hook method. This one doesn't do anyhing. 
+        for(var i = 0; i < this.onSelectFunctions.length; i++)
+        {
+            this.onSelectFunctions[i](event, suggestion);
+        }
+    }
+    this.onSelect = function(func)
+    {
+        this.onSelectFunctions.push(func);
     }
     this.$box = $(inputElement);
     this.setURL = function(url){
@@ -56,7 +62,7 @@ function PlayerPicker(inputElement){
     var that = this;
     this.$box.bind("typeahead:select", function(event, suggestion)
             {
-                that.onSelect(event, suggestion);
+                that.runOnSelect(event, suggestion);
             });
 }
 
