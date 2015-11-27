@@ -91,7 +91,7 @@ var StockWidget = function(inputElement)
     this.onSelectFunctions = [];
     this.runOnSelect = function(event, suggestion)
     {
-        for(var i = 0; i < onSelectFunctions; i++)
+        for(var i = 0; i < this.onSelectFunctions.length; i++)
         {
             this.onSelectFunctions[i](event, suggestion);
         }
