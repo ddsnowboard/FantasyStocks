@@ -152,8 +152,6 @@ class FloorForm(forms.Form):
 
 
 class TradeForm(forms.Form):
-    USER_STOCK_PICKER_ID = "id_user_stock_picker"
-    OTHER_STOCK_PICKER_ID = "id_other_stock_picker"
     other_user = UserField(label="Other Player")
     user_stocks = StockChoiceField(label="Your Stocks")
     other_stocks = StockChoiceField(label="Other player's stocks")
