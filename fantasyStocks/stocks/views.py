@@ -151,7 +151,7 @@ def playerFieldJavascript(request, identifier):
 def userList(request):
     return HttpResponse(json.dumps([{"username": u.username if u.username else u.email, "email": u.email} for u in User.objects.all()]), content_type="text/json")
 
-def stockLookup(request, query=None, key=None):
+def stockLookup(request, query=None, key=None, user=None, floor=None):
     # I don't really use this branch anymore, but I might need it. 
     if query:
         STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
@@ -159,6 +159,8 @@ def stockLookup(request, query=None, key=None):
     # This is almost always the part that runs.
     elif key:
         return HttpResponse(json.dumps([s.format_for_json() for s in Player.objects.get(pk=key).stocks.all()]), content_type="text/json")
+    elif user and floor:
+        return HttpResponse(json.dumps([i.format_for_json() for i in Player.objects.get(user__username=user, floor=floor).stocks.all()]))
     else:
         return redirect(static("stocks.json"), permanent=True)
 
