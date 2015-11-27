@@ -19,6 +19,12 @@ function PlayerPicker(inputElement){
      * anwhere else in the JavaScript code for a page as long as this is executed 
      * before.
      */
+    // TODO: Refactor this to use an array so that you can bind more than 
+    // one thing. 
+    this.onSelect = function(event, suggestion)
+    {
+        // This is a hook method. This one doesn't do anyhing. 
+    }
     this.$box = $(inputElement);
     this.setURL = function(url){
         this.$box.typeahead("destroy");
@@ -46,6 +52,11 @@ function PlayerPicker(inputElement){
                 {
                     event.preventDefault();
                 }
+            });
+    var that = this;
+    this.$box.bind("typeahead:select", function(event, suggestion)
+            {
+                that.onSelect(event, suggestion);
             });
 }
 
