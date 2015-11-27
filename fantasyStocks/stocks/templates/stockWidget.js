@@ -41,15 +41,15 @@ var StockWidget = function(inputElement)
 
     this.$holder = $("<div class=\"holder\"></div>");
     var that = this;
-    this.$holder.on("mousedown", ".selection", function() {
+    this.$holder.on("mousedown", ".selection:not(.warning)", function() {
         that.selected_stocks.splice(that.selected_stocks.indexOf($(this).attr('id')), 1);
         that.setBox(that.selected_stocks);
         $(this).remove();
     })
-    .on("mouseenter", ".selection", function() {
+    .on("mouseenter", ".selection:not(.warning)", function() {
         $(this).addClass("redBackground");
     })
-    .on("mouseleave", ".selection", function() {
+    .on("mouseleave", ".selection:not(.warning)", function() {
         $(this).removeClass("redBackground");
     });
 
