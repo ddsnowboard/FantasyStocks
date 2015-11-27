@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse_lazy, reverse
 from stocks.models import Floor, Stock, StockAPIError
 from django.core.exceptions import ValidationError
-from stocks.models import Floor
+from stocks.models import Floor, Player
 import sys
 
 class StockWidget(forms.widgets.TextInput):
@@ -85,6 +85,9 @@ class StockChoiceField(forms.Field):
         return out
 
 class UserField(forms.Field):
+    """
+    This returns a `User` object, not just a string. 
+    """
     widget = UserChoiceWidget
     def __init__(self, floor=None, other=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -157,8 +160,57 @@ class TradeForm(forms.Form):
     other_stocks = StockChoiceField(label="Other player's stocks")
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+    def is_valid(self, floor=None, user=None):
+        """
+        You have to give this function the floor number or else it won't know where 
+        to look. You also need to give it the user object so it can find its player.
+        """
+        # There's got to be a better way to do this. This breaks the one page rule, 
+        # and also it's terrible (though effective). I think I can move all this 
+        # into the respective fields, but I'm not 100% sure. If I can do that, though, 
+        # it would be one line, if I'm not mistaken (specifically, the one below). 
+        # But for now it's OK, I think. I should do some stress testing though. 
+        super().is_valid()
+        if not floor:
+            raise RuntimeError("""You need to give a floor to 
+                TradeForm.is_valid() or else it won't know what to look for.""", 
+                code="nofloor")
+        elif not user:
+            raise RuntimeError("""You need to give the user object to 
+                TradeForm.is_valid() or else it won't know what to look for.""", 
+                code="nouser")
+        try:
+            floor = Floor.objects.get(pk=floor)
+        except Floor.DoesNotExist:
+            self.addError(ValidationError("""The floor with primary key %(pk)d""",
+                    params={"pk": floor}, code="invalidpk"))
+        other = self.fields["other_user"].to_python(self.data["other_user"])
+        try:
+            other_player = Player.objects.get(floor=floor,
+                    user=other)
+        except Player.DoesNotExist:
+            self.addError(ValidationError("""The other player does not exist""", code="invalidother"))
+        try:
+            user_player = Player.objects.get(floor=floor, user=user)
+        except Player.DoesNotExist:
+            self.addError(ValidationError("""The user player does not exist""", code="invaliduser"))
+        user_stocks = self.fields["user_stocks"].to_python(self.data["user_stocks"])
+        for s in user_stocks:
+            # The empty slice should cache that list so that it runs faster
+            if not s in user_player.stocks.all()[:]:
+                self.addError(ValidationError("""The stock {} does not belong to the user
+                {} on floor {}""".format(s.symbol, user_player.user.username,
+                    floor.name), code="invaliduserstock"))
+        other_stocks = self.fields["other_stocks"].to_python(self.data["other_stocks"])
+        for s in other_stocks:
+            if not s in other_player.stocks.all()[:]:
+                self.addError(ValidationError("""The stock {} does not belong to the user
+                {} on floor {}""".format(s.symbol, other_player.user.username,
+                    floor.name), code="invalidotherstock"))
+        return True
     def _media(self):
-        # There is usually such good design in django. I don't know where it went here. O well. 
+        # There is usually such good design in django. 
+        # I don't know where it went here. O well. 
         # At least I know that the scripts will be in the order I want. 
         otherMedia = forms.Media()
         for i in self.fields.values():

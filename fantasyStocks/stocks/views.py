@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.utils.html import escape
 from urllib import request as py_request
 import json
 import sys
@@ -115,8 +116,10 @@ def trade(request, player=None, stock=None, floor=None):
     outputDict["request"] = request
     if request.POST:
         form = forms.TradeForm(request.POST)
-        if form.isValid():
+        if form.is_valid(floor=floor, user=request.user):
+            form.clean()
             # TODO: Create a trade object and go somewhere else. I'm not there yet
+            return HttpResponse("Worked! <pre>{}</pre>".format(escape(form.cleaned_data)))
             pass
         else:
             outputDict["form"] = form
