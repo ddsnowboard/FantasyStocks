@@ -120,16 +120,18 @@ def trade(request, player=None, stock=None, floor=None):
             form.clean()
             # TODO: Create a trade object and go somewhere else. I'm not there yet
             return HttpResponse("Worked! <pre>{}</pre>".format(escape(form.cleaned_data)))
-            pass
         else:
             outputDict["form"] = form
     elif not (player or stock or floor):
         raise RuntimeError("You need to at least pass in a floor")
     elif player and floor and not stock:
         otherPlayer = Player.objects.get(pk=player)
+        init_dict = {}
         if otherPlayer.user == request.user:
             otherPlayer = None
-        outputDict["form"] = forms.TradeForm({"other_user" : otherPlayer.user.username})
+        else:
+            init_dict["other_user"] = otherPlayer.user.username
+        outputDict["form"] = forms.TradeForm(initial=init_dict)
     elif stock and floor and not player:
         floor = Floor.objects.get(pk=floor)
         # stocks__id means look for something with this id in the "stocks" many-to-many field. 
@@ -138,12 +140,12 @@ def trade(request, player=None, stock=None, floor=None):
         try:
             otherPlayer = Player.objects.get(floor=floor, stocks__id=stock)
             if otherPlayer.user == request.user:
-                outputDict["form"] = forms.TradeForm({"user_stocks": stocks_string})
+                outputDict["form"] = forms.TradeForm(initial={"user_stocks": stocks_string})
             else:
-                outputDict["form"] = forms.TradeForm({"other_user": otherPlayer.user.username, "other_stocks": stocks_string})
+                outputDict["form"] = forms.TradeForm(initial={"other_user": otherPlayer.user.username, "other_stocks": stocks_string})
         except Player.DoesNotExist:
             # This should give you the floor player, but I haven't implemented that yet. 
-            outputDict["form"] = forms.TradeForm({"other_stocks": stocks_string})
+            outputDict["form"] = forms.TradeForm(initial={"other_stocks": stocks_string})
     else:
         raise RuntimeError("You passed in the wrong arguments")
     return render(request, "trade.html", outputDict)

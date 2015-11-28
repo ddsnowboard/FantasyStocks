@@ -155,8 +155,8 @@ class FloorForm(forms.Form):
 
 class TradeForm(forms.Form):
     other_user = UserField(label="Other Player")
-    user_stocks = StockChoiceField(label="Your Stocks")
-    other_stocks = StockChoiceField(label="Other player's stocks")
+    user_stocks = StockChoiceField(label="Your Stocks", required=False)
+    other_stocks = StockChoiceField(label="Other player's stocks", required=False)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     def is_valid(self, floor=None, user=None):
@@ -169,7 +169,8 @@ class TradeForm(forms.Form):
         # into the respective fields, but I'm not 100% sure. If I can do that, though, 
         # it would be one line, if I'm not mistaken (specifically, the one below). 
         # But for now it's OK, I think. I should do some stress testing though. 
-        super().is_valid()
+        if not super().is_valid():
+            return False
         error = False
         if not floor:
             raise RuntimeError("""You need to give a floor to 
