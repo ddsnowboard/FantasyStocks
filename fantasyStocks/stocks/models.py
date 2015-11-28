@@ -107,3 +107,9 @@ class Player(models.Model):
     points = models.IntegerField(default=0)
     def __str__(self):
         return "{} on {}".format(str(self.user), str(self.floor))
+    def get_name(self):
+        """
+        It's possible that somebody could not have a username, perhaps, so I have this to take
+        care of that, and also prevent a bunch of ugly `player.user.username` calls. 
+        """
+        return self.user.username if self.user.username else self.user.email
