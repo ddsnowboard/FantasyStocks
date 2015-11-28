@@ -40,7 +40,6 @@ class StockWidget(forms.widgets.TextInput):
             js.append(reverse("stockWidgetJavascript", kwargs={"identifier" : self.attrs['id'], "player" : self.prefetchPlayerPk}))
         return forms.Media(js=js)
     media = property(_media)
-
     def render(self, name, value, attrs=None):
         if not attrs:
             attrs = {}
@@ -171,43 +170,48 @@ class TradeForm(forms.Form):
         # it would be one line, if I'm not mistaken (specifically, the one below). 
         # But for now it's OK, I think. I should do some stress testing though. 
         super().is_valid()
+        error = False
         if not floor:
             raise RuntimeError("""You need to give a floor to 
-                TradeForm.is_valid() or else it won't know what to look for.""", 
-                code="nofloor")
+                TradeForm.is_valid() or else it won't know what to look for.""")
         elif not user:
             raise RuntimeError("""You need to give the user object to 
-                TradeForm.is_valid() or else it won't know what to look for.""", 
-                code="nouser")
+                TradeForm.is_valid() or else it won't know what to look for.""")
         try:
             floor = Floor.objects.get(pk=floor)
         except Floor.DoesNotExist:
-            self.addError(ValidationError("""The floor with primary key %(pk)d""",
-                    params={"pk": floor}, code="invalidpk"))
+            raise RuntimeError("""The floor with primary key %(pk)d""")
         other = self.fields["other_user"].to_python(self.data["other_user"])
         try:
             other_player = Player.objects.get(floor=floor,
                     user=other)
         except Player.DoesNotExist:
-            self.addError(ValidationError("""The other player does not exist""", code="invalidother"))
+            self.add_error(self.fields["other_player"], ValidationError("""The other player does not exist""", code="invalidother"))
+            error = True
         try:
             user_player = Player.objects.get(floor=floor, user=user)
         except Player.DoesNotExist:
-            self.addError(ValidationError("""The user player does not exist""", code="invaliduser"))
+            self.add_error(None, ValidationError("""The user player does not exist""", code="invaliduser"))
+            error = True
         user_stocks = self.fields["user_stocks"].to_python(self.data["user_stocks"])
         for s in user_stocks:
             # The empty slice should cache that list so that it runs faster
             if not s in user_player.stocks.all()[:]:
-                self.addError(ValidationError("""The stock {} does not belong to the user
+                self.add_error(self.fields["user_stocks"], ValidationError("""The stock {} does not belong to the user
                 {} on floor {}""".format(s.symbol, user_player.user.username,
-                    floor.name), code="invaliduserstock"))
+                    floor.name, code="invaliduserstock")))
+                error = True
         other_stocks = self.fields["other_stocks"].to_python(self.data["other_stocks"])
         for s in other_stocks:
             if not s in other_player.stocks.all()[:]:
-                self.addError(ValidationError("""The stock {} does not belong to the user
+                self.add_error(self.fields["other_player"], ValidationError("""The stock {} does not belong to the user
                 {} on floor {}""".format(s.symbol, other_player.user.username,
                     floor.name), code="invalidotherstock"))
-        return True
+                error = True
+        if not other_stocks and not user_stocks:
+            self.add_error(None, ValidationError("""The trade is empty!""", code="empty"))
+            error = True
+        return not error
     def _media(self):
         # There is usually such good design in django. 
         # I don't know where it went here. O well. 

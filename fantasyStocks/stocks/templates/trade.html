@@ -7,18 +7,26 @@
         {% csrf_token %}
         <table align="center">
             <tr>
+                <td colspan="2">
+                    {{ form.non_field_errors }}
+                </td>
+            </tr>
+            <tr>
                 <td>
                     <input type="text" id="username" value="{{ request.user.username }}" disabled>
                 </td>
                 <td>
+                    {{ form.other_user.errors }}
                     {{ form.other_user }}
                 </td>
             </tr>
             <tr>
                 <td>
+                    {{ form.user_stocks.errors }}
                     {{ form.user_stocks }}
                 </td>
                 <td>
+                    {{ form.other_stocks.errors }}
                     {{ form.other_stocks }}
                 </td>
             </tr>
