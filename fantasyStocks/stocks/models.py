@@ -4,7 +4,7 @@ from urllib import request
 from urllib.parse import urlencode
 from django.utils import timezone
 import json
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from datetime import timedelta
 from django.conf import settings
 import sys
@@ -103,9 +103,11 @@ class Floor(models.Model):
 class Player(models.Model):
     user = models.ForeignKey(User)
     floor = models.ForeignKey(Floor)
-    stocks = models.ManyToManyField(Stock)
+    stocks = models.ManyToManyField(Stock, blank=True)
     points = models.IntegerField(default=0)
     def __str__(self):
+        if self.user.groups.filter(name="Floor").exists():
+            return "Floor"
         return "{} on {}".format(str(self.user), str(self.floor))
     def get_name(self):
         """
@@ -113,3 +115,7 @@ class Player(models.Model):
         care of that, and also prevent a bunch of ugly `player.user.username` calls. 
         """
         return self.user.username if self.user.username else self.user.email
+
+class Trade(models.Model):
+    pass
+

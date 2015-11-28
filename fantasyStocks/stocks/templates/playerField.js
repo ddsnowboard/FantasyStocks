@@ -44,7 +44,7 @@ function PlayerPicker(inputElement){
             templates: {
                 pending: ". . .", 
                 suggestion: function(obj) {
-                    return "<div class=\"suggestion\">" + obj.username + " (" + obj.email + ")</div>";
+                    return "<div class=\"suggestion\">" + obj.username + "</div>";
                 },
             },
             limit: 20,
