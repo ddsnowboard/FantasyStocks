@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse_lazy, reverse
 from stocks.models import Floor, Stock, StockAPIError
 from django.core.exceptions import ValidationError
-from stocks.models import Floor, Player
+from stocks.models import Floor, Player, Trade
 import sys
 
 class StockWidget(forms.widgets.TextInput):
@@ -213,6 +213,17 @@ class TradeForm(forms.Form):
             self.add_error(None, ValidationError("""The trade is empty!""", code="empty"))
             error = True
         return not error
+    def to_trade(self, floor=None, user=None):
+        floor = Floor.objects.get(pk=floor)
+        trade = Trade.objects.create(floor=floor,
+                sender=Player.objects.get(floor=floor, user=user),
+                recipient=Player.objects.get(user=self.cleaned_data["other_user"], floor=floor))
+        for i in self.cleaned_data["other_stocks"]:
+            trade.recipientStocks.add(i)
+        for i in self.cleaned_data["user_stocks"]:
+            trade.senderStocks.add(i)
+        trade.save()
+        return trade
     def _media(self):
         # There is usually such good design in django. 
         # I don't know where it went here. O well. 

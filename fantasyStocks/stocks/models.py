@@ -92,22 +92,22 @@ class Floor(models.Model):
     stocks = models.ManyToManyField(Stock)
     permissiveness = models.CharField(max_length=15, choices=PERMISSIVENESS_CHOICES, default=PERMISSIVE)
     owner = models.ForeignKey(User, null=True)
+    # The model for this ForeignKey is a string because it doesn't know what it is yet because it's down there. 
+    floorPlayer = models.ForeignKey("Player", related_name="FloorPlayer", null=True)
     def __str__(self):
         return self.name
     def leaders(self):
-        return Player.objects.filter(floor=self).order_by("-points")
+        return Player.objects.filter(floor=self).exclude(user__groups__name__exact="Floor").order_by("-points")
 
 # NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
 # object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
 # deleted if the it's `User` object or its floor is deleted. 
 class Player(models.Model):
     user = models.ForeignKey(User)
-    floor = models.ForeignKey(Floor)
+    floor = models.ForeignKey("Floor")
     stocks = models.ManyToManyField(Stock, blank=True)
     points = models.IntegerField(default=0)
     def __str__(self):
-        if self.user.groups.filter(name="Floor").exists():
-            return "Floor"
         return "{} on {}".format(str(self.user), str(self.floor))
     def get_name(self):
         """
@@ -117,5 +117,23 @@ class Player(models.Model):
         return self.user.username if self.user.username else self.user.email
 
 class Trade(models.Model):
-    pass
-
+    recipient = models.ForeignKey(Player)
+    # recipientStocks and senderStocks are the stocks that those people have right now and will give away in the trade. 
+    recipientStocks = models.ManyToManyField(Stock, related_name="receivingPlayerStocks")
+    floor = models.ForeignKey(Floor)
+    sender = models.ForeignKey(Player, related_name="sendingPlayer")
+    senderStocks = models.ManyToManyField(Stock)
+    def __str__(self):
+        return "Trade from {} to {} on {}".format(self.sender.user, self.recipient.user, self.floor)
+    def accept(self):
+        for s in self.recipientStocks.all():
+            self.recipient.stocks.remove(s)
+            self.sender.stocks.add(s)
+        for s in self.senderStocks.all():
+            self.sender.stocks.remove(s)
+            self.sender.stocks.add(s)
+        self.sender.save()
+        self.recipient.save()
+        self.delete()
+    def verify(self):
+        pass

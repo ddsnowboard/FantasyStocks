@@ -15,6 +15,7 @@ import json
 import sys
 import csv
 
+FLOOR_USER = User.objects.get(groups__name__exact="Floor")
 STANDARD_SCRIPTS = ["//code.jquery.com/jquery-1.11.3.min.js"]
 
 @login_required
@@ -32,7 +33,6 @@ def dashboard(request):
                 "scripts" : scripts,
             })
 
-# Create your views here.
 def index(request):
     # If you're already logged in...
     if request.user.is_authenticated():
@@ -84,9 +84,13 @@ def create_floor(request):
         if form.is_valid():
             floor = form.save()
             floor.owner = request.user
-            floor.save()
             newPlayer = Player.objects.create(user=request.user, floor=floor)
-            newPlayer.save()
+            newFloorPlayer = Player.objects.create(user=FLOOR_USER, floor=floor)
+            newFloorPlayer.save()
+            floor.floorPlayer = newFloorPlayer
+            floor.save()
+            for s in floor.stocks.all():
+                newFloorPlayer.stocks.add(s)
             return redirect(reverse("dashboard"), permanent=False)
         else:
             return render(request, "createFloor.html", variableDict)
@@ -119,6 +123,7 @@ def trade(request, player=None, stock=None, floor=None):
         if form.is_valid(floor=floor, user=request.user):
             form.clean()
             # TODO: Create a trade object and go somewhere else. I'm not there yet
+            form.to_trade(floor=floor, user=request.user)
             return HttpResponse("Worked! <pre>{}</pre>".format(escape(form.cleaned_data)))
         else:
             outputDict["form"] = form

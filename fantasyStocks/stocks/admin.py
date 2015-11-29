@@ -1,7 +1,7 @@
 from django.contrib import admin
 import stocks
 
-# Register your models here.
+# Stock admin functions
 def update(modeladmin, request, queryset):
     for i in queryset:
         i.update()
@@ -9,6 +9,9 @@ def force_update(modeladmin, request, queryset):
     for i in queryset:
         i.force_update()
 
+def accept(modeladmin, request, queryset):
+    for i in queryset:
+        i.accept()
 @admin.register(stocks.models.Stock)
 class StockAdmin(admin.ModelAdmin):
     actions = [update, force_update]
@@ -20,4 +23,9 @@ class PlayerAdmin(admin.ModelAdmin):
 
 @admin.register(stocks.models.Floor)
 class FloorAdmin(admin.ModelAdmin):
-    fields = ("name", "owner", "stocks", "permissiveness")
+    fields = ("name", "owner", "floorPlayer", "stocks", "permissiveness")
+
+@admin.register(stocks.models.Trade)
+class TradeAdmin(admin.ModelAdmin):
+    fields = ("recipient", "recipientStocks", "floor", "sender", "senderStocks")
+    actions = [accept]
