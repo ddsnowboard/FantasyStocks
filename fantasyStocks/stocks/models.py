@@ -54,15 +54,12 @@ class Stock(models.Model):
             Stock.remote_load_price(self.symbol).apply(self)
             self.last_updated = timezone.now()
             self.save()
+            self.refresh_from_db()
     def force_update(self):
         self.last_updated -= timedelta(minutes=30)
-        # print("Started updating {}".format(self.company_name), file=sys.stderr)
         self.update()
-        # print("Finished updating {}".format(self.company_name), file=sys.stderr)
     def get_price(self):
         self.update()
-        # Apparently this number isn't put into the database and rounded until the next page load. 
-        # Because that makes sense. Anyway, be careful.
         return self.price
     def get_change(self):
         self.update()
