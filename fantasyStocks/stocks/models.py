@@ -136,4 +136,5 @@ class Trade(models.Model):
         self.recipient.save()
         self.delete()
     def verify(self):
-        pass
+        # TODO: This function
+        raise NotImplementedError("I haven't writen this function yet")
