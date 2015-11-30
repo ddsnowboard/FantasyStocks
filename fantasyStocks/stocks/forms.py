@@ -196,8 +196,7 @@ class TradeForm(forms.Form):
             error = True
         user_stocks = self.fields["user_stocks"].to_python(self.data["user_stocks"])
         for s in user_stocks:
-            # The empty slice should cache that list so that it runs faster
-            if not s in user_player.stocks.all()[:]:
+            if not s in user_player.stocks.all():
                 self.add_error(self.fields["user_stocks"], ValidationError("""The stock {} does not belong to the user
                 {} on floor {}""".format(s.symbol, user_player.user.username,
                     floor.name, code="invaliduserstock")))
