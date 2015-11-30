@@ -51,7 +51,9 @@ The dashboard will have a few main parts. On the left side, there will be vertic
 
 Below that there will be a stock-board looking part which will list off all the stocks are being played on that floor and some information about them (price, change that day, points that day, owner, etc.). If you click on any of the stocks, a little javascript bubble will pop up asking if you want to trade for that stock, and if you say yes the trade page will come up with the owner of that stock and the stock pre-populated. Next to that will be a leaderboard which lists out all the other people on your floor in order of how many points they have, with their score next to them. You can click on any player and it will take you to their other player page.
 
-NB: This image is no longer accurate. It does not include the recent changes regarding the showing of multiple floors, and the removal of the chat box for the sake of simplicity. 
+Below that, there will be a trade inbox. It will also change with the changes of the floor tabs. At the top, there are two tabs: "Received Trades" and "Sent Trades". The tabs will be colored just like the tabs for the floor, and they will also be controlled with JavaScript and all rendered from the server on page load. There will be horizontal bars, similar to how emails are displayed in the inbox in Gmail, holding each trade. The trades will be displayed thus: first, the name of the other participant in the trade (you'll know what the other person's role is by which tab you're in). After that will be the date that the trade was sent, and maybe some other stuff. If you click somewhere on the trade, it will take you to the Received Trade page, where you can accept, deny, or counter the trade.  
+
+NB: This image is no longer accurate. It does not include the recent changes regarding the showing of multiple floors, and the removal of the chat box for the sake of simplicity, nor does it include the trades box at the bottom.
 ![Image of dashboard design](specResources/dashboardDesign.png "Dashboard")
 
 ###Trade Page
