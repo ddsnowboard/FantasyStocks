@@ -54,6 +54,9 @@ class Stock(models.Model):
             Stock.remote_load_price(self.symbol).apply(self)
             self.last_updated = timezone.now()
             self.save()
+            # The database normalizes the input to two decimal places and makes 
+            # sure that the negative and positive work on the dashboard, so I 
+            # reload it here. With any luck, it's fast, but who knows. 
             self.refresh_from_db()
     def force_update(self):
         self.last_updated -= timedelta(minutes=30)
