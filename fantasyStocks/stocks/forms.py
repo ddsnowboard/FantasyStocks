@@ -208,6 +208,16 @@ class TradeForm(forms.Form):
                 {} on floor {}""".format(s.symbol, other_player.user.username,
                     floor.name), code="invalidotherstock"))
                 error = True
+        stocks_in_trades = []
+        for i in Trades.objects.filter(floor=floor).values("senderStocks", "recipientStocks"):
+            stocks_in_trades.extend(i.senderStocks)
+            stocks_in_trades.extend(i.recipientStocks)
+        for i in user_stocks:
+            if i in stocks_in_trades:
+                self.add_error(self.fields["user_stocks"], ValidationError("The stock %(stock)s is already being traded by you", params={"stock": i}))
+        for i in other_stocks:
+            if i in stocks_in_trades:
+                self.add_error(self.fields["other_stocks"], ValidationError("The stock %(stock)s is already being traded by %(other)s", params={"stock": i, "other": other_player.user}))
         if not other_stocks and not user_stocks:
             self.add_error(None, ValidationError("""The trade is empty!""", code="empty"))
             error = True
