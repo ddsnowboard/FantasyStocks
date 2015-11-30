@@ -64,7 +64,7 @@ Design Mockup:
 
 If you click on a stock from the dashboard, or go to a player's page and click "trade", you will come to the trade page. It will have two nearly identical sides. Each side will have a box for a name, with a regular text box that has a real-time suggestions dropdown, just like the Gmail address box. 
 
->Technical Note: Although the original spec complains about the complexity of this a bunch, I have since wrapped all that complexity into a nice package called StockChoiceField. NB that there is some JavaScript that needs to be injected onto the page in the template for it to work, documented in the code with its brother, StockWidget. 
+>Technical Note: Although the original spec complains about the complexity of this a bunch, I have since wrapped all that complexity into a nice package called StockChoiceField. 
 
 The left side top box will always be the same:
 >\[Your Username\] (You)
