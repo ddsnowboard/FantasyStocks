@@ -16,6 +16,9 @@ def get_upload_location(instance, filename):
 class StockAPIError(Exception):
     pass
 
+class TradeError(Exception):
+    pass
+
 class RemoteStockData:
     """
     An object that holds the data received when a stock is updated
@@ -136,5 +139,17 @@ class Trade(models.Model):
         self.recipient.save()
         self.delete()
     def verify(self):
-        # TODO: This function
-        raise NotImplementedError("I haven't writen this function yet")
+        for s in recipientStocks.all():
+            if not s in recipient.stocks.all():
+                raise TradeError("One of the recipient stocks ({}) doesn't belong to the recipient ({})".format(s, self.recipient.user))
+            if not s in floor.stocks.all():
+                raise TradeError("One of the recipient stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
+        for s in senderStocks.all():
+            if not s in sender.stocks.all():
+                raise TradeError("One of the sender stocks ({}) doesn't belong to the sender ({})".format(s, self.recipient.user))
+            if not s in floor.stocks.all():
+                raise TradeError("One of the sender stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
+        if recipient.user.groups == "Floor":
+            self.accept()
+        elif sender.user.groups == "Floor":
+            raise RuntimeError("The floor sent a trade. This isn't good at all.")
