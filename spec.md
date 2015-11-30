@@ -1,7 +1,7 @@
 #Fantasy Stocks Spec
 ######Will Koster
 =========
-Any good spec has to have scenarios for who will use the product, otherwise the product might not be used, so here they are. 
+Any good spec has to have scenarios for who will use the product, otherwise they might have a CueCat, so here they are. 
 
 Scenarios
 ==========
