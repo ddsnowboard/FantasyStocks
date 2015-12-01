@@ -209,9 +209,9 @@ class TradeForm(forms.Form):
                     floor.name), code="invalidotherstock"))
                 error = True
         stocks_in_trades = []
-        for i in Trades.objects.filter(floor=floor).values("senderStocks", "recipientStocks"):
-            stocks_in_trades.extend(i.senderStocks)
-            stocks_in_trades.extend(i.recipientStocks)
+        for i in Trade.objects.filter(floor=floor):
+            if i.senderStocks: stocks_in_trades.extend(i.senderStocks.all())
+            if i.recipientStocks: stocks_in_trades.extend(i.recipientStocks.all())
         for i in user_stocks:
             if i in stocks_in_trades:
                 self.add_error("user_stocks", ValidationError("The stock %(stock)s is already being traded by you", params={"stock": i}))
@@ -227,9 +227,9 @@ class TradeForm(forms.Form):
         trade = Trade.objects.create(floor=floor,
                 sender=Player.objects.get(floor=floor, user=user),
                 recipient=Player.objects.get(user=self.cleaned_data["other_user"], floor=floor))
-        for i in self.cleaned_data["other_stocks"]:
+        for i in self.cleaned_data.get("other_stocks", []):
             trade.recipientStocks.add(i)
-        for i in self.cleaned_data["user_stocks"]:
+        for i in self.cleaned_data.get("user_stocks", []):
             trade.senderStocks.add(i)
         trade.save()
         return trade
