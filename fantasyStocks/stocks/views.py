@@ -122,9 +122,8 @@ def trade(request, player=None, stock=None, floor=None):
         form = forms.TradeForm(request.POST)
         if form.is_valid(floor=floor, user=request.user):
             form.clean()
-            # TODO: Create a trade object and go somewhere else. I'm not there yet
             form.to_trade(floor=floor, user=request.user)
-            return HttpResponse("Worked! <pre>{}</pre>".format(escape(form.cleaned_data)))
+            return redirect(reverse("dashboard"), permanent=False)
         else:
             outputDict["form"] = form
     elif not (player or stock or floor):

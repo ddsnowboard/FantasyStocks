@@ -232,6 +232,7 @@ class TradeForm(forms.Form):
         for i in self.cleaned_data.get("user_stocks", []):
             trade.senderStocks.add(i)
         trade.save()
+        trade.verify()
         return trade
     def _media(self):
         # There is usually such good design in django. 
