@@ -224,3 +224,8 @@ a.noUnderline {
     margin-right: auto;
     text-align: center;
 }
+
+.userStock {
+    color: black;
+    background-color: white;
+}
