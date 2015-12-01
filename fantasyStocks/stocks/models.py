@@ -141,7 +141,7 @@ class Trade(models.Model):
             self.sender.stocks.add(s)
         for s in self.senderStocks.all():
             self.sender.stocks.remove(s)
-            self.sender.stocks.add(s)
+            self.recipient.stocks.add(s)
         self.sender.save()
         self.recipient.save()
         self.delete()
