@@ -15,6 +15,7 @@ def accept(modeladmin, request, queryset):
 @admin.register(stocks.models.Stock)
 class StockAdmin(admin.ModelAdmin):
     actions = [update, force_update]
+    list_display = ("__str__", "last_updated")
 
 @admin.register(stocks.models.Player)
 class PlayerAdmin(admin.ModelAdmin):
