@@ -123,6 +123,8 @@ class Player(models.Model):
         care of that, and also prevent a bunch of ugly `player.user.username` calls. 
         """
         return self.user.username if self.user.username else self.user.email
+    def isFloor(self):
+        return "Floor" in [i.name for i in self.user.groups.all()]
 
 class Trade(models.Model):
     recipient = models.ForeignKey(Player)
@@ -144,17 +146,17 @@ class Trade(models.Model):
         self.recipient.save()
         self.delete()
     def verify(self):
-        for s in recipientStocks.all():
-            if not s in recipient.stocks.all():
+        for s in self.recipientStocks.all():
+            if not s in self.recipient.stocks.all():
                 raise TradeError("One of the recipient stocks ({}) doesn't belong to the recipient ({})".format(s, self.recipient.user))
-            if not s in floor.stocks.all():
+            if not s in self.floor.stocks.all():
                 raise TradeError("One of the recipient stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
-        for s in senderStocks.all():
-            if not s in sender.stocks.all():
+        for s in self.senderStocks.all():
+            if not s in self.sender.stocks.all():
                 raise TradeError("One of the sender stocks ({}) doesn't belong to the sender ({})".format(s, self.recipient.user))
-            if not s in floor.stocks.all():
+            if not s in self.floor.stocks.all():
                 raise TradeError("One of the sender stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
-        if recipient.user.groups == "Floor":
+        if self.recipient.isFloor():
             self.accept()
-        elif sender.user.groups == "Floor":
+        elif self.sender.isFloor():
             raise RuntimeError("The floor sent a trade. This isn't good at all.")
