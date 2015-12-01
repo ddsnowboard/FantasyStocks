@@ -1,5 +1,6 @@
 from django.contrib import admin
 import stocks
+from stocks.models import Player, Floor
 
 # Stock admin functions
 def update(modeladmin, request, queryset):
@@ -12,6 +13,18 @@ def force_update(modeladmin, request, queryset):
 def accept(modeladmin, request, queryset):
     for i in queryset:
         i.accept()
+
+def resetToFloor(modeladmin, request, queryset):
+    for i in queryset:
+        for p in Player.objects.filter(floor=i):
+            p.stocks = []
+            p.save()
+        i.floorPlayer.stocks = []
+        for s in i.stocks.all():
+            i.floorPlayer.stocks.add(s)
+        i.floorPlayer.save()
+resetToFloor.short_description = "Move all stocks to floor"
+
 @admin.register(stocks.models.Stock)
 class StockAdmin(admin.ModelAdmin):
     actions = [update, force_update]
@@ -24,6 +37,7 @@ class PlayerAdmin(admin.ModelAdmin):
 
 @admin.register(stocks.models.Floor)
 class FloorAdmin(admin.ModelAdmin):
+    actions = [resetToFloor]
     fields = ("name", "owner", "floorPlayer", "stocks", "permissiveness")
 
 @admin.register(stocks.models.Trade)
