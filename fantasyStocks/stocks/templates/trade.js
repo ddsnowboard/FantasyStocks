@@ -61,6 +61,10 @@ $(document).ready(function() {
             userStockbox = stockWidgets[i];
         }
     }
+    otherStockbox.minLength = 0;
+    otherStockbox.setTypeahead();
+    userStockbox.minLength = 0;
+    userStockbox.setTypeahead();
     var otherUsername;
     for(var i = 0; i < playerPickers.length; i++)
     {

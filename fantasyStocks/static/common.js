@@ -1,7 +1,7 @@
 "use strict"
 
 function jsonBloodhound(url){
-    return new Bloodhound({
+    var b = new Bloodhound({
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         datumTokenizer:  function(datum)
         {
@@ -28,4 +28,19 @@ function jsonBloodhound(url){
             }, 
         }
     });
+    b._get = b.get;
+    var f = function(q, sync){
+        if(q === "")
+        {
+            console.log("entered");
+            return this.index.datums;
+        }
+        else
+        {
+            return this.search(q);
+        }
+    }
+    b.get = f;
+    console.log(b);
+    return b;
 }
