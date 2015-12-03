@@ -7,6 +7,19 @@ var stockWidgets = [];
 
 var StockWidget = function(inputElement)
 {
+    // Defaults
+    this.minLength = 1;
+    this.highlight = false;
+    this.hint = false;
+    this.url = PREFETCH_URL;
+    this.pending = ". . .";
+    this.suggestionFunc = function(obj)
+    {
+        return "<div class=\"suggestion\"><span class=\"name\">" + obj.name + "</span><span class=\"symbol\"> (" + obj.symbol + ") </span></div>"
+    }
+    this.limit = 20;
+    this.displayFunc = function(o){ return o.name; }
+
     this.$value = $(inputElement);
     if(this.$value.val())
     {
@@ -108,28 +121,30 @@ var StockWidget = function(inputElement)
             });
     this.changeURL = function(url) 
     {
+        this.url = url;
+        this.setTypeahead();
+    };
+    this.setTypeahead = function()
+    {
         this.$box.typeahead("destroy");
         this.$box.typeahead({
-            minLength: 1,
-            highlight: false,
-            hint: false,
+            minLength: this.minLength,
+            highlight: this.highlight,
+            hint: this.hint,
         }, {
             name: "stocks_dataset", 
-            source: jsonBloodhound(url),
+            source: jsonBloodhound(this.url),
             templates: {
-                pending: " . . . ", 
-                suggestion: function(obj)
-                {
-                    return "<div class=\"suggestion\"><span class=\"name\">" + obj.name + "</span><span class=\"symbol\"> (" + obj.symbol + ") </span></div>"
-                }, 
+                pending: this.pending, 
+                suggestion: this.suggestionFunc, 
             }, 
-            limit: 20,
+            limit: this.limit,
             rateLimitBy: "throttle",
             rateLimitWait: 600,
-            display: function(o){ return o.name; }, 
+            display: this.displayFunc, 
         });
     }
-    this.changeURL(PREFETCH_URL);
+    this.setTypeahead();
 }
 
 $(document).ready(function(){
