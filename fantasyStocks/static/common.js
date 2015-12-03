@@ -28,19 +28,16 @@ function jsonBloodhound(url){
             }, 
         }
     });
-    b._get = b.get;
-    var f = function(q, sync){
+    return function(q, sync)
+    {
         if(q === "")
         {
-            console.log("entered");
-            return this.index.datums;
+            return b.index.all();
         }
         else
         {
-            return this.search(q);
+            console.log(b.search(q, sync));
+            return b.search(q, sync);
         }
-    }
-    b.get = f;
-    console.log(b);
-    return b;
+    };
 }
