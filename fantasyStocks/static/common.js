@@ -32,11 +32,10 @@ function jsonBloodhound(url){
     {
         if(q === "")
         {
-            return b.index.all();
+            return sync(b.index.all());
         }
         else
         {
-            console.log(b.search(q, sync));
             return b.search(q, sync);
         }
     };
