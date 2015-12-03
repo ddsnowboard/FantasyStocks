@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.db.models import Q
 from django.http import HttpResponse
 from stocks import forms
 from stocks.models import Player, Floor, Stock
@@ -31,6 +32,7 @@ def dashboard(request):
                 "players": players,
                 "floors": [i.floor for i in Player.objects.filter(user=request.user)], 
                 "scripts" : scripts,
+                "trades" : {player.pk : Trade.objects.filter(Q(recipient=player)|Q(sender=player)) for player in players}
             })
 
 def index(request):

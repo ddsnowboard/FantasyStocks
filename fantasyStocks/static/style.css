@@ -229,3 +229,14 @@ a.noUnderline {
     color: black;
     background-color: white;
 }
+
+.trade {
+    width: 100%;
+}
+
+.trade td {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-collapse: collapse; 
+    width: 100%;
+}

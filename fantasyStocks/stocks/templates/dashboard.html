@@ -19,10 +19,8 @@ var floors = {
                             <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
                         </a>
                         {% with change=stock.get_change %}
-                        <!-- We need this `floatformat` because the model doesn't put the price through the database before showing it if it is brand new, so this takes care of it. And sometimes, 
-                            bad stuff happens. Never be too careful. -->
-                            <span class="{% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" style="display: inline-block; float: right">{% if change > 0 %}+{% endif %}{{ change|floatformat:2 }}</span>
-                            {% endwith %}
+                        <span class="{% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" style="display: inline-block; float: right">{% if change > 0 %}+{% endif %}{{ change }}</span>
+                        {% endwith %}
                     </td>
             </tr>
             {% endfor %}
@@ -41,6 +39,23 @@ var floors = {
                         {% endfor %}
                     </table>
                 </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align:center">
+                        <h2>
+                            Active Trades
+                        </h2>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <table style="width: 100%">
+                            <tr class="trade">
+                                <td>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
                 </tr>
                 {% endfilter %}{% endwith %}', 
                 {% endfor %}
