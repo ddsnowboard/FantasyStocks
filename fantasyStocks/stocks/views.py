@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.http import HttpResponse
 from stocks import forms
-from stocks.models import Player, Floor, Stock
+from stocks.models import Player, Floor, Stock, Trade
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import logout_then_login

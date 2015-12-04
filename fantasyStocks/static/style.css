@@ -240,3 +240,7 @@ a.noUnderline {
     border-collapse: collapse; 
     width: 100%;
 }
+
+.tradeInbox {
+    width: 100%;
+}

@@ -40,26 +40,25 @@ var floors = {
                     </table>
                 </td>
                 </tr>
-                <tr>
-                    <td colspan="2" style="text-align:center">
-                        <h2>
-                            Active Trades
-                        </h2>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <table style="width: 100%">
-                            <tr class="trade">
-                                <td>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
                 {% endfilter %}{% endwith %}', 
                 {% endfor %}
                 };
+                {% filter escapejs %}
+                var trades = [
+                {% for player in players %}
+                {received : "{% for trade in player.receivedTrades %}
+                <tr class="trade">
+                    <td>
+                        {{ trade.sender }}</td>
+                    <td>{{ trade.date }}</td>
+                </tr>
+                {% endfor %}", 
+                sent: "{% for trade in player.sentTrades %}<tr class="trade">
+                    <td>{{ trade.recipient }}</td>
+                    <td>{{ trade.date }}</td>
+                </tr>{% endfor %}
+                }, {% endfor %}];
+                {% endfilter %}
                 {% endblock %}
 
                 {% block content %}
@@ -81,6 +80,22 @@ var floors = {
                         </td>
                         <td>
                             <table class="dashboardMain">
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td style="text-align:center">
+                            <h2>
+                                Active Trades
+                            </h2>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <table class="tradeInbox">
                             </table>
                         </td>
                     </tr>

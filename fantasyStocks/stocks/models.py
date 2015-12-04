@@ -125,6 +125,10 @@ class Player(models.Model):
         return self.user.username if self.user.username else self.user.email
     def isFloor(self):
         return "Floor" in [i.name for i in self.user.groups.all()]
+    def receivedTrades(self):
+        return Trade.objects.filter(recipient=self)
+    def sentTrades(self):
+        return Trade.objects.filter(sender=self)
 
 class Trade(models.Model):
     recipient = models.ForeignKey(Player)
