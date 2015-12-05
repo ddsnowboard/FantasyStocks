@@ -43,22 +43,22 @@ var floors = {
                 {% endfilter %}{% endwith %}', 
                 {% endfor %}
                 };
-                {% filter escapejs %}
-                var trades = [
+                var trades = {
                 {% for player in players %}
-                {received : "{% for trade in player.receivedTrades %}
+                {{ player.floor.pk }} : {received : "{% filter escapejs %}{% for trade in player.receivedTrades %}
                 <tr class="trade">
-                    <td>
-                        {{ trade.sender }}</td>
+                    <td>{{ trade.sender }}</td>
                     <td>{{ trade.date }}</td>
                 </tr>
-                {% endfor %}", 
-                sent: "{% for trade in player.sentTrades %}<tr class="trade">
+                {% endfor %}{% endfilter %}", 
+                sent: "{% filter escapejs %}{% for trade in player.sentTrades %}
+                <tr class="trade">
                     <td>{{ trade.recipient }}</td>
                     <td>{{ trade.date }}</td>
-                </tr>{% endfor %}
-                }, {% endfor %}];
-                {% endfilter %}
+                </tr>
+                {% endfor %}{% endfilter %}"}, 
+                {% endfor %}
+                };
                 {% endblock %}
 
                 {% block content %}
@@ -87,9 +87,12 @@ var floors = {
                         <td>
                         </td>
                         <td style="text-align:center">
-                            <h2>
-                                Active Trades
-                            </h2>
+                            <div class="tradeTab selected unselectable" id="received">
+                                Received Trades
+                            </div>
+                            <div class="tradeTab unselectable" id="sent">
+                                Sent Trades
+                            </div>
                         </td>
                     </tr>
                     <tr>
