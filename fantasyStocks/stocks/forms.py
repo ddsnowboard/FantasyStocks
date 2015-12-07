@@ -157,8 +157,6 @@ class TradeForm(forms.Form):
     other_user = UserField(label="Other Player")
     user_stocks = StockChoiceField(label="Your Stocks", required=False)
     other_stocks = StockChoiceField(label="Other player's stocks", required=False)
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
     def is_valid(self, floor=None, user=None):
         """
         You have to give this function the floor number or else it won't know where 
