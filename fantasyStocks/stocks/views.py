@@ -190,3 +190,8 @@ def renderStockWidgetJavascript(request, identifier=None, player=0):
     return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
 def tradeFormJavaScript(request):
     return render(request, "trade.js")
+
+def receivedTrade(request, pkTrade):
+    trade = Trade.objects.get(pk=pkTrade)
+    form = forms.ReceivedTradeForm(trade.toFormDict())
+    return render(request, "trade.html", {"form" : form})

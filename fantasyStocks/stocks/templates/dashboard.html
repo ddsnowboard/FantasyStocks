@@ -47,7 +47,11 @@ var floors = {
                 {% for player in players %}
                 {{ player.floor.pk }} : {received : "{% filter escapejs %}{% for trade in player.receivedTrades %}
                 <tr class="trade">
-                    <td>{{ trade.sender }}</td>
+                    <td>
+                        <a href="{% url "receivedTrade" pkTrade=trade.pk %}" class="noUnderline">
+                            {{ trade.sender }}
+                        </a>
+                    </td>
                     <td>{{ trade.date }}</td>
                 </tr>
                 {% endfor %}{% endfilter %}", 

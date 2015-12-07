@@ -232,13 +232,24 @@ class TradeForm(forms.Form):
         trade.save()
         trade.verify()
         return trade
+    def get_widget_media(self):
+        otherMedia = forms.Media()
+        for i in self.fields.values():
+            otherMedia += i.widget.media
+        return otherMedia
     def _media(self):
         # There is usually such good design in django. 
         # I don't know where it went here. O well. 
         # At least I know that the scripts will be in the order I want. 
-        otherMedia = forms.Media()
-        for i in self.fields.values():
-            otherMedia += i.widget.media
         js = (reverse("tradeFormJavaScript"), )
-        return otherMedia + forms.Media(js=js)
+        return self.get_widget_media() + forms.Media(js=js)
     media = property(_media)
+
+class ReceivedTradeForm(TradeForm):
+    # TODO: Make this just like TradeForm, but there should be a script here 
+    # that makes the widgets read-only (which is a function you'll have to give
+    # them in javascript.) Then, go into the template, add a few buttons that
+    # are conditional on it being rendered as a received trade, either by checking
+    # the type of the form or just passing in a variable from the view, and then 
+    # wire up the buttons to do what they're supposed to do. 
+    pass
