@@ -19,10 +19,8 @@ var floors = {
                             <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
                         </a>
                         {% with change=stock.get_change %}
-                        <!-- We need this `floatformat` because the model doesn't put the price through the database before showing it if it is brand new, so this takes care of it. And sometimes, 
-                            bad stuff happens. Never be too careful. -->
-                            <span class="{% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" style="display: inline-block; float: right">{% if change > 0 %}+{% endif %}{{ change|floatformat:2 }}</span>
-                            {% endwith %}
+                        <span class="{% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" style="display: inline-block; float: right">{% if change > 0 %}+{% endif %}{{ change }}</span>
+                        {% endwith %}
                     </td>
             </tr>
             {% endfor %}
@@ -43,6 +41,22 @@ var floors = {
                 </td>
                 </tr>
                 {% endfilter %}{% endwith %}', 
+                {% endfor %}
+                };
+                var trades = {
+                {% for player in players %}
+                {{ player.floor.pk }} : {received : "{% filter escapejs %}{% for trade in player.receivedTrades %}
+                <tr class="trade">
+                    <td>{{ trade.sender }}</td>
+                    <td>{{ trade.date }}</td>
+                </tr>
+                {% endfor %}{% endfilter %}", 
+                sent: "{% filter escapejs %}{% for trade in player.sentTrades %}
+                <tr class="trade">
+                    <td>{{ trade.recipient }}</td>
+                    <td>{{ trade.date }}</td>
+                </tr>
+                {% endfor %}{% endfilter %}"}, 
                 {% endfor %}
                 };
                 {% endblock %}
@@ -66,6 +80,25 @@ var floors = {
                         </td>
                         <td>
                             <table class="dashboardMain">
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td style="text-align:center">
+                            <div class="tradeTab selected unselectable" id="received">
+                                Received Trades
+                            </div>
+                            <div class="tradeTab unselectable" id="sent">
+                                Sent Trades
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <table class="tradeInbox">
                             </table>
                         </td>
                     </tr>

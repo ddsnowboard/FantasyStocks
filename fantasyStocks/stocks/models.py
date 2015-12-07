@@ -125,6 +125,10 @@ class Player(models.Model):
         return self.user.username if self.user.username else self.user.email
     def isFloor(self):
         return "Floor" in [i.name for i in self.user.groups.all()]
+    def receivedTrades(self):
+        return Trade.objects.filter(recipient=self)
+    def sentTrades(self):
+        return Trade.objects.filter(sender=self)
 
 class Trade(models.Model):
     recipient = models.ForeignKey(Player)
@@ -133,6 +137,7 @@ class Trade(models.Model):
     floor = models.ForeignKey(Floor)
     sender = models.ForeignKey(Player, related_name="sendingPlayer")
     senderStocks = models.ManyToManyField(Stock)
+    date = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return "Trade from {} to {} on {}".format(self.sender.user, self.recipient.user, self.floor)
     def accept(self):
