@@ -73,7 +73,11 @@ var floors = {
                                 <ul>
                                     {% for player in players %}
                                     <li {% if forloop.first %}class="selected"{% endif %} id="{{ player.floor.pk }}">
-                                        {{ player.floor }}
+                                        {{ player.floor }} {% with len=player.receivedTrades|length %} 
+                                        {% if len %}<strong>{% endif %}
+                                            ({{ len }})
+                                            {% if len %}</strong>{% endif %}
+                                        {% endwith %}
                                     </li>
                                     {% endfor %}
                                     <li style="padding: 0;">
