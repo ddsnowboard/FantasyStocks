@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.db.models import Q
 from django.http import HttpResponse
 from stocks import forms
 from stocks.models import Player, Floor, Stock, Trade
@@ -32,7 +31,6 @@ def dashboard(request):
                 "players": players,
                 "floors": [i.floor for i in Player.objects.filter(user=request.user)], 
                 "scripts" : scripts,
-                "trades" : {player.pk : Trade.objects.filter(Q(recipient=player)|Q(sender=player)) for player in players}
             })
 
 def index(request):
@@ -117,16 +115,27 @@ def join(request, floorNumber):
 
 
 @login_required
-def trade(request, player=None, stock=None, floor=None):
+def trade(request, player=None, stock=None, floor=None, pkCountering=None):
     outputDict = {}
     outputDict["request"] = request
+    p = lambda x: print(x, file=sys.stderr)
     if request.POST:
+        p("entered post")
+        p(request.POST)
         form = forms.TradeForm(request.POST)
-        if form.is_valid(floor=floor, user=request.user):
+        p(form)
+        if form.is_valid(floor=floor, user=request.user, pkCountering=pkCountering):
+            p("is valid")
             form.clean()
+            p(form.cleaned_data)
             form.to_trade(floor=floor, user=request.user)
+            if pkCountering:
+                Trade.objects.get(pk=pkCountering).delete()
             return redirect(reverse("dashboard"), permanent=False)
         else:
+            p("isn't valid")
+            if pkCountering:
+                outputDict["countering"] = Trade.objects.get(pk=pkCountering)
             outputDict["form"] = form
     elif not (player or stock or floor):
         raise RuntimeError("You need to at least pass in a floor")
@@ -150,14 +159,37 @@ def trade(request, player=None, stock=None, floor=None):
             else:
                 outputDict["form"] = forms.TradeForm(initial={"other_user": otherPlayer.user.username, "other_stocks": stocks_string})
         except Player.DoesNotExist:
-            # This should give you the floor player, but I haven't implemented that yet. 
             outputDict["form"] = forms.TradeForm(initial={"other_stocks": stocks_string})
+    elif floor and pkCountering:
+        raise RuntimeError("got floor and pk")
     else:
         raise RuntimeError("You passed in the wrong arguments")
     return render(request, "trade.html", outputDict)
 
+def receivedTrade(request, pkTrade):
+    trade = Trade.objects.get(pk=pkTrade)
+    form = forms.ReceivedTradeForm(trade.toFormDict())
+    return render(request, "trade.html", {"form" : form, "received": True, "trade": trade})
+
+def rejectTrade(request, pkTrade):
+    Trade.objects.get(pk=pkTrade).delete()
+    return redirect(reverse("dashboard"), permanent=False)
+
+def acceptTrade(request, pkTrade):
+    Trade.objects.get(pk=pkTrade).accept()
+    return redirect(reverse("dashboard"), permanent=False)
+
+def counterTrade(request, pkTrade, floor):
+    trade = Trade.objects.get(pk=pkTrade)
+    form = forms.TradeForm(initial=trade.toFormDict())
+    outputDict = {"form": form, "request": request, "countering": trade}
+    return render(request, "trade.html", outputDict)
+
 def playerFieldJavascript(request, identifier):
     return render(request, "playerField.js", {"id" : identifier})
+
+def receivedTradeJavaScript(request):
+    return render(request, "receivedTrade.js", {})
 
 def userList(request):
     return HttpResponse(json.dumps([{"username": u.username if u.username else u.email, "email": u.email} for u in User.objects.all()]), content_type="text/json")
@@ -190,8 +222,3 @@ def renderStockWidgetJavascript(request, identifier=None, player=0):
     return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
 def tradeFormJavaScript(request):
     return render(request, "trade.js")
-
-def receivedTrade(request, pkTrade):
-    trade = Trade.objects.get(pk=pkTrade)
-    form = forms.ReceivedTradeForm(trade.toFormDict())
-    return render(request, "trade.html", {"form" : form})

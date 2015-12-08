@@ -166,7 +166,6 @@ class Trade(models.Model):
         elif self.sender.isFloor():
             raise RuntimeError("The floor sent a trade. This isn't good at all.")
     def toFormDict(self):
-        from stocks import forms
         d = {"other_user": self.sender.get_name(),
             "user_stocks": ",".join(i.symbol for i in self.recipientStocks.all()),
             "other_stocks": ",".join(i.symbol for i in self.senderStocks.all())}

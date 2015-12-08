@@ -20,6 +20,7 @@ urlpatterns = [
             url("^thisCANbAEASAReallyHardURL/(?P<identifier>[A-Za-z0-9_]+)/(?P<player>[A-Za-z0-9]+)/$", views.renderStockWidgetJavascript, name="stockWidgetJavascript"), 
             url("^thisCANbAEASAReallyHardURL/(?P<identifier>[A-Za-z0-9_]+)/$", views.renderStockWidgetJavascript, name="stockWidgetJavascript"), 
             url("^trade/floor/(?P<floor>[0-9]+)/$", views.trade, name="trade"), 
+            url("^trade/floor/(?P<floor>[0-9]+)/counter/(?P<pkCountering>[0-9]+)/$", views.trade, name="trade"), 
             # player is the primary key of the other player involved in the trade
             url("^trade/player/(?P<player>[0-9]+)/floor/(?P<floor>[0-9]+)/$", views.trade, name="trade"), 
             # stock is primary key of the stock that was clicked, and floor is the 
@@ -29,6 +30,10 @@ urlpatterns = [
             url("^userList/$", views.userList, name="users"), 
             url("^tradeFormJavaScript/$", views.tradeFormJavaScript, name="tradeFormJavaScript"), 
             url("^receivedTrade/(?P<pkTrade>[0-9]+)/$", views.receivedTrade, name="receivedTrade"),
+            url("^youWillNeverGuessThisURLHAHahahhahaha/$", views.receivedTradeJavaScript, name="receivedTradeJavascript"), 
+            url("^counterATrade/(?P<pkTrade>[0-9]+)/floor/(?P<floor>[0-9]+)/$", views.counterTrade, name="counterTrade"), 
+            url("^acceptATrade/(?P<pkTrade>[0-9]+)/$", views.acceptTrade, name="acceptTrade"), 
+            url("^rejectATrade/(?P<pkTrade>[0-9]+)/$", views.rejectTrade, name="rejectTrade"), 
         ]
 
 

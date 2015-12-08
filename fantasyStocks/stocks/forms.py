@@ -157,7 +157,7 @@ class TradeForm(forms.Form):
     other_user = UserField(label="Other Player")
     user_stocks = StockChoiceField(label="Your Stocks", required=False)
     other_stocks = StockChoiceField(label="Other player's stocks", required=False)
-    def is_valid(self, floor=None, user=None):
+    def is_valid(self, floor=None, user=None, pkCountering=None):
         """
         You have to give this function the floor number or else it won't know where 
         to look. You also need to give it the user object so it can find its player.
@@ -207,9 +207,14 @@ class TradeForm(forms.Form):
                     floor.name), code="invalidotherstock"))
                 error = True
         stocks_in_trades = []
-        for i in Trade.objects.filter(floor=floor):
-            if i.senderStocks: stocks_in_trades.extend(i.senderStocks.all())
-            if i.recipientStocks: stocks_in_trades.extend(i.recipientStocks.all())
+        trades = Trade.objects.filter(floor=floor)
+        if pkCountering:
+            trades = trades.exclude(pk=pkCountering)
+        for i in trades:
+            if i.senderStocks: 
+                stocks_in_trades.extend(i.senderStocks.all())
+            if i.recipientStocks: 
+                stocks_in_trades.extend(i.recipientStocks.all())
         for i in user_stocks:
             if i in stocks_in_trades:
                 self.add_error("user_stocks", ValidationError("The stock %(stock)s is already being traded by you", params={"stock": i}))
@@ -252,4 +257,7 @@ class ReceivedTradeForm(TradeForm):
     # are conditional on it being rendered as a received trade, either by checking
     # the type of the form or just passing in a variable from the view, and then 
     # wire up the buttons to do what they're supposed to do. 
-    pass
+    def _media(self):
+        js = (reverse("receivedTradeJavascript"), )
+        return self.get_widget_media() + forms.Media(js=js)
+    media = property(_media)

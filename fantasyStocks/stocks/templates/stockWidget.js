@@ -13,12 +13,33 @@ var StockWidget = function(inputElement)
     this.hint = false;
     this.url = PREFETCH_URL;
     this.pending = ". . .";
+    this.enabled = true;
     this.suggestionFunc = function(obj)
     {
         return "<div class=\"suggestion\"><span class=\"name\">" + obj.name + "</span><span class=\"symbol\"> (" + obj.symbol + ") </span></div>"
     }
     this.limit = 20;
     this.displayFunc = function(o){ return o.name; }
+    this.enable = function() {
+        this.enabled = true;
+        this.$holder.on("mousedown", ".selection:not(.warning)", function() {
+            that.selected_stocks.splice(that.selected_stocks.indexOf($(this).attr('id')), 1);
+            that.setBox(that.selected_stocks);
+            $(this).remove();
+        })
+        .on("mouseenter", ".selection:not(.warning)", function() {
+            $(this).addClass("redBackground");
+        })
+        .on("mouseleave", ".selection:not(.warning)", function() {
+            $(this).removeClass("redBackground");
+        });
+        this.$box.removeAttr("disabled");
+    }
+    this.disable = function() {
+        this.enabled = false;
+        this.$holder.unbind();
+        this.$box.attr("disabled", "disabled");
+    }
 
     this.$value = $(inputElement);
     if(this.$value.val())
@@ -54,17 +75,6 @@ var StockWidget = function(inputElement)
 
     this.$holder = $("<div class=\"holder\"></div>");
     var that = this;
-    this.$holder.on("mousedown", ".selection:not(.warning)", function() {
-        that.selected_stocks.splice(that.selected_stocks.indexOf($(this).attr('id')), 1);
-        that.setBox(that.selected_stocks);
-        $(this).remove();
-    })
-    .on("mouseenter", ".selection:not(.warning)", function() {
-        $(this).addClass("redBackground");
-    })
-    .on("mouseleave", ".selection:not(.warning)", function() {
-        $(this).removeClass("redBackground");
-    });
 
     this.$box = $("<input type=\"text\" />");
     this.$box.addClass(this.TEXTBOX_CLASS);
@@ -76,7 +86,7 @@ var StockWidget = function(inputElement)
     this.setBox = function(arr)
     {
         this.$value.val(arr.join(","));
-    }
+    };
     this.pushStock = function(stock, addToArray)
     {
         var WARNING_DURATION = 2000;
@@ -143,8 +153,9 @@ var StockWidget = function(inputElement)
             rateLimitWait: 600,
             display: this.displayFunc, 
         });
-    }
+    };
     this.setTypeahead();
+    this.enable();
 }
 
 $(document).ready(function(){

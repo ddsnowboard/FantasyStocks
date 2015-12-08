@@ -1,9 +1,11 @@
 {% extends "loggedIn.html" %}
-{% block title %}Trade{% endblock %}
+{% block title %}{% if not received %}Trade
+{% else %}Received Trade{% endif %}
+{% endblock %}
 {% block head %}{{ form.media }}{% endblock %}
 {% block content %}
 <div class="tradeHolder">
-    <form action="" method="POST">
+    <form action="{% if received %}{% url "trade" floor=trade.floor.pk %}{% elif countering %}{% url "trade" floor=countering.floor.pk pkCountering=countering.pk %}{% endif %}" method="POST">
         {% csrf_token %}
         <table align="center">
             <tr>
@@ -31,7 +33,13 @@
                 </td>
             </tr>
         </table>
+        {% if not received %}
         <input type="submit">
+        {% else %}
+        <input type="button" onclick="document.location.pathname = '{% url "counterTrade" pkTrade=trade.pk floor=trade.floor.pk %}';" value="Counter">
+        <input type="button" onclick="document.location.pathname = '{% url "rejectTrade" pkTrade=trade.pk%}';" value="Reject">
+        <input type="button" onclick="document.location.pathname = '{% url "acceptTrade" pkTrade=trade.pk%}';" value="Accept">
+        {% endif %}
     </form>
 </div>
 {% endblock %}

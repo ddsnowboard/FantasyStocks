@@ -19,6 +19,7 @@ function PlayerPicker(inputElement){
      * anwhere else in the JavaScript code for a page as long as this is executed 
      * before.
      */
+    this.enabled = true;
     this.onSelectFunctions = [];
     this.runOnSelect = function(event, suggestion)
     {
@@ -26,11 +27,11 @@ function PlayerPicker(inputElement){
         {
             this.onSelectFunctions[i](event, suggestion);
         }
-    }
+    };
     this.onSelect = function(func)
     {
         this.onSelectFunctions.push(func);
-    }
+    };
     this.$box = $(inputElement);
     this.setURL = function(url){
         this.$box.typeahead("destroy");
@@ -50,20 +51,29 @@ function PlayerPicker(inputElement){
             limit: 20,
             display: function(o){ return o.username; },
         });
-    }
+    };
     this.setURL(PLAYER_URL);
-    this.$box.keydown(function(event)
-            {
-                if(event.which === 13)
+    this.enable = function() {
+        var that = this;
+        this.enabled = true;
+        this.$box.removeAttr("disabled");
+        this.$box.keydown(function(event)
                 {
-                    event.preventDefault();
-                }
-            });
-    var that = this;
-    this.$box.bind("typeahead:select", function(event, suggestion)
-            {
-                that.runOnSelect(event, suggestion);
-            });
+                    if(event.which === 13)
+                    {
+                        event.preventDefault();
+                    }
+                });
+        this.$box.bind("typeahead:select", function(event, suggestion)
+                {
+                    that.runOnSelect(event, suggestion);
+                });
+    };
+    this.disable = function() {
+        this.enabled = false;
+        this.$box.attr("disabled", "disabled");
+        this.$box.unbind();
+    };
 }
 
 $(document).ready(function(){
