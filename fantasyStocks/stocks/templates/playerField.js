@@ -19,7 +19,7 @@ function PlayerPicker(inputElement){
      * anwhere else in the JavaScript code for a page as long as this is executed 
      * before.
      */
-    this.enabled = true;
+    this.enabled = false;
     this.onSelectFunctions = [];
     this.runOnSelect = function(event, suggestion)
     {

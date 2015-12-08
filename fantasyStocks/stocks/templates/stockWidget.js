@@ -13,7 +13,7 @@ var StockWidget = function(inputElement)
     this.hint = false;
     this.url = PREFETCH_URL;
     this.pending = ". . .";
-    this.enabled = true;
+    this.enabled = false;
     this.suggestionFunc = function(obj)
     {
         return "<div class=\"suggestion\"><span class=\"name\">" + obj.name + "</span><span class=\"symbol\"> (" + obj.symbol + ") </span></div>"
