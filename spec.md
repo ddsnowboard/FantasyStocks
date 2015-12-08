@@ -53,7 +53,7 @@ Below that there will be a stock-board looking part which will list off all the 
 
 Below that, there will be a trade inbox. It will also change with the changes of the floor tabs. At the top, there are two tabs: "Received Trades" and "Sent Trades". The tabs will be colored just like the tabs for the floor, and they will also be controlled with JavaScript and all rendered from the server on page load. There will be horizontal bars, similar to how emails are displayed in the inbox in Gmail, holding each trade. The trades will be displayed thus: first, the name of the other participant in the trade (you'll know what the other person's role is by which tab you're in). After that will be the date that the trade was sent, and maybe some other stuff. If you click somewhere on the trade, it will take you to the Received Trade page, where you can accept, deny, or counter the trade.  
 
-NB: This image is no longer accurate. It does not include the recent changes regarding the showing of multiple floors, and the removal of the chat box for the sake of simplicity, nor does it include the trades box at the bottom.
+NB: This image is no longer accurate. It does not include the recent changes regarding the showing of multiple floors, and the removal of the chat box for the sake of simplicity, nor does it include the trades inbox at the bottom.
 ![Image of dashboard design](specResources/dashboardDesign.png "Dashboard")
 
 ###Trade Page
@@ -75,7 +75,7 @@ The right side will 99 times out of 100 be pre-populated. If you come from the d
 
 If and only if you come from your own player page will it be blank. You will be able to type in a name or "Floor" and it will be filled in automatically.
 
->Technical Note: I will have to make a new Widget and maybe a new FormField for player picking. It should be easier now that I've alredy done it though. 
+>Technical Note: I made a new Widget for player picking, similar to the one for picking stocks, but simpler. 
 
 Right below that box on both sides will be the place where you will list the stocks to trade. It will be equal in width to the name boxes, which together will comprise about 70-75% of the screen, and the height will be 40-50% of the screen. Below each box will me a non-moving text box for you to type into. It will say "Type in a symbol or name" as default, but it will turn blank if you click it. If you clicked on a stock on the dashboard to get to this page, the right lower box, which lists stocks that you wish to receive in the trade, will be pre-populated with that stock, although you can add more. When you type in a stock, a suggestions dropdown will come down to suggest stocks for you. When you press enter to select a stock from the dropdown, it will fill it in.
 
