@@ -61,10 +61,9 @@ var floors = {
                 </tr>
                 {% endfor %}{% endfilter %}", 
                 {% if player.user == player.floor.owner %}
-                // TODO: IMPLEMENT RECEIVEDREQUESTS OR WHATEVER AND YOU'RE DONE!
                 requests: "{% filter escapejs %}{% for request in player.receivedRequests %}
                 <tr class="trade">
-                    <td>{{ request.stock }} (from {{ request.requstingPlayer.user.getName }})</td>
+                    <td>{{ request.stock }} (from {{ request.requesting_player.get_name }})</td>
                     <td>{{ request.date }}</td>
                 </tr>
                 {% endfor %}{% endfilter %}", 

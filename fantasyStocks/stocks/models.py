@@ -124,6 +124,8 @@ class Player(models.Model):
         return Trade.objects.filter(recipient=self)
     def sentTrades(self):
         return Trade.objects.filter(sender=self)
+    def receivedRequests(self):
+        return StockSuggestion.objects.filter(floor__owner=self.user)
 
 class Trade(models.Model):
     recipient = models.ForeignKey(Player)
@@ -174,8 +176,8 @@ class StockSuggestion(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     def accept(self):
         if not self.stock in self.floor.stocks.all():
-            self.floor.stocks.objects.add(self.stock)
+            self.floor.stocks.add(self.stock)
             self.floor.save()
-            self.requesting_player.stocks.add(stock)
+            self.requesting_player.stocks.add(self.stock)
             self.requesting_player.save()
         self.delete()

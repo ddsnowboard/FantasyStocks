@@ -203,7 +203,7 @@ class TradeForm(forms.Form):
         for s in other_stocks:
             if not s in other_player.stocks.all()[:]:
                 if other_player.isFloor() and floor.permissiveness == "permissive":
-                    suggestion = StockSuggestion(stock=s, requesting_player=other_player, floor=floor)
+                    suggestion = StockSuggestion(stock=s, requesting_player=user_player, floor=floor)
                     suggestion.save()
                 elif other_player.isFloor() and floor.permissiveness == "open":
                     floor.stocks.add(s)
