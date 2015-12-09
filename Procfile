@@ -1,1 +1,1 @@
-web: gunicorn fantasyStocks/fantasyStocks.wsgi --log-file -
+web: gunicorn fantasyStocks.wsgi --pythonpath fantasyStocks --log-file -
