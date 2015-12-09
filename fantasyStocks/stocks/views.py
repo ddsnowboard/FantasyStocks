@@ -118,22 +118,15 @@ def join(request, floorNumber):
 def trade(request, player=None, stock=None, floor=None, pkCountering=None):
     outputDict = {}
     outputDict["request"] = request
-    p = lambda x: print(x, file=sys.stderr)
     if request.POST:
-        p("entered post")
-        p(request.POST)
         form = forms.TradeForm(request.POST)
-        p(form)
         if form.is_valid(floor=floor, user=request.user, pkCountering=pkCountering):
-            p("is valid")
             form.clean()
-            p(form.cleaned_data)
             form.to_trade(floor=floor, user=request.user)
             if pkCountering:
                 Trade.objects.get(pk=pkCountering).delete()
             return redirect(reverse("dashboard"), permanent=False)
         else:
-            p("isn't valid")
             if pkCountering:
                 outputDict["countering"] = Trade.objects.get(pk=pkCountering)
             outputDict["form"] = form
@@ -195,11 +188,10 @@ def userList(request):
     return HttpResponse(json.dumps([{"username": u.username if u.username else u.email, "email": u.email} for u in User.objects.all()]), content_type="text/json")
 
 def stockLookup(request, query=None, key=None, user=None, floor=None):
-    # I don't really use this branch anymore, but I might need it. 
+    # This if branch is depricated
     if query:
         STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
         return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
-    # This is almost always the part that runs.
     elif key:
         return HttpResponse(json.dumps([s.format_for_json() for s in Player.objects.get(pk=key).stocks.all()]), content_type="text/json")
     elif user and floor:

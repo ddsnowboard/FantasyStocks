@@ -54,18 +54,13 @@ class Stock(models.Model):
         return "{} ({})".format(self.company_name, self.symbol)
     def update(self):
         if timezone.now() - self.last_updated > timedelta(minutes=15):
-            p = lambda x: print(x, file=sys.stderr)
-            p("Starting price load")
             Stock.remote_load_price(self.symbol).apply(self)
-            p("Finished price load")
             self.last_updated = timezone.now()
             self.save()
             # The database normalizes the input to two decimal places and makes 
             # sure that the negative and positive work on the dashboard, so I 
             # reload it here. With any luck, it's fast, but who knows. 
-            p("about to refresh db")
             self.refresh_from_db()
-            p("refreshed db")
     def force_update(self):
         self.last_updated -= timedelta(minutes=30)
         self.update()

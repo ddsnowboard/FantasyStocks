@@ -179,7 +179,7 @@ class TradeForm(forms.Form):
         try:
             floor = Floor.objects.get(pk=floor)
         except Floor.DoesNotExist:
-            raise RuntimeError("""The floor with primary key %(pk)d""")
+            raise RuntimeError("""The floor with primary key {} doesn't exist""".format(floor))
         other = self.fields["other_user"].to_python(self.data["other_user"])
         try:
             other_player = Player.objects.get(floor=floor,
@@ -261,12 +261,6 @@ class TradeForm(forms.Form):
     media = property(_media)
 
 class ReceivedTradeForm(TradeForm):
-    # TODO: Make this just like TradeForm, but there should be a script here 
-    # that makes the widgets read-only (which is a function you'll have to give
-    # them in javascript.) Then, go into the template, add a few buttons that
-    # are conditional on it being rendered as a received trade, either by checking
-    # the type of the form or just passing in a variable from the view, and then 
-    # wire up the buttons to do what they're supposed to do. 
     def _media(self):
         js = (reverse("receivedTradeJavascript"), )
         return self.get_widget_media() + forms.Media(js=js)
