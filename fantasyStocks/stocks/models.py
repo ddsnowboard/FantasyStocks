@@ -151,11 +151,12 @@ class Trade(models.Model):
         self.recipient.save()
         self.delete()
     def verify(self):
-        for s in self.recipientStocks.all():
-            if not s in self.recipient.stocks.all():
-                raise TradeError("One of the recipient stocks ({}) doesn't belong to the recipient ({})".format(s, self.recipient.user))
-            if not s in self.floor.stocks.all():
-                raise TradeError("One of the recipient stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
+        if not (self.recipient.isFloor() and not self.floor.permissiveness == "closed"):
+            for s in self.recipientStocks.all():
+                if not s in self.recipient.stocks.all():
+                    raise TradeError("One of the recipient stocks ({}) doesn't belong to the recipient ({})".format(s, self.recipient.user))
+                if not s in self.floor.stocks.all():
+                    raise TradeError("One of the recipient stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
         for s in self.senderStocks.all():
             if not s in self.sender.stocks.all():
                 raise TradeError("One of the sender stocks ({}) doesn't belong to the sender ({})".format(s, self.recipient.user))
@@ -170,3 +171,16 @@ class Trade(models.Model):
             "user_stocks": ",".join(i.symbol for i in self.recipientStocks.all()),
             "other_stocks": ",".join(i.symbol for i in self.senderStocks.all())}
         return d
+
+class StockSuggestion(models.Model):
+    stock = models.ForeignKey(Stock)
+    requesting_player = models.ForeignKey(Player)
+    floor = models.ForeignKey(Floor)
+    date = models.DateTimeField(auto_now_add=True)
+    def accept(self):
+        if not self.stock in self.floor.stocks.all():
+            self.floor.stocks.objects.add(self.stock)
+            self.floor.save()
+            self.requesting_player.stocks.add(stock)
+            self.requesting_player.save()
+        self.delete()

@@ -34,12 +34,22 @@ $(document).ready(function() {
             sent.removeClass("selected");
             currentTradeSet = trades[this.id];
             setTradeBox(tradeInbox, currentTradeSet.received);
+            if(currentTradeSet.requests == undefined)
+            {
+                $("#requests").css("visibility", "hidden");
+            }
+            else
+            {
+                $("#requests").css("visibility", "visible");
+            }
         }
     });
+    $($(".leftTabs li")[0]).removeClass("selected").click();
     $(".tradeTab").click(function() {
         if(this.className.indexOf("selected") == -1)
         {
-            $(".tradeTab").toggleClass("selected");
+            $(".tradeTab").removeClass("selected");
+            $(this).addClass("selected");
             setTradeBox(tradeInbox, currentTradeSet[this.id]);
         }
     });

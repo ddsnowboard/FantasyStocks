@@ -203,7 +203,11 @@ def stockLookup(request, query=None, key=None, user=None, floor=None):
     elif key:
         return HttpResponse(json.dumps([s.format_for_json() for s in Player.objects.get(pk=key).stocks.all()]), content_type="text/json")
     elif user and floor:
-        return HttpResponse(json.dumps([i.format_for_json() for i in Player.objects.get(user__username=user, floor=floor).stocks.all()]))
+        oFloor = Floor.objects.get(pk=floor)
+        player = Player.objects.get(user__username=user, floor=oFloor)
+        if player.isFloor() and not oFloor.permissiveness == "closed":
+            return redirect(static("stocks.json"))
+        return HttpResponse(json.dumps([i.format_for_json() for i in player.stocks.all()]))
     else:
         return redirect(static("stocks.json"), permanent=True)
 

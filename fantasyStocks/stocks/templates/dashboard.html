@@ -1,5 +1,4 @@
 {% extends "loggedIn.html" %}
-
 {% block title %}Dashboard{% endblock %}
 {% block script %}
 var floors = {
@@ -60,7 +59,16 @@ var floors = {
                     <td>{{ trade.recipient }}</td>
                     <td>{{ trade.date }}</td>
                 </tr>
-                {% endfor %}{% endfilter %}"}, 
+                {% endfor %}{% endfilter %}", 
+                {% if player.user == player.floor.owner %}
+                // TODO: IMPLEMENT RECEIVEDREQUESTS OR WHATEVER AND YOU'RE DONE!
+                requests: "{% filter escapejs %}{% for request in player.receivedRequests %}
+                <tr class="trade">
+                    <td>{{ request.stock }} (from {{ request.requstingPlayer.user.getName }})</td>
+                    <td>{{ request.date }}</td>
+                </tr>
+                {% endfor %}{% endfilter %}", 
+                {% endif %}},
                 {% endfor %}
                 };
                 {% endblock %}
@@ -100,6 +108,9 @@ var floors = {
                             </div>
                             <div class="tradeTab unselectable" id="sent">
                                 Sent Trades
+                            </div>
+                            <div class="tradeTab unselectable" id="requests" style="visibility: hidden">
+                                Stock Suggestions
                             </div>
                         </td>
                     </tr>

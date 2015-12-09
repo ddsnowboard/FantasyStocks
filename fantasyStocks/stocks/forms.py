@@ -5,7 +5,7 @@ from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse_lazy, reverse
-from stocks.models import Floor, Stock, StockAPIError
+from stocks.models import Floor, Stock, StockAPIError, StockSuggestion
 from django.core.exceptions import ValidationError
 from stocks.models import Floor, Player, Trade
 import sys
@@ -202,10 +202,16 @@ class TradeForm(forms.Form):
         other_stocks = self.fields["other_stocks"].to_python(self.data["other_stocks"])
         for s in other_stocks:
             if not s in other_player.stocks.all()[:]:
-                self.add_error("other_player", ValidationError("""The stock {} does not belong to the user
+                if other_player.isFloor() and floor.permissiveness == "permissive":
+                    suggestion = StockSuggestion(stock=s, requesting_player=other_player, floor=floor)
+                    suggestion.save()
+                elif other_player.isFloor() and floor.permissiveness == "open":
+                    floor.stocks.add(s)
+                else:
+                    self.add_error("other_user", ValidationError("""The stock {} does not belong to the user
                 {} on floor {}""".format(s.symbol, other_player.user.username,
                     floor.name), code="invalidotherstock"))
-                error = True
+                    error = True
         stocks_in_trades = []
         trades = Trade.objects.filter(floor=floor)
         if pkCountering:

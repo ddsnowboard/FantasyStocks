@@ -64,10 +64,10 @@ $(document).ready(function() {
             otherUsername = w;
         }
     }
-    var username = $("#" + USER_NAMEBOX_ID);
-    if(username.val() !== "")
+    var $username = $("#" + USER_NAMEBOX_ID);
+    if($username.val() !== "")
     {
-        setUserStockbox(username.val(), floor);
+        setUserStockbox($username.val(), floor);
     }
     if(otherUsername.$box.val() !== "")
     {

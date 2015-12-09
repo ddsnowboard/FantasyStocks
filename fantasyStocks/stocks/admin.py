@@ -44,3 +44,7 @@ class FloorAdmin(admin.ModelAdmin):
 class TradeAdmin(admin.ModelAdmin):
     fields = ("recipient", "recipientStocks", "floor", "sender", "senderStocks")
     actions = [accept]
+
+@admin.register(stocks.models.StockSuggestion)
+class StockSuggestionAdmin(admin.ModelAdmin):
+    actions = [accept]
