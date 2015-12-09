@@ -1,1 +1,1 @@
-web: gunicorn fantasyStocks/fantasyStocks/wsgi.py --log-file -
+web: gunicorn fantasyStocks/fantasyStocks.wsgi --log-file -
