@@ -1,4 +1,5 @@
 {% extends "loggedIn.html" %}
+{% load staticfiles %}
 {% block title %}Dashboard{% endblock %}
 {% block script %}
 var floors = {
@@ -75,16 +76,17 @@ var floors = {
                 {% block content %}
                 <table class="dash">
                     <tr>
-                        <td style="border-right: 1px solid black; width: 125px;">
+                        <td style="border-right: 1px solid black; width: 170px;">
                             <div class="leftTabs">
                                 <ul>
                                     {% for player in players %}
                                     <li {% if forloop.first %}class="selected"{% endif %} id="{{ player.floor.pk }}">
-                                        {{ player.floor }} {% with len=player.receivedTrades|length %} 
+                                        {{ player.floor }} {% with len=player.numMessages %} 
                                         {% if len %}<strong>{% endif %}
                                             ({{ len }})
                                             {% if len %}</strong>{% endif %}
                                         {% endwith %}
+                                        <img src="{% static "redX.gif" %}" class="deleteButton" />
                                     </li>
                                     {% endfor %}
                                     <li style="padding: 0;">

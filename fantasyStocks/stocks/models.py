@@ -126,6 +126,11 @@ class Player(models.Model):
         return Trade.objects.filter(sender=self)
     def receivedRequests(self):
         return StockSuggestion.objects.filter(floor__owner=self.user)
+    def numMessages(self):
+        num = self.receivedTrades().count()
+        if self.floor.owner == self.user and self.floor.permissiveness == 'permissive':
+            num += self.receivedRequests().count()
+        return num
 
 class Trade(models.Model):
     recipient = models.ForeignKey(Player)
