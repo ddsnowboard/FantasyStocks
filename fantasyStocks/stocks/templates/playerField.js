@@ -66,7 +66,6 @@ function PlayerPicker(inputElement){
                 });
         this.$box.bind("typeahead:select", function(event, suggestion)
                 {
-                    console.log("selected!");
                     that.runOnSelect(event, suggestion);
                 });
     };
@@ -75,6 +74,7 @@ function PlayerPicker(inputElement){
         this.$box.attr("disabled", "disabled");
         this.$box.unbind();
     };
+    this.enable();
 }
 
 $(document).ready(function(){

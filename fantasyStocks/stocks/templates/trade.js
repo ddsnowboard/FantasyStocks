@@ -75,7 +75,6 @@ $(document).ready(function() {
     }
     otherUsername.onSelect(function(event, suggestion)
             {
-                console.log("selected " + suggestion);
                 setOtherStockbox(otherUsername.$box.val(), floor);
                 // TODO: Clear stockbox if you change the name, or, better yet, make it ask you if you really want to do this. 
             });
