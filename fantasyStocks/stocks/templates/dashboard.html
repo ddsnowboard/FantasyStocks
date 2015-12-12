@@ -65,7 +65,7 @@ var floors = {
                 requests: "{% filter escapejs %}{% for request in player.receivedRequests %}
                 <tr class="trade">
                     <td>
-                        <a loop="{% url "acceptStock" pkSuggestion=request.pk %}" class="acceptButton noUnderline" id="{{ request.stock }}" >
+                        <a href="{% url "acceptStock" pkSuggestion=request.pk %}" class="acceptButton noUnderline" id="{{ request.stock }}" >
                             {{ request.stock }} (from {{ request.requesting_player.get_name }})</a>
                     </td>
                     <td>{{ request.date }}</td>

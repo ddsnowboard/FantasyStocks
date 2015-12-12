@@ -291,8 +291,10 @@ img.flipped {
     margin-left: auto;
     margin-right: auto;
     position: absolute;
-    min-height: 250px;
     min-width: 350px;
+    top: 20%;
+    left: 25%;
+    padding: 15px;
 }
 
 .confirmationButton {
@@ -300,4 +302,7 @@ img.flipped {
     color: black;
     border: 2px solid black;
     border-radius: 5px;
+    display: inline-block;
+    padding: 5px;
+    margin: 10px;
 }

@@ -20,14 +20,11 @@ function rebind()
     $(".acceptButton").click(function(event)
             {
                 var that = this;
-                console.log(new ConfirmationBox("Do you want to add the stock " + this.id + " to this floor?", 
-                        [{text: "Yes", func: function() { window.location = that.attributes.href; }},
-                        {text: "No", func: function(){ window.location = $(that).attr("href") + "del/"; }},
-                        {text: "Cancel", func: function() { this.destroy() }}]).$holder)
-                $(document).append((new ConfirmationBox("Do you want to add the stock " + this.id + " to this floor?", 
-                        [{text: "Yes", func: function() { window.location = that.attributes.href; }},
-                        {text: "No", func: function(){ window.location = $(that).attr("href") + "del/"; }},
-                        {text: "Cancel", func: function() { this.destroy() }}])).$holder);
+                var url = $(that).attr("href");
+                $(document.body).append((new ConfirmationBox("Do you want to add the stock " + this.id + " to this floor?", 
+                        [{text: "Yes", func: function() { window.location = url; }},
+                        {text: "No", func: function(){ window.location = url + "del/"; }},
+                        {text: "Cancel", func: function() { this.destroy(); }}])).$holder);
                 event.preventDefault();
             }); 
 }

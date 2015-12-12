@@ -44,19 +44,17 @@ function jsonBloodhound(url){
 function ConfirmationBox(text, buttons)
 {
     // Buttons is an array of objects of the form {text: "button text", func: function() { console.log("Do stuff"); }}
-    console.log("got into function");
     this.buttons = buttons;
     this.text = text;
     this.$holder = $("<div class=\"confirmationBox\"></div>");
-    this.$holder.html(text);
+    this.$holder.html(text + "<br />");
     for(var i = 0; i < buttons.length; i++)
     {
         var $currButton = $("<div class=\"confirmationButton\"></div>");
         $currButton.html(buttons[i].text);
-        $currButton.click(buttons[i].func);
+        $currButton.click(buttons[i].func.bind(this));
         this.$holder.append($currButton);
     }
-    console.log("got out of function");
     this.destroy = function() 
     {
         this.$holder.remove();
