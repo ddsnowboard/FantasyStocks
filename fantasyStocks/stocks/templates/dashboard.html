@@ -61,10 +61,13 @@ var floors = {
                     <td>{{ trade.date }}</td>
                 </tr>
                 {% endfor %}{% endfilter %}", 
-                {% if player.user == player.floor.owner %}
+                {% if player.seesSuggestions %}
                 requests: "{% filter escapejs %}{% for request in player.receivedRequests %}
                 <tr class="trade">
-                    <td>{{ request.stock }} (from {{ request.requesting_player.get_name }})</td>
+                    <td>
+                        <a loop="{% url "acceptStock" pkSuggestion=request.pk %}" class="acceptButton noUnderline" id="{{ request.stock }}" >
+                            {{ request.stock }} (from {{ request.requesting_player.get_name }})</a>
+                    </td>
                     <td>{{ request.date }}</td>
                 </tr>
                 {% endfor %}{% endfilter %}", 

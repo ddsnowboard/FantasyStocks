@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from stocks import forms
-from stocks.models import Player, Floor, Stock, Trade
+from stocks.models import Player, Floor, Stock, Trade, StockSuggestion
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import logout_then_login
@@ -21,7 +21,7 @@ STANDARD_SCRIPTS = ["//code.jquery.com/jquery-1.11.3.min.js"]
 @login_required
 def dashboard(request):
     # IMPORTANT: Keep jQuery at the beginning or else it won't load first and bad stuff will happen.
-    scripts =  STANDARD_SCRIPTS + [static("dashboard.js")]
+    scripts =  STANDARD_SCRIPTS + [static("common.js"), static("dashboard.js")]
     players = Player.objects.filter(user=request.user)
     if not players:
         return redirect(reverse("joinFloor"), permanent=False)
@@ -225,3 +225,12 @@ def deletePlayer(request, pkPlayer=None):
     else:
         Player.objects.get(pk=pkPlayer).delete()
         return redirect(reverse("dashboard"), permanent=False)
+
+def acceptSuggestion(request, pkSuggestion=None, delete=None):
+    if not pkSuggestion:
+        raise RuntimeError("You didn't give me a suggestion. God only knows how that happened.")
+    elif delete:
+        StockSuggestion.objects.get(pk=pkSuggestion).delete()
+    else:
+        StockSuggestion.objects.get(pk=pkSuggestion).accept()
+    return redirect(reverse("dashboard"), permanent=False)

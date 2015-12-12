@@ -131,6 +131,12 @@ class Player(models.Model):
         if self.floor.owner == self.user and self.floor.permissiveness == 'permissive':
             num += self.receivedRequests().count()
         return num
+    def seesSuggestions(self):
+        """
+        This returns a boolean telling whether this player needs a suggestions tab on his 
+        dashboard tab. 
+        """
+        return self.floor.owner == self.user and self.floor.permissiveness == "permissive"
 
 class Trade(models.Model):
     recipient = models.ForeignKey(Player)

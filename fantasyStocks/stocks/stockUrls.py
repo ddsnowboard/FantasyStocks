@@ -35,6 +35,7 @@ urlpatterns = [
             url("^acceptATrade/(?P<pkTrade>[0-9]+)/$", views.acceptTrade, name="acceptTrade"), 
             url("^rejectATrade/(?P<pkTrade>[0-9]+)/$", views.rejectTrade, name="rejectTrade"), 
             url("^deletePlayerFromFloor/pkPlayer/(?P<pkPlayer>[0-9]+)/$", views.deletePlayer, name="deletePlayer"),
+            url("^acceptAStockSuggestion/pkSuggestion/(?P<pkSuggestion>[0-9]+)/(?P<delete>del/)?", views.acceptSuggestion, name="acceptStock"), 
         ]
 
 

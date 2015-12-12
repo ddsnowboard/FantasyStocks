@@ -15,6 +15,22 @@ function setTradeBox($box, text)
         $box.html(text);
     }
 }
+function rebind()
+{
+    $(".acceptButton").click(function(event)
+            {
+                var that = this;
+                console.log(new ConfirmationBox("Do you want to add the stock " + this.id + " to this floor?", 
+                        [{text: "Yes", func: function() { window.location = that.attributes.href; }},
+                        {text: "No", func: function(){ window.location = $(that).attr("href") + "del/"; }},
+                        {text: "Cancel", func: function() { this.destroy() }}]).$holder)
+                $(document).append((new ConfirmationBox("Do you want to add the stock " + this.id + " to this floor?", 
+                        [{text: "Yes", func: function() { window.location = that.attributes.href; }},
+                        {text: "No", func: function(){ window.location = $(that).attr("href") + "del/"; }},
+                        {text: "Cancel", func: function() { this.destroy() }}])).$holder);
+                event.preventDefault();
+            }); 
+}
 $(document).ready(function() {
     main = $(".dashboardMain");
     received = $("#received");
@@ -42,6 +58,7 @@ $(document).ready(function() {
             {
                 $("#requests").css("visibility", "visible");
             }
+            rebind();
         }
     });
     $($(".leftTabs li")[0]).removeClass("selected").click();
@@ -51,6 +68,7 @@ $(document).ready(function() {
             $(".tradeTab").removeClass("selected");
             $(this).addClass("selected");
             setTradeBox(tradeInbox, currentTradeSet[this.id]);
+            rebind();
         }
     });
     $(".deleteButton").click(function(event)
@@ -62,5 +80,5 @@ $(document).ready(function() {
                     event.preventDefault();
                 }
             });
-}); 
+});
 
