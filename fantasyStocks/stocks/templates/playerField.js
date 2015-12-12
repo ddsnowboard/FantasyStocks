@@ -66,6 +66,7 @@ function PlayerPicker(inputElement){
                 });
         this.$box.bind("typeahead:select", function(event, suggestion)
                 {
+                    console.log("selected!");
                     that.runOnSelect(event, suggestion);
                 });
     };
