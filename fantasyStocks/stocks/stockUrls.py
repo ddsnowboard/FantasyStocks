@@ -34,6 +34,7 @@ urlpatterns = [
             url("^counterATrade/(?P<pkTrade>[0-9]+)/floor/(?P<floor>[0-9]+)/$", views.counterTrade, name="counterTrade"), 
             url("^acceptATrade/(?P<pkTrade>[0-9]+)/$", views.acceptTrade, name="acceptTrade"), 
             url("^rejectATrade/(?P<pkTrade>[0-9]+)/$", views.rejectTrade, name="rejectTrade"), 
+            url("^deletePlayerFromFloor/pkPlayer/(?P<pkPlayer>[0-9]+)/$", views.deletePlayer, name="deletePlayer"),
         ]
 
 

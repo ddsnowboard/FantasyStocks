@@ -218,3 +218,10 @@ def renderStockWidgetJavascript(request, identifier=None, player=0):
     return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
 def tradeFormJavaScript(request):
     return render(request, "trade.js")
+
+def deletePlayer(request, pkPlayer=None):
+    if not pkPlayer:
+        raise RuntimeError("You didn't give me a player. God only knows how that happened.")
+    else:
+        Player.objects.get(pk=pkPlayer).delete()
+        return redirect(reverse("dashboard"), permanent=False)
