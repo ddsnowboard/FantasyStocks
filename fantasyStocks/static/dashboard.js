@@ -53,5 +53,14 @@ $(document).ready(function() {
             setTradeBox(tradeInbox, currentTradeSet[this.id]);
         }
     });
+    $(".deleteButton").click(function(event)
+            {
+                if(confirm("Are you sure you want to leave " + this.id + "?"))
+                {}
+                else
+                {
+                    event.preventDefault();
+                }
+            });
 }); 
 

@@ -76,7 +76,7 @@ var floors = {
                 {% block content %}
                 <table class="dash">
                     <tr>
-                        <td style="border-right: 1px solid black; width: 170px;">
+                        <td style="border-right: 1px solid black; width: 20%;">
                             <div class="leftTabs">
                                 <ul>
                                     {% for player in players %}
@@ -86,7 +86,9 @@ var floors = {
                                             ({{ len }})
                                             {% if len %}</strong>{% endif %}
                                         {% endwith %}
-                                        <img src="{% static "redX.gif" %}" class="deleteButton" />
+                                        <a href="{% url "deletePlayer" pkPlayer=player.pk %}" id="{{ player.floor.name }}" class="deleteButton">
+                                            <img src="{% static "redX.gif" %}" class="deleteImage" />
+                                        </a>
                                     </li>
                                     {% endfor %}
                                     <li style="padding: 0;">

@@ -83,7 +83,7 @@
     padding: 5px;
     padding-right: 15px;
     cursor: pointer;
-    height: 30px;
+    line-height: 1.5;
 }
 
 .selected {
@@ -278,7 +278,8 @@ img.flipped {
     -ms-filter: FlipH;
 }
 
-.deleteButton {
+.deleteImage {
     width: 20px;
     float: right;
+    padding-top: 2px;
 }
