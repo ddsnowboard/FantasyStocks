@@ -83,6 +83,7 @@
     padding: 5px;
     padding-right: 15px;
     cursor: pointer;
+    line-height: 1.5;
 }
 
 .selected {
@@ -181,7 +182,7 @@ a.full {
 
 a.noUnderline {
     text-decoration: none;
-    color: black;
+    color: inherit;
 }
 
 .tt-menu {
@@ -217,4 +218,91 @@ a.noUnderline {
 
 .redBackground {
     background-color: red !important;
+}
+
+.tradeHolder {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.userStock {
+    color: black;
+    background-color: white;
+}
+
+.trade {
+    width: 100%;
+}
+
+.trade td {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-collapse: collapse; 
+}
+
+.tradeInbox {
+    width: 100%;
+}
+
+.tradeTab {
+    display: inline-block;
+    float: left;
+    margin-right: 25px;
+    border-top: 1px solid black;
+    border-right: 1px solid black;
+    border-left: 1px solid black;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    cursor: default;
+}
+
+.unselectable {
+    /* Someday, CSS will be so nice. */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+img.flipped {
+    /* Someday... */
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: FlipH;
+}
+
+.deleteImage {
+    width: 20px;
+    float: right;
+    padding-top: 2px;
+}
+
+.confirmationBox {
+    background-color: white;
+    border: 2px solid grey;
+    border-radius: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    position: absolute;
+    min-width: 350px;
+    top: 20%;
+    left: 25%;
+    padding: 15px;
+}
+
+.confirmationButton {
+    background-color: lightgrey;
+    color: black;
+    border: 2px solid black;
+    border-radius: 5px;
+    display: inline-block;
+    padding: 5px;
+    margin: 10px;
 }

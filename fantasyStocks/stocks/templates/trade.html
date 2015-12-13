@@ -1,0 +1,51 @@
+{% extends "loggedIn.html" %}
+{% load staticfiles %}
+{% block title %}{% if not received %}Trade
+{% else %}Received Trade{% endif %}
+{% endblock %}
+{% block head %}{{ form.media }}{% endblock %}
+{% block content %}
+<div class="tradeHolder">
+    <form action="{% if received %}{% url "trade" floor=trade.floor.pk %}{% elif countering %}{% url "trade" floor=countering.floor.pk pkCountering=countering.pk %}{% endif %}" method="POST">
+        {% csrf_token %}
+        <table align="center">
+            <tr>
+                <td colspan="2">
+                    {{ form.non_field_errors }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" id="username" value="{{ request.user.username }}" disabled>
+                </td>
+                <td></td>
+                <td>
+                    {{ form.other_user.errors }}
+                    {{ form.other_user }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{ form.user_stocks.errors }}
+                    {{ form.user_stocks }}
+                </td>
+                <td>
+                    <img src="{% static "arrow.png" %}" width="15px"/><br />
+                    <img src="{% static "arrow.png" %}" width="15px" class="flipped"/>
+                </td>
+                <td>
+                    {{ form.other_stocks.errors }}
+                    {{ form.other_stocks }}
+                </td>
+            </tr>
+        </table>
+        {% if not received %}
+        <input type="submit">
+        {% else %}
+        <input type="button" onclick="document.location.pathname = '{% url "counterTrade" pkTrade=trade.pk floor=trade.floor.pk %}';" value="Counter">
+        <input type="button" onclick="document.location.pathname = '{% url "rejectTrade" pkTrade=trade.pk%}';" value="Reject">
+        <input type="button" onclick="document.location.pathname = '{% url "acceptTrade" pkTrade=trade.pk%}';" value="Accept">
+        {% endif %}
+    </form>
+</div>
+{% endblock %}
