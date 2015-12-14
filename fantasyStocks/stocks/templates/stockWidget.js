@@ -86,6 +86,7 @@ var StockWidget = function(inputElement)
     {
         this.$value.val(arr.join(","));
     };
+
     this.pushStock = function(stock, addToArray)
     {
         var WARNING_DURATION = 2000;
@@ -96,7 +97,10 @@ var StockWidget = function(inputElement)
         }
         if(this.selected_stocks.indexOf(stock.symbol) === -1)
         {
-            that.$holder.append("<div class=\"selection\" id=\"" + stock.symbol + "\"><span class=\"name\">" + stock.name + "</span><span class=\"symbol\"> (" + stock.symbol + ") </span></div>");
+            that.$holder.append("<div class=\"selection\" id=\"" 
+                    + stock.symbol + "\"><span class=\"name\">" 
+                    + stock.name + "</span><span class=\"symbol\"> (" 
+                    + stock.symbol + ") </span></div>");
             if(addToArray){
                 that.selected_stocks.push(stock.symbol);
                 that.setBox(that.selected_stocks);
@@ -108,9 +112,11 @@ var StockWidget = function(inputElement)
             setTimeout(function(){ $(".warning").fadeOut() }, WARNING_DURATION);
         }
     }
+
     this.$value.parent().append(this.$holder).append(this.$box);
 
     this.onSelectFunctions = [];
+
     this.runOnSelect = function(event, suggestion)
     {
         for(var i = 0; i < this.onSelectFunctions.length; i++)
@@ -118,21 +124,25 @@ var StockWidget = function(inputElement)
             this.onSelectFunctions[i](event, suggestion);
         }
     }
+
     this.onSelect = function(func)
     {
         this.onSelectFunctions.push(func);
     }
+
     this.$box.bind("typeahead:select", function(event, suggestion)
             {
                 that.$box.typeahead("val", "");
                 that.pushStock(suggestion);
                 that.runOnSelect(event, suggestion);
             });
+
     this.changeURL = function(url) 
     {
         this.url = url;
         this.setTypeahead();
     };
+
     this.setTypeahead = function()
     {
         this.$box.typeahead("destroy");
@@ -153,12 +163,14 @@ var StockWidget = function(inputElement)
             display: this.displayFunc, 
         });
     };
+
     this.remove = function(symbol)
     {
         this.selected_stocks.splice(this.selected_stocks.indexOf(symbol));
         this.setBox(this.selected_stocks);
         $(".selection:not(.warning)#" + symbol).remove();
     };
+
     this.clear = function()
     {
         for(var i = 0;i < this.selected_stocks.length; i++)
@@ -166,6 +178,8 @@ var StockWidget = function(inputElement)
             this.remove(this.selected_stocks[i]);
         }
     };
+
+
     this.setTypeahead();
     this.enable();
 }

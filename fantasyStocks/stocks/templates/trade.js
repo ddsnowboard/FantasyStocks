@@ -74,6 +74,7 @@ $(document).ready(function() {
         setOtherStockbox(otherUsername.$box.val(), floor);
         otherUsername.name = otherUsername.$box.val();
     }
+    // This makes sure that the JavaScript prevents you from putting in a bunch of stocks for a person who doesn't have them. 
     otherUsername.onSelect(function(event, suggestion)
             {
                 if(otherStockbox.selected_stocks.length !== 0 && suggestion !== otherUsername.name)
@@ -88,7 +89,6 @@ $(document).ready(function() {
                                     }
                                 }, {text: "Cancel",
                                     func: function(){ 
-                                        // I have no idea how otherUsername.name turns into an object. I am so confused. 
                                         otherUsername.$box.typeahead("val", otherUsername.name);
                                         this.destroy();
                                     }, 
