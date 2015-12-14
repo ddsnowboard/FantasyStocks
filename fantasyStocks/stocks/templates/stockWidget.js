@@ -70,7 +70,7 @@ var StockWidget = function(inputElement)
         request.send();
     }
     this.TEXTBOX_CLASS = "inputBox";
-    this.selected_stocks = [];
+    this.selectedStocks = [];
 
     this.$holder = $("<div class=\"holder\"></div>");
     var that = this;
@@ -95,15 +95,15 @@ var StockWidget = function(inputElement)
         {
             addToArray = true;
         }
-        if(this.selected_stocks.indexOf(stock.symbol) === -1)
+        if(this.selectedStocks.indexOf(stock.symbol) === -1)
         {
             that.$holder.append("<div class=\"selection\" id=\"" 
                     + stock.symbol + "\"><span class=\"name\">" 
                     + stock.name + "</span><span class=\"symbol\"> (" 
                     + stock.symbol + ") </span></div>");
             if(addToArray){
-                that.selected_stocks.push(stock.symbol);
-                that.setBox(that.selected_stocks);
+                that.selectedStocks.push(stock.symbol);
+                that.setBox(that.selectedStocks);
             }
         }
         else
@@ -166,16 +166,16 @@ var StockWidget = function(inputElement)
 
     this.remove = function(symbol)
     {
-        this.selected_stocks.splice(this.selected_stocks.indexOf(symbol));
-        this.setBox(this.selected_stocks);
+        this.selectedStocks.splice(this.selectedStocks.indexOf(symbol));
+        this.setBox(this.selectedStocks);
         $(".selection:not(.warning)#" + symbol).remove();
     };
 
     this.clear = function()
     {
-        for(var i = 0;i < this.selected_stocks.length; i++)
+        for(var i = 0;i < this.selectedStocks.length; i++)
         {
-            this.remove(this.selected_stocks[i]);
+            this.remove(this.selectedStocks[i]);
         }
     };
 

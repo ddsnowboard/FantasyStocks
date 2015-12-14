@@ -77,7 +77,7 @@ $(document).ready(function() {
     // This makes sure that the JavaScript prevents you from putting in a bunch of stocks for a person who doesn't have them. 
     otherUsername.onSelect(function(event, suggestion)
             {
-                if(otherStockbox.selected_stocks.length !== 0 && suggestion !== otherUsername.name)
+                if(otherStockbox.selectedStocks.length !== 0 && suggestion !== otherUsername.name)
                 {
                     $(document.body).append(new ConfirmationBox("If you change the user, all the stocks that you already selected will disappear.",
                                 [{text: "Ok", 
