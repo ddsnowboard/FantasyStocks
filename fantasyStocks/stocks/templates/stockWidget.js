@@ -22,10 +22,9 @@ var StockWidget = function(inputElement)
     this.displayFunc = function(o){ return o.name; }
     this.enable = function() {
         this.enabled = true;
+        var that = this; 
         this.$holder.on("mousedown", ".selection:not(.warning)", function() {
-            that.selected_stocks.splice(that.selected_stocks.indexOf($(this).attr('id')), 1);
-            that.setBox(that.selected_stocks);
-            $(this).remove();
+            that.remove($(this).attr("id"));
         })
         .on("mouseenter", ".selection:not(.warning)", function() {
             $(this).addClass("redBackground");
@@ -153,6 +152,19 @@ var StockWidget = function(inputElement)
             rateLimitWait: 600,
             display: this.displayFunc, 
         });
+    };
+    this.remove = function(symbol)
+    {
+        this.selected_stocks.splice(this.selected_stocks.indexOf(symbol));
+        this.setBox(this.selected_stocks);
+        $(".selection:not(.warning)#" + symbol).remove();
+    };
+    this.clear = function()
+    {
+        for(var i = 0;i < this.selected_stocks.length; i++)
+        {
+            this.remove(this.selected_stocks[i]);
+        }
     };
     this.setTypeahead();
     this.enable();

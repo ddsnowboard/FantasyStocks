@@ -72,10 +72,33 @@ $(document).ready(function() {
     if(otherUsername.$box.val() !== "")
     {
         setOtherStockbox(otherUsername.$box.val(), floor);
+        otherUsername.name = otherUsername.$box.val();
     }
     otherUsername.onSelect(function(event, suggestion)
             {
-                setOtherStockbox(otherUsername.$box.val(), floor);
-                // TODO: Clear stockbox if you change the name, or, better yet, make it ask you if you really want to do this. 
+                if(otherStockbox.selected_stocks.length !== 0 && suggestion !== otherUsername.name)
+                {
+                    $(document.body).append(new ConfirmationBox("If you change the user, all the stocks that you already selected will disappear.",
+                                [{text: "Ok", 
+                                    func: function(){ 
+                                        otherStockbox.clear();
+                                        setOtherStockbox(otherUsername.$box.val(), floor);
+                                        otherUsername.name = otherUsername.$box.val();
+                                        this.destroy();
+                                    }
+                                }, {text: "Cancel",
+                                    func: function(){ 
+                                        // I have no idea how otherUsername.name turns into an object. I am so confused. 
+                                        otherUsername.$box.typeahead("val", otherUsername.name);
+                                        this.destroy();
+                                    }, 
+                                }
+                                ]).$holder);
+                }
+                else
+                {
+                    setOtherStockbox(otherUsername.$box.val(), floor);
+                    otherUsername.name = suggestion;
+                }
             });
 });
