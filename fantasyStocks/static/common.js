@@ -44,6 +44,7 @@ function jsonBloodhound(url){
 function ConfirmationBox(text, buttons)
 {
     // Buttons is an array of objects of the form {text: "button text", func: function() { console.log("Do stuff"); }}
+    // Note that the functions are run with the actual ConfirmationBox as the context for using `this`, not the HTML or jQuery button. 
     this.buttons = buttons;
     this.text = text;
     this.$holder = $("<div class=\"confirmationBox\"></div>");
