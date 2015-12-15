@@ -79,7 +79,13 @@ class Stock(models.Model):
         name, price, and last change. 
         """
         URL = "http://finance.yahoo.com/webservice/v1/symbols/{}/quote?format=json&view=detail"
-        jsonObj = json.loads(request.urlopen(URL.format(symbol)).read().decode("UTF-8"))['list']['resources'][0]['resource']['fields']
+        try:
+            jsonObj = json.loads(request.urlopen(URL.format(symbol)).read().decode("UTF-8"))['list']['resources'][0]['resource']['fields']
+        except IndexError:
+            if "." in symbol:
+                return Stock.remote_load_price(symbol[:symbol.index(".")])
+            else:
+                raise RuntimeError("The stock with symbol {} can't be found!".format(symbol))
         return RemoteStockData(jsonObj["symbol"], jsonObj["name"], jsonObj["price"], jsonObj["change"])
 
 class Floor(models.Model):
