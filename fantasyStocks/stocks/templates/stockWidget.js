@@ -102,8 +102,8 @@ var StockWidget = function(inputElement)
                     + stock.name + "</span><span class=\"symbol\"> (" 
                     + stock.symbol + ") </span></div>");
             if(addToArray){
-                that.selectedStocks.push(stock.symbol);
-                that.setBox(that.selectedStocks);
+                this.selectedStocks.push(stock.symbol);
+                this.setBox(that.selectedStocks);
             }
         }
         else
@@ -168,14 +168,15 @@ var StockWidget = function(inputElement)
     {
         this.selectedStocks.splice(this.selectedStocks.indexOf(symbol));
         this.setBox(this.selectedStocks);
-        $(".selection:not(.warning)#" + symbol).remove();
+        $(".selection:not(.warning)#" + symbol.toUpperCase()).remove();
     };
 
     this.clear = function()
     {
-        for(var i = 0;i < this.selectedStocks.length; i++)
+        var stocksCopy = this.selectedStocks.slice();
+        for(var i = 0; i < stocksCopy.length; i++)
         {
-            this.remove(this.selectedStocks[i]);
+            this.remove(stocksCopy[i]);
         }
     };
 
