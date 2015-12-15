@@ -98,7 +98,7 @@ $(document).ready(function() {
                 else
                 {
                     setOtherStockbox(otherUsername.$box.val(), floor);
-                    otherUsername.name = suggestion;
+                    otherUsername.name = suggestion.username;
                 }
             });
 });
