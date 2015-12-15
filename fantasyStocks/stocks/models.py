@@ -41,6 +41,8 @@ class RemoteStockData:
         if stockObj.company_name == "":
             stockObj.company_name = self.name
             stockObj.symbol = stockObj.symbol.upper()
+    def __str__(self):
+        return "{} at {}".format(self.symbol, self.price)
 
 class Stock(models.Model):
     company_name = models.CharField(max_length=50, default="", blank=True)
@@ -83,7 +85,7 @@ class Stock(models.Model):
             jsonObj = json.loads(request.urlopen(URL.format(symbol)).read().decode("UTF-8"))['list']['resources'][0]['resource']['fields']
         except IndexError:
             if "." in symbol:
-                return Stock.remote_load_price(symbol[:symbol.index(".")])
+                return Stock.remote_load_price(symbol.replace(".", "-"))
             else:
                 raise RuntimeError("The stock with symbol {} can't be found!".format(symbol))
         return RemoteStockData(jsonObj["symbol"], jsonObj["name"], jsonObj["price"], jsonObj["change"])
