@@ -166,7 +166,7 @@ var StockWidget = function(inputElement)
 
     this.remove = function(symbol)
     {
-        this.selectedStocks.splice(this.selectedStocks.indexOf(symbol));
+        this.selectedStocks.splice(this.selectedStocks.indexOf(symbol), 1);
         this.setBox(this.selectedStocks);
         $(".selection:not(.warning)#" + symbol.toUpperCase()).remove();
     };
