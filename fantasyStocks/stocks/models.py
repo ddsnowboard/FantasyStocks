@@ -67,9 +67,6 @@ class Stock(models.Model):
     def get_price(self):
         self.update()
         return self.price
-    def get_change(self):
-        self.update()
-        return self.change
     def format_for_json(self):
         return {"symbol": self.symbol, "name": self.company_name}
     @staticmethod
