@@ -47,7 +47,6 @@ class Stock(models.Model):
     company_name = models.CharField(max_length=50, default="", blank=True)
     symbol = models.CharField(max_length=4)
     last_updated = models.DateTimeField(default=timezone.now() - timedelta(minutes=20))
-    # Set up a default image and maybe a way to get them automatically. 
     image = models.ImageField(upload_to=get_upload_location, blank=True, default=settings.MEDIA_URL + "default")
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     change = models.DecimalField(max_digits=6, decimal_places=2, default=0)
@@ -81,7 +80,9 @@ class Stock(models.Model):
         # This is really a dummy method. I just need something so that I can make it technically work, 
         # then I'll be able to fine tune it. 
         # TODO: Implement this so that it adds this to each user who has the stock every time it loads prices. 
-        return self.price * (self.price - self.last_price) / self.last_price
+        if self.last_price == 0:
+            return 0
+        return (self.price * (self.price - self.last_price) / self.last_price) * 100
     def format_for_json(self):
         return {"symbol": self.symbol, "name": self.company_name}
     @staticmethod
