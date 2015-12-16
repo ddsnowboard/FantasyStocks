@@ -36,6 +36,7 @@ class RemoteStockData:
     def apply(self, stockObj = None):
         if not stockObj:
             stockObj = Stock.objects.get(symbol=self.symbol)
+        stockObj.last_price = stockObj.price
         stockObj.price = self.price
         stockObj.change = self.change
         if stockObj.company_name == "":
@@ -50,6 +51,7 @@ class Stock(models.Model):
     image = models.ImageField(upload_to=get_upload_location, blank=True, default=settings.MEDIA_URL + "default")
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     change = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    last_price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     def __str__(self):
         return "{} ({})".format(self.company_name, self.symbol)
     def update(self):
@@ -70,6 +72,11 @@ class Stock(models.Model):
     def get_change(self):
         self.update()
         return self.change
+    def get_score(self):
+        # This is really a dummy method. I just need something so that I can make it technically work, 
+        # then I'll be able to fine tune it. 
+        # TODO: Implement this so that it adds this to each user who has the stock every time it loads prices. 
+        return self.price * (self.price - self.last_price) / self.last_price
     def format_for_json(self):
         return {"symbol": self.symbol, "name": self.company_name}
     @staticmethod
