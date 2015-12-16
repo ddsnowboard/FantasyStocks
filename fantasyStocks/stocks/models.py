@@ -84,10 +84,7 @@ class Stock(models.Model):
         try:
             jsonObj = json.loads(request.urlopen(URL.format(symbol)).read().decode("UTF-8"))['list']['resources'][0]['resource']['fields']
         except IndexError:
-            if "." in symbol:
-                return Stock.remote_load_price(symbol.replace(".", "-"))
-            else:
-                raise RuntimeError("The stock with symbol {} can't be found!".format(symbol))
+            raise RuntimeError("The stock with symbol {} can't be found!".format(symbol))
         return RemoteStockData(jsonObj["symbol"], jsonObj["name"], jsonObj["price"], jsonObj["change"])
 
 class Floor(models.Model):
