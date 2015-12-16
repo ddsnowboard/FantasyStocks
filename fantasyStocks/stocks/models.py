@@ -63,6 +63,11 @@ class Stock(models.Model):
             # sure that the negative and positive work on the dashboard, so I 
             # reload it here. With any luck, it's fast, but who knows. 
             self.refresh_from_db()
+            score = self.get_score()
+            # Apply points to owners
+            for i in [p for p in Player.objects.all() if self in p.stocks.all()]:
+                i.points += score
+                i.save()
     def force_update(self):
         self.last_updated -= timedelta(minutes=30)
         self.update()
