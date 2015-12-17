@@ -29,6 +29,7 @@ class ScoringStressTestCase(StaticLiveServerTestCase):
             player.save()
     def test_players_get_scores(self):
         start = time.clock()
+        print("Started")
         floor = Floor.objects.all()[0]
         DEFAULT_PRICE = 5
         for s in floor.stocks.all():
@@ -37,4 +38,4 @@ class ScoringStressTestCase(StaticLiveServerTestCase):
         for p in Player.objects.filter(floor=floor):
             if not p.isFloor():
                 self.assertEqual(p.points, reduce(lambda x, y: x + y, [s.price for s in p.stocks.all()]))
-        print("Took {} seconds!".format(time.clock() - start))
+        print("Finished! Took {} seconds!".format(time.clock() - start))
