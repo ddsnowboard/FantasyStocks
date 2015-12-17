@@ -7,3 +7,6 @@ vim :
 	vim $(FILES)
 templates : 
 	vim fantasyStocks/stocks/templates/* fantasyStocks/static/*
+test : 
+	python3 ./fantasyStocks/manage.py test ./fantasyStocks/
+	cd ..
