@@ -4,7 +4,7 @@
 {% block script %}
 var floors = {
 {% for player in players %}
-"{{ player.floor.pk }}": {% with count=forloop.counter0 %}'{% filter escapejs %}
+"{{ player.floor.pk }}": '{% filter escapejs %}
 <tr>
     <td style="width: 50%">
         <table class="stockBoard">
@@ -40,7 +40,7 @@ var floors = {
                     </table>
                 </td>
                 </tr>
-                {% endfilter %}{% endwith %}', 
+                {% endfilter %}', 
                 {% endfor %}
                 };
                 var trades = {

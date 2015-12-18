@@ -103,6 +103,48 @@ class Floor(models.Model):
         return self.name
     def leaders(self):
         return Player.objects.filter(floor=self).exclude(user__groups__name__exact="Floor").order_by("-points")
+    def render_board(player=None):
+        """
+        The output from this needs to be surrounded by `<table>` tags. 
+        """
+        TEMPLATE_STRING = """{% filter escapejs %}
+<tr>
+    <td style="width: 50%">
+        <table class="stockBoard">
+            {% for stock in player.floor.stocks.all %}
+            <tr>
+                {% if stock in player.stocks.all %}
+                <td class="userStock">
+                    {% else %}
+                    <td>
+                        {% endif %}
+                        <a class="noUnderline" href="{% url "trade" stock=stock.pk floor=player.floor.pk %}">
+                            <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
+                        </a>
+                        {% with change=stock.change %}
+                        <span class="{% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" style="display: inline-block; float: right">{% if change > 0 %}+{% endif %}{{ change }}</span>
+                        {% endwith %}
+                    </td>
+            </tr>
+            {% endfor %}
+</tr>
+        </table>
+                </td>
+                <td>
+                    <table class="leaderBoard">
+                        {% for competitor in player.floor.leaders %}
+                        <tr>
+                            <td {% if forloop.last %}style="border-bottom: none;"{% endif %}>
+                                <a class="noUnderline" href="{% url "trade" player=competitor.pk floor=player.floor.pk %}"<span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.get_name }}</span></a>
+                                <span style="display: inline-block; float: right">{{ competitor.points }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                </tr>
+                {% endfilter %}
+                """
 
 # NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
 # object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
@@ -139,6 +181,8 @@ class Player(models.Model):
         dashboard tab. 
         """
         return self.floor.owner == self.user and self.floor.permissiveness == "permissive"
+    def get_floor_board(self):
+        return self.floor.get_board(self)
 
 class Trade(models.Model):
     recipient = models.ForeignKey(Player)
