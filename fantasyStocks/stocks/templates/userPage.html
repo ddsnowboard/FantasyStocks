@@ -1,0 +1,14 @@
+{% extends "loggedIn.html" %}
+{% load staticfiles %}
+{% block content %}
+<img src="{% static "default" %}" style="float: left; height: 250px; margin: 30px; border: 2px solid black; border-radius: 5px; padding: 5px;" />
+<h2 style="margin-top: 25px;">{{ user.username }}</h2>
+<h4>Joined {{ user.date_joined|date:"m/d/y" }}</h4>
+<table style="width: 100%;">
+    <tr>
+        <td>
+            This is a test
+        </td>
+    </tr>
+</table>
+{% endblock %}

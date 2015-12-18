@@ -178,6 +178,11 @@ def counterTrade(request, pkTrade, floor):
     outputDict = {"form": form, "request": request, "countering": trade}
     return render(request, "trade.html", outputDict)
 
+def userPage(request, pkUser):
+    user = User.objects.get(pk=pkUser)
+    outputDict = {"user": user, "players": Player.objects.filter(user=user)}
+    return render(request, "userPage.html", outputDict)
+
 def playerFieldJavascript(request, identifier):
     return render(request, "playerField.js", {"id" : identifier})
 
