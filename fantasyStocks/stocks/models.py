@@ -36,6 +36,7 @@ class RemoteStockData:
     def apply(self, stockObj = None):
         if not stockObj:
             stockObj = Stock.objects.get(symbol=self.symbol)
+        stockObj.last_price = stockObj.price
         stockObj.price = self.price
         stockObj.change = self.change
         if stockObj.company_name == "":
@@ -48,10 +49,10 @@ class Stock(models.Model):
     company_name = models.CharField(max_length=50, default="", blank=True)
     symbol = models.CharField(max_length=4)
     last_updated = models.DateTimeField(default=timezone.now() - timedelta(minutes=20))
-    # Set up a default image and maybe a way to get them automatically. 
     image = models.ImageField(upload_to=get_upload_location, blank=True, default=settings.MEDIA_URL + "default")
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     change = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    last_price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     def __str__(self):
         return "{} ({})".format(self.company_name, self.symbol)
     def update(self):
@@ -63,12 +64,27 @@ class Stock(models.Model):
             # sure that the negative and positive work on the dashboard, so I 
             # reload it here. With any luck, it's fast, but who knows. 
             self.refresh_from_db()
+            score = self.get_score()
+            # Apply points to owners
+            for i in [p for p in Player.objects.all() if self in p.stocks.all()]:
+                i.points += score
+                i.save()
     def force_update(self):
         self.last_updated -= timedelta(minutes=30)
         self.update()
     def get_price(self):
         self.update()
         return self.price
+    def get_change(self):
+        self.update()
+        return self.change
+    def get_score(self):
+        # This is really a dummy method. I just need something so that I can make it technically work, 
+        # then I'll be able to fine tune it. 
+        # TODO: Implement this so that it adds this to each user who has the stock every time it loads prices. 
+        if self.last_price == 0:
+            return 0
+        return (self.price * (self.price - self.last_price) / self.last_price) * 100
     def format_for_json(self):
         return {"symbol": self.symbol, "name": self.company_name}
     @staticmethod
@@ -147,7 +163,7 @@ class Trade(models.Model):
     floor = models.ForeignKey(Floor)
     sender = models.ForeignKey(Player, related_name="sendingPlayer")
     senderStocks = models.ManyToManyField(Stock)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(default=timezone.now)
     def __str__(self):
         return "Trade from {} to {} on {}".format(self.sender.user, self.recipient.user, self.floor)
     def accept(self):
