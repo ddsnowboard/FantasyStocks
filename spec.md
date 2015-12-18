@@ -21,7 +21,7 @@ Nongoals:
     + Dashboard
     + Trade Page
       + Received Trade Page
-    + Other player page
+    + Other User page
     + Create Floor Page
     + Join Floor Page
 + Epilogue: The Game
@@ -89,9 +89,9 @@ In between the banks of boxes there will be some sort of nice arrow image, proba
 
 This will be aesthetically nearly identical to the Trade Page except the "Send" button will be replaced with an "Accept" button, and next to that will be a "Counter-Offer" button, which will take you to a trade page pre-populated with the stocks that were in the trade before, along with the proper names, for you to edit and then send back. If you type in a company name into any of the boxes, it will add to the list just like it would on the trade page.
 
-###Other Player Page
+###Other User Page
 
-![Image of Other Player Page](specResources/otherPlayer.png "Other Player")
+![Image of Other User Page](specResources/otherPlayer.png "Other Player")
 
 In the top left corner there will be the avatar of the user. Next to that there will be their name, their username, the date they joined, and a motto or something, maybe a description. Something that they wrote, basically.
 
