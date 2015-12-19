@@ -4,7 +4,7 @@
 {% block script %}
 var floors = {
 {% for player in players %}
-"{{ player.floor.pk }}": '{{ player.get_floor_board|escapejs }}', 
+'{{ player.floor.pk }}': '{{ player.get_floor_leaderboard|escapejs }}{{ player.get_floor_stockboard|escapejs }}', 
 {% endfor %}
 };
 var trades = {
@@ -19,12 +19,12 @@ var trades = {
     <td>{{ trade.date }}</td>
 </tr>
 {% endfor %}{% endfilter %}", 
-sent: "{% for trade in player.sentTrades %}
+sent: "{% filter escapejs %}{% for trade in player.sentTrades %}
 <tr class="trade">
     <td>{{ trade.recipient }}</td>
     <td>{{ trade.date }}</td>
 </tr>
-{% endfor %}", 
+{% endfor %}{% endfilter %}", 
 {% if player.seesSuggestions %}
 requests: "{% filter escapejs %}{% for request in player.receivedRequests %}
 <tr class="trade">
@@ -35,8 +35,10 @@ requests: "{% filter escapejs %}{% for request in player.receivedRequests %}
     <td>{{ request.date }}</td>
 </tr>
 {% endfor %}{% endfilter %}", 
-{% endif %}},
+{% endif %}
+},
 {% endfor %}
+
 };
 {% endblock %}
 

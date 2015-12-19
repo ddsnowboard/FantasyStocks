@@ -1,5 +1,6 @@
 from django.db import models
 from django.http import HttpResponse
+from django.template import Template, Context
 from urllib import request
 from urllib.parse import urlencode
 from django.utils import timezone
@@ -149,10 +150,14 @@ class Floor(models.Model):
                                             </tr>
                                             
                 """
+        tem = Template(TEMPLATE_STRING)
+        con = Context({"leaderboard" : leaderboard, "stockboard" : stockboard})
+        return tem.render(con)
+
     def render_leaderboard(self, player):
-        return _render_board(player=player, leaderboard=True)
+        return self._render_board(player=player, leaderboard=True)
     def render_stockboard(self, player):
-        return _render_board(player=player, stockboard=True)
+        return self._render_board(player=player, stockboard=True)
 
 # NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
 # object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
