@@ -149,10 +149,10 @@ class Floor(models.Model):
                                             </tr>
                                             
                 """
-                def render_leaderboard(self, player):
-                    return _render_board(player=player, leaderboard=True)
-                def render_stockboard(self, player):
-                    return _render_board(player=player, stockboard=True)
+    def render_leaderboard(self, player):
+        return _render_board(player=player, leaderboard=True)
+    def render_stockboard(self, player):
+        return _render_board(player=player, stockboard=True)
 
 # NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
 # object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
