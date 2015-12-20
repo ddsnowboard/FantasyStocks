@@ -46,7 +46,7 @@ requests: "{% filter escapejs %}{% for request in player.receivedRequests %}
 <table class="dash">
     <tr>
         <td style="border-right: 1px solid black; width: 20%;">
-            <div class="leftTabs">
+            <div class="tabs">
                 <ul>
                     {% for player in players %}
                     <li {% if forloop.first %}class="selected"{% endif %} id="{{ player.floor.pk }}">
@@ -67,7 +67,7 @@ requests: "{% filter escapejs %}{% for request in player.receivedRequests %}
             </div>
         </td>
         <td>
-            <table class="dashboardMain">
+            <table class="floorContainer">
             </table>
         </td>
     </tr>

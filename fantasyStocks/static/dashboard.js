@@ -1,20 +1,8 @@
 "use strict"
-var main;
 var currentTradeSet;
 var received;
 var sent;
 var tradeInbox;
-function setTradeBox($box, text)
-{
-    if(text === "" || /^\s*$/.test(text))
-    {
-        $box.html("<tr><td>There doesn't seem to be anything here...</td></tr>")
-    }
-    else
-    {
-        $box.html(text);
-    }
-}
 function rebind()
 {
     $(".acceptButton").click(function(event)
@@ -22,43 +10,34 @@ function rebind()
                 var that = this;
                 var url = $(that).attr("href");
                 $(document.body).append((new ConfirmationBox("Do you want to add the stock " + this.id + " to this floor?", 
-                        [{text: "Yes", func: function() { window.location = url; }},
-                        {text: "No", func: function(){ window.location = url + "del/"; }},
-                        {text: "Cancel", func: function() { this.destroy(); }}])).$holder);
+                                [{text: "Yes", func: function() { window.location = url; }},
+                                {text: "No", func: function(){ window.location = url + "del/"; }},
+                                {text: "Cancel", func: function() { this.destroy(); }}])).$holder);
                 event.preventDefault();
             }); 
 }
 $(document).ready(function() {
-    main = $(".dashboardMain");
     received = $("#received");
     sent = $("#sent");
     tradeInbox = $(".tradeInbox");
-    var pk = $(".selected")[0].id;
-    main.html(floors[pk]);
     currentTradeSet = trades[pk];
     setTradeBox(tradeInbox, currentTradeSet.received);
-    $(".leftTabs li").click(function() {
-        if(this.className.indexOf("selected") == -1)
+    onTabClick = function(that) {
+        received.addClass("selected");
+        sent.removeClass("selected");
+        currentTradeSet = trades[that.id];
+        setTradeBox(tradeInbox, currentTradeSet.received);
+        if(currentTradeSet.requests == undefined)
         {
-            $(".leftTabs li").removeClass("selected");
-            $(this).addClass("selected");
-            main.html(floors[this.id]);
-            received.addClass("selected");
-            sent.removeClass("selected");
-            currentTradeSet = trades[this.id];
-            setTradeBox(tradeInbox, currentTradeSet.received);
-            if(currentTradeSet.requests == undefined)
-            {
-                $("#requests").css("visibility", "hidden");
-            }
-            else
-            {
-                $("#requests").css("visibility", "visible");
-            }
-            rebind();
+            $("#requests").css("visibility", "hidden");
         }
-    });
-    $($(".leftTabs li")[0]).removeClass("selected").click();
+        else
+        {
+            $("#requests").css("visibility", "visible");
+        }
+        rebind();
+    };
+
     $(".tradeTab").click(function() {
         if(this.className.indexOf("selected") == -1)
         {
@@ -78,4 +57,3 @@ $(document).ready(function() {
                 }
             });
 });
-

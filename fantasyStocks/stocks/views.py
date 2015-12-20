@@ -21,7 +21,7 @@ STANDARD_SCRIPTS = ["//code.jquery.com/jquery-1.11.3.min.js"]
 @login_required
 def dashboard(request):
     # IMPORTANT: Keep jQuery at the beginning or else it won't load first and bad stuff will happen.
-    scripts =  STANDARD_SCRIPTS + [static("common.js"), static("dashboard.js")]
+    scripts =  STANDARD_SCRIPTS + [static("common.js"), static("floorTabs.js"), static("dashboard.js")]
     players = Player.objects.filter(user=request.user)
     if not players:
         return redirect(reverse("joinFloor"), permanent=False)
@@ -180,7 +180,8 @@ def counterTrade(request, pkTrade, floor):
 
 def userPage(request, pkUser):
     user = User.objects.get(pk=pkUser)
-    outputDict = {"user": user, "players": Player.objects.filter(user=user)}
+    scripts =  STANDARD_SCRIPTS + [static("common.js"), static("floorTabs.js")]
+    outputDict = {"user": user, "players": Player.objects.filter(user=user), "scripts": scripts}
     return render(request, "userPage.html", outputDict)
 
 def playerFieldJavascript(request, identifier):
