@@ -3,7 +3,7 @@
 {% block script %}
 var floors = {
 {% for player in players %}
-"{{ player.pk }}": "{{ player.get_both_floor_boards|escapejs }}",
+"{{ player.floor.pk }}": "{{ player.get_both_floor_boards|escapejs }}",
 {% endfor %}
 };
 {% endblock %}
@@ -11,7 +11,12 @@ var floors = {
 <img src="{% static "default" %}" style="float: left; height: 250px; margin: 30px; border: 2px solid black; border-radius: 5px; padding: 5px;" />
 <h2 style="margin-top: 25px;">{{ user.username }}</h2>
 <h4>Joined {{ user.date_joined|date:"m/d/y" }}</h4>
-<table class="dash">
+<table class="dash" id="userFloors">
+    <tr>
+        <td colspan="3">
+            <h2>{{ user.username|capfirst }}'s Dashboard</h2>
+        </td>
+    </tr>
     <tr>
         <td style="border-right: 1px solid black; width: 20%;">
             <div class="tabs">
@@ -32,4 +37,4 @@ var floors = {
             </table>
         </td>
     </tr>
-        {% endblock %}
+    {% endblock %}

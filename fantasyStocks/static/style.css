@@ -306,3 +306,8 @@ img.flipped {
     padding: 5px;
     margin: 10px;
 }
+
+#userFloors {
+    width: 75%;
+    border: 5px inset grey;
+}
