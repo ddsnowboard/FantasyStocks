@@ -4,7 +4,7 @@
 {% block script %}
 var floors = {
 {% for player in players %}
-'{{ player.floor.pk }}': '{{ player.get_floor_leaderboard|escapejs }}{{ player.get_floor_stockboard|escapejs }}', 
+'{{ player.floor.pk }}': '{{ player.get_both_floor_boards|escapejs }}', 
 {% endfor %}
 };
 var trades = {

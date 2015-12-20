@@ -1,14 +1,35 @@
 {% extends "loggedIn.html" %}
 {% load staticfiles %}
+{% block script %}
+var floors = {
+{% for player in players %}
+"{{ player.pk }}": "{{ player.get_both_floor_boards|escapejs }}",
+{% endfor %}
+};
+{% endblock %}
 {% block content %}
 <img src="{% static "default" %}" style="float: left; height: 250px; margin: 30px; border: 2px solid black; border-radius: 5px; padding: 5px;" />
 <h2 style="margin-top: 25px;">{{ user.username }}</h2>
 <h4>Joined {{ user.date_joined|date:"m/d/y" }}</h4>
-<table style="width: 100%;">
+<table class="dash">
     <tr>
+        <td style="border-right: 1px solid black; width: 20%;">
+            <div class="tabs">
+                <ul>
+                    {% for player in players %}
+                    <li {% if forloop.first %}class="selected"{% endif %} id="{{ player.floor.pk }}">
+                        {{ player.floor }}  
+                    </li>
+                    {% endfor %}
+                    <li style="padding: 0;">
+                        <a class="full" style="padding: 5px; margin-right: 10px; text-decoration: none; color: black;" href="{% url "joinFloor" %}" style="text-decoration: none; color: black">Join a floor</a>
+                    </li>
+                </ul>
+            </div>
+        </td>
         <td>
-            This is a test
+            <table class="floorContainer">
+            </table>
         </td>
     </tr>
-</table>
-{% endblock %}
+        {% endblock %}

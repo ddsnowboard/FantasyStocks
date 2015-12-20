@@ -113,7 +113,7 @@ class Floor(models.Model):
                                 {% if stockboard %}
                                 <td style="width: 50%">
                                     <table class="stockBoard">
-                                        {% for stock in player.floor.stocks.all %}
+                                        {% for stock in stocks %}
                                         <tr>
                                             {% if stock in player.stocks.all %}
                                             <td class="userStock">
@@ -136,10 +136,10 @@ class Floor(models.Model):
                                             {% if leaderboard %}
                                             <td>
                                                 <table class="leaderBoard">
-                                                    {% for competitor in player.floor.leaders %}
+                                                    {% for competitor in leaders %}
                                                     <tr>
                                                         <td {% if forloop.last %}style="border-bottom: none;"{% endif %}>
-                                                            <a class="noUnderline" href="{% url "trade" player=competitor.pk floor=player.floor.pk %}"<span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.get_name }}</span></a>
+                                                            <a class="noUnderline" href="{% url "userPage" pkUser=competitor.user.pk %}"<span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.get_name }}</span></a>
                                                             <span style="display: inline-block; float: right">{{ competitor.points }}</span>
                                                         </td>
                                                     </tr>
@@ -151,13 +151,15 @@ class Floor(models.Model):
                                             
                 """
         tem = Template(TEMPLATE_STRING)
-        con = Context({"leaderboard" : leaderboard, "stockboard" : stockboard})
+        con = Context({"leaderboard" : leaderboard, "stockboard" : stockboard, "player": player, "leaders": self.leaders(), "stocks": self.stocks.all()})
         return tem.render(con)
 
     def render_leaderboard(self, player):
         return self._render_board(player=player, leaderboard=True)
     def render_stockboard(self, player):
         return self._render_board(player=player, stockboard=True)
+    def render_both_boards(self, player):
+        return self._render_board(player=player, stockboard=True, leaderboard=True)
 
 # NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
 # object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
@@ -198,6 +200,8 @@ class Player(models.Model):
         return self.floor.render_leaderboard(self)
     def get_floor_stockboard(self):
         return self.floor.render_stockboard(self)
+    def get_both_floor_boards(self):
+        return self.floor.render_both_boards(self)
 
 class Trade(models.Model):
     recipient = models.ForeignKey(Player)
