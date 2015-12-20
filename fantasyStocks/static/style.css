@@ -68,11 +68,11 @@
     font-size: x-small;
 }
 
-.leftTabs {
+.tabs {
     padding-right: 15px;
 }
 
-.leftTabs li {
+.tabs li {
     list-style-type: none;
     margin-bottom: 15px;
     border-right: 1px solid black;
@@ -90,7 +90,7 @@
     background-color: #cccccc;
 }
 
-.dashboardMain {
+.floorContainer {
     width: 85%;
 }
 
@@ -99,7 +99,7 @@
 }
 
 /* Without this, the tabs on the Dasboard will be too far from the side of the page. */
-.leftTabs > ul {
+.tabs > ul {
     padding-left: 0px;
     text-align: right;
 }
@@ -305,4 +305,9 @@ img.flipped {
     display: inline-block;
     padding: 5px;
     margin: 10px;
+}
+
+#userFloors {
+    width: 75%;
+    border: 5px inset grey;
 }

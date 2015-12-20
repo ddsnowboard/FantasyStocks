@@ -1,5 +1,6 @@
 from django.db import models
 from django.http import HttpResponse
+from django.template import Template, Context
 from urllib import request
 from urllib.parse import urlencode
 from django.utils import timezone
@@ -119,6 +120,62 @@ class Floor(models.Model):
         return self.name
     def leaders(self):
         return Player.objects.filter(floor=self).exclude(user__groups__name__exact="Floor").order_by("-points")
+    def _render_board(self, player=None, leaderboard=False, stockboard=False):
+        """
+        The output from this needs to be surrounded by `<table>` tags. 
+        """
+        TEMPLATE_STRING = """
+                            <tr>
+                                {% if stockboard %}
+                                <td style="width: 50%">
+                                    <table class="stockBoard">
+                                        {% for stock in stocks %}
+                                        <tr>
+                                            {% if stock in player.stocks.all %}
+                                            <td class="userStock">
+                                                {% else %}
+                                                <td>
+                                                    {% endif %}
+                                                    <a class="noUnderline" href="{% url "trade" stock=stock.pk floor=player.floor.pk %}">
+                                                        <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
+                                                    </a>
+                                                    {% with change=stock.change %}
+                                                    <span class="{% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" style="display: inline-block; float: right">{% if change > 0 %}+{% endif %}{{ change }}</span>
+                                                    {% endwith %}
+                                                </td>
+                                        </tr>
+                                        {% endfor %}
+                            </tr>
+                                    </table>
+                                            </td>
+                                            {% endif %}
+                                            {% if leaderboard %}
+                                            <td>
+                                                <table class="leaderBoard">
+                                                    {% for competitor in leaders %}
+                                                    <tr>
+                                                        <td {% if forloop.last %}style="border-bottom: none;"{% endif %}>
+                                                            <a class="noUnderline" href="{% url "userPage" pkUser=competitor.user.pk %}"<span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.get_name }}</span></a>
+                                                            <span style="display: inline-block; float: right">{{ competitor.points }}</span>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </table>
+                                            </td>
+                                            {% endif %}
+                                            </tr>
+                                            
+                """
+        tem = Template(TEMPLATE_STRING)
+        con = Context({"leaderboard" : leaderboard, "stockboard" : stockboard, "player": player, "leaders": self.leaders(), "stocks": self.stocks.all()})
+        return tem.render(con)
+
+    def render_leaderboard(self, player):
+        return self._render_board(player=player, leaderboard=True)
+    def render_stockboard(self, player):
+        return self._render_board(player=player, stockboard=True)
+    def render_both_boards(self, player):
+        return self._render_board(player=player, stockboard=True, leaderboard=True)
 
 # NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
 # object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
@@ -155,6 +212,12 @@ class Player(models.Model):
         dashboard tab. 
         """
         return self.floor.owner == self.user and self.floor.permissiveness == "permissive"
+    def get_floor_leaderboard(self):
+        return self.floor.render_leaderboard(self)
+    def get_floor_stockboard(self):
+        return self.floor.render_stockboard(self)
+    def get_both_floor_boards(self):
+        return self.floor.render_both_boards(self)
 
 class Trade(models.Model):
     recipient = models.ForeignKey(Player)
