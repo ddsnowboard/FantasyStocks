@@ -104,7 +104,7 @@ class Floor(models.Model):
         return self.name
     def leaders(self):
         return Player.objects.filter(floor=self).exclude(user__groups__name__exact="Floor").order_by("-points")
-    def _render_board(player=None, leaderboard=False, stockboard=False):
+    def _render_board(self, player=None, leaderboard=False, stockboard=False):
         """
         The output from this needs to be surrounded by `<table>` tags. 
         """
