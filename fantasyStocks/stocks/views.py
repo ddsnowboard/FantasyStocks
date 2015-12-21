@@ -159,30 +159,55 @@ def trade(request, player=None, stock=None, floor=None, pkCountering=None):
         raise RuntimeError("You passed in the wrong arguments")
     return render(request, "trade.html", outputDict)
 
+@login_required
+def editAccount(request):
+    user = request.user
+    if request.POST:
+        form = forms.UserEditingForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("dashboard", permanent=False)
+        else:
+            pass
+    else:
+        formDict = {"primary_key": user.pk}
+        formDict["username"] = user.username
+        formDict["last_name"] = user.last_name
+        formDict["first_name"] = user.first_name
+        formDict["email"] = user.email
+        form = forms.UserEditingForm(formDict)
+    return render(request, "editUser.html", {"form": form})
+
+@login_required
 def receivedTrade(request, pkTrade):
     trade = Trade.objects.get(pk=pkTrade)
     form = forms.ReceivedTradeForm(trade.toFormDict())
     return render(request, "trade.html", {"form" : form, "received": True, "trade": trade})
 
+@login_required
 def rejectTrade(request, pkTrade):
     Trade.objects.get(pk=pkTrade).delete()
     return redirect(reverse("dashboard"), permanent=False)
 
+@login_required
 def acceptTrade(request, pkTrade):
     Trade.objects.get(pk=pkTrade).accept()
     return redirect(reverse("dashboard"), permanent=False)
 
+@login_required
 def counterTrade(request, pkTrade, floor):
     trade = Trade.objects.get(pk=pkTrade)
     form = forms.TradeForm(initial=trade.toFormDict())
     outputDict = {"form": form, "request": request, "countering": trade}
     return render(request, "trade.html", outputDict)
 
+@login_required
 def userPage(request, pkUser):
     user = User.objects.get(pk=pkUser)
     scripts =  STANDARD_SCRIPTS + [static("common.js"), static("floorTabs.js")]
     outputDict = {"user": user, "players": Player.objects.filter(user=user), "scripts": scripts}
     return render(request, "userPage.html", outputDict)
+
 
 def playerFieldJavascript(request, identifier):
     return render(request, "playerField.js", {"id" : identifier})
@@ -225,6 +250,7 @@ def renderStockWidgetJavascript(request, identifier=None, player=0):
 def tradeFormJavaScript(request):
     return render(request, "trade.js")
 
+@login_required
 def deletePlayer(request, pkPlayer=None):
     if not pkPlayer:
         raise RuntimeError("You didn't give me a player. God only knows how that happened.")
@@ -232,6 +258,7 @@ def deletePlayer(request, pkPlayer=None):
         Player.objects.get(pk=pkPlayer).delete()
         return redirect(reverse("dashboard"), permanent=False)
 
+@login_required
 def acceptSuggestion(request, pkSuggestion=None, delete=None):
     if not pkSuggestion:
         raise RuntimeError("You didn't give me a suggestion. God only knows how that happened.")
