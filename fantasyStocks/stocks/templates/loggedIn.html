@@ -1,2 +1,3 @@
 {% extends "base.html" %}
+{% block rightLink %}{% endblock %}
 {% block rightButton %}<a href="{% url "editUser" %}" class="noUnderline">{{ request.user.username }}</a> <a href="{% url "mylogout" %}" class="noUnderline">(logout)</a>{% endblock %}

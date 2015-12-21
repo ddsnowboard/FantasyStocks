@@ -2,9 +2,33 @@
 {% block content %}
 <form action="" method="POST">
     {% csrf_token %}
-<table>
-{{ form.as_table }}
-</table>
-<input type="submit" />
+    <h2>User information</h2>
+    <table style="width: 50%;">
+        {{ form.as_table }}
+        <tr>
+            <td></td>
+            <td>
+                Click <a href="{% url "myChangePassword" %}">here</a> to change your password.
+            </td>
+        </tr>
+    </table>
+    <input type="submit" />
 </form>
+<br />
+<h2>Table information</h2>
+<table style="width: 50%" border="1">
+    <thead>
+        <tr>
+            <td>Name</td>
+            <td>Number of players</td>
+            <td>Permissiveness</td>
+        </tr>
+    </thead>
+    {% for player in players %}
+    <tr>
+        <td><a href="{% url "editFloor" pkFloor=player.floor.pk %}">{{ player.floor.name }}</a></td>
+        <td>{{ player.floor.leaders.count }}</td>
+        <td>{{ player.floor.permissiveness|capfirst }}</td>
+    </tr>
+    {% endfor %}
 {% endblock %}

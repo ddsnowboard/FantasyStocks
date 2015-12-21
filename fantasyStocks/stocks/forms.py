@@ -280,12 +280,22 @@ class UserEditingForm(forms.Form):
     def save(self):
         if self.is_valid():
             try:
-                user = User.objects.get(self.cleaned_fields["primary_key"])
-                user.first_name = self.cleaned_fields["first_name"]
-                user.last_name = self.cleaned_fields["last_name"]
-                user.email = self.cleaned_fields["email"]
+                user = User.objects.get(pk=self.cleaned_data["primary_key"])
+                user.first_name = self.cleaned_data["first_name"]
+                user.last_name = self.cleaned_data["last_name"]
+                user.email = self.cleaned_data["email"]
                 user.save()
             except User.DoesNotExist:
-                raise RuntimeError("{} is not an available primary key!".format(self.cleaned_fields["primary_key"]))
+                raise RuntimeError("{} is not an available primary key!".format(self.cleaned_data["primary_key"]))
         else:
             raise RuntimeError("This isn't valid!")
+
+class EditFloorForm(forms.Form):
+    name = forms.CharField(max_length=30, required=True)
+    permissiveness = forms.ChoiceField(choices=Floor.PERMISSIVENESS_CHOICES)
+    stocks = StockChoiceField(label="Stocks")
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(widget=forms.widgets.PasswordInput())
+    new_password = forms.CharField(widget=forms.widgets.PasswordInput())
+    new_password_2 = forms.CharField(widget=forms.widgets.PasswordInput(), label="Confirm new password")

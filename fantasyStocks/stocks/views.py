@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from stocks import forms
 from stocks.models import Player, Floor, Stock, Trade, StockSuggestion
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, hashers
 from django.contrib.auth.views import logout_then_login
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
@@ -176,7 +176,52 @@ def editAccount(request):
         formDict["first_name"] = user.first_name
         formDict["email"] = user.email
         form = forms.UserEditingForm(formDict)
-    return render(request, "editUser.html", {"form": form})
+    return render(request, "editUser.html", {"form": form, "players": Player.objects.filter(user=user)})
+
+@login_required
+def editFloor(request, pkFloor=None):
+    if not pkFloor:
+        raise RuntimeError("You didn't pass in a floor")
+    floor = Floor.objects.get(pk=pkFloor)
+    if not floor:
+        raise RuntimeError("{} is not an available floor!".format(pkFloor))
+    if request.POST:
+        form = forms.EditFloorForm(request.POST)
+        if form.is_valid():
+            floor.name = form.cleaned_data["name"]
+            floor.permissiveness = form.cleaned_data["permissiveness"]
+            floor.stocks = form.cleaned_data["stocks"]
+            for player in Player.objects.filter(floor=floor):
+                for s in player.stocks.all():
+                    if not s in floor.stocks.all():
+                        player.stocks.remove(s)
+                player.save()
+            floor.save()
+            return redirect(reverse("dashboard"))
+    form = forms.EditFloorForm({"name": floor.name, "stocks": ",".join([s.symbol for s in floor.stocks.all()]), "permissiveness": floor.permissiveness})
+    return render(request, "editFloor.html", {"form": form})
+
+@login_required
+def changePassword(request):
+    if request.POST:
+        print(request.POST, file=sys.stderr)
+        form = forms.ChangePasswordForm(request.POST)
+        if form.is_valid():
+            if form.cleaned_data["new_password_2"] == form.cleaned_data["new_password"]:
+                old_password = form.cleaned_data["old_password"]
+                new_password = form.cleaned_data["new_password"]
+                user = request.user
+                if hashers.check_password(old_password, user.password):
+                    user.password = hashers.make_password(new_password)
+                    user.save()
+                    return redirect(reverse("dashboard"), permanent=False)
+                else:
+                    form.add_error("old_password", "Your old password is wrong!")
+            else:
+                form.add_error("new_password_2", "Your passwords don't match!")
+    else:
+        form = forms.ChangePasswordForm()
+    return render(request, "changePassword.html", {"form": form})
 
 @login_required
 def receivedTrade(request, pkTrade):

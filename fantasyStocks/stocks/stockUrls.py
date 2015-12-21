@@ -38,6 +38,8 @@ urlpatterns = [
             url("^acceptAStockSuggestion/pkSuggestion/(?P<pkSuggestion>[0-9]+)/(?P<delete>del/?)?", views.acceptSuggestion, name="acceptStock"), 
             url("^user/(?P<pkUser>[0-9]+)/$", views.userPage, name="userPage"), 
             url("^editUser/$", views.editAccount, name="editUser"), 
+            url("^editFloor/floor/(?P<pkFloor>[0-9]+)/$", views.editFloor, name="editFloor"), 
+            url("^changePassword/$", views.changePassword, name="myChangePassword"), 
         ]
 
 
