@@ -82,10 +82,9 @@ class Stock(models.Model):
     def get_score(self):
         # This is really a dummy method. I just need something so that I can make it technically work, 
         # then I'll be able to fine tune it. 
-        # TODO: Implement this so that it adds this to each user who has the stock every time it loads prices. 
         if self.last_price == 0:
             return 0
-        return (self.price * (self.price - self.last_price) / self.last_price) * 100
+        return (self.price * ((self.price - self.last_price) / self.last_price)) * 100
     def format_for_json(self):
         return {"symbol": self.symbol, "name": self.company_name}
     @staticmethod
