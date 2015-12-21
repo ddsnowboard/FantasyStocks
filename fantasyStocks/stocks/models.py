@@ -138,7 +138,7 @@ class Floor(models.Model):
                                                     <a class="noUnderline" href="{% url "trade" stock=stock.pk floor=player.floor.pk %}">
                                                         <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
                                                     </a>
-                                                    {% with change=stock.change %}
+                                                    {% with change=stock.get_change %}
                                                     <span class="{% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" style="display: inline-block; float: right">{% if change > 0 %}+{% endif %}{{ change }}</span>
                                                     {% endwith %}
                                                 </td>
