@@ -38,4 +38,5 @@ class ScoringStressTestCase(StaticLiveServerTestCase):
         for p in Player.objects.filter(floor=floor):
             if not p.isFloor():
                 self.assertEqual(p.points, reduce(lambda x, y: x + y, [s.price for s in p.stocks.all()]))
+                print("Added {} points to {}".format(p.points, p))
         print("Finished! Took {} seconds!".format(time.clock() - start))
