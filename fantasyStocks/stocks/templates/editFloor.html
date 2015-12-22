@@ -2,10 +2,12 @@
 {% block head %}{{ form.media }}{% endblock %}
 {% block content %}
 <form action="" method="POST">
-{% csrf_token %}
-<table>
-{{ form.as_table }}
-</table>
-<input type="submit">
+    {% csrf_token %}
+    <table>
+        {{ form.as_table }}
+    </table>
+    <input type="submit">
 </form>
+<br />
+<input type="button" value="Delete floor {{ floor.name }}" id="deleteButton" />
 {% endblock %}

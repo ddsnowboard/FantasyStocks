@@ -180,6 +180,7 @@ def editAccount(request):
 
 @login_required
 def editFloor(request, pkFloor=None):
+    scripts = STANDARD_SCRIPTS + [static("common.js"), reverse("editFloorJS",kwargs={"pkFloor":pkFloor})]
     if not pkFloor:
         raise RuntimeError("You didn't pass in a floor")
     floor = Floor.objects.get(pk=pkFloor)
@@ -199,7 +200,7 @@ def editFloor(request, pkFloor=None):
             floor.save()
             return redirect(reverse("dashboard"))
     form = forms.EditFloorForm({"name": floor.name, "stocks": ",".join([s.symbol for s in floor.stocks.all()]), "permissiveness": floor.permissiveness})
-    return render(request, "editFloor.html", {"form": form})
+    return render(request, "editFloor.html", {"form": form, "floor": floor, "scripts": scripts})
 
 @login_required
 def changePassword(request):
@@ -294,6 +295,8 @@ def renderStockWidgetJavascript(request, identifier=None, player=0):
     return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
 def tradeFormJavaScript(request):
     return render(request, "trade.js")
+def editFloorJavaScript(request, pkFloor=None):
+    return render(request, "editFloor.js", {"floor": Floor.objects.get(pk=pkFloor)})
 
 @login_required
 def deletePlayer(request, pkPlayer=None):
@@ -311,4 +314,10 @@ def acceptSuggestion(request, pkSuggestion=None, delete=None):
         StockSuggestion.objects.get(pk=pkSuggestion).delete()
     else:
         StockSuggestion.objects.get(pk=pkSuggestion).accept()
+    return redirect(reverse("dashboard"), permanent=False)
+
+def deleteFloor(request, pkFloor=None):
+    if not pkFloor:
+        raise RuntimeError("This should never happen. You didn't give a floor")
+    Floor.objects.get(pk=pkFloor).delete()
     return redirect(reverse("dashboard"), permanent=False)
