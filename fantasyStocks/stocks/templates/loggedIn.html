@@ -1,3 +1,6 @@
 {% extends "base.html" %}
-{% block rightLink %}{% url 'mylogout' %}{% endblock %}
-{% block rightButton %}Logout {{ request.user.username }}{% endblock %}
+{% comment %}
+Don't mind this little HTML injection. No one else needs to know about it
+{% endcomment %}
+{% block rightLink %}" class="defaultCursor" "{% endblock %}
+{% block rightButton %}<a href="{% url "editUser" %}" class="noUnderline">{{ request.user.username }}</a> <a href="{% url "mylogout" %}" class="noUnderline">(logout)</a>{% endblock %}

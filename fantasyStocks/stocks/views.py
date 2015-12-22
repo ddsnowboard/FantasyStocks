@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from stocks import forms
 from stocks.models import Player, Floor, Stock, Trade, StockSuggestion
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, hashers
 from django.contrib.auth.views import logout_then_login
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
@@ -159,30 +159,101 @@ def trade(request, player=None, stock=None, floor=None, pkCountering=None):
         raise RuntimeError("You passed in the wrong arguments")
     return render(request, "trade.html", outputDict)
 
+@login_required
+def editAccount(request):
+    user = request.user
+    if request.POST:
+        form = forms.UserEditingForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("dashboard", permanent=False)
+        else:
+            pass
+    else:
+        formDict = {"primary_key": user.pk}
+        formDict["username"] = user.username
+        formDict["last_name"] = user.last_name
+        formDict["first_name"] = user.first_name
+        formDict["email"] = user.email
+        form = forms.UserEditingForm(formDict)
+    return render(request, "editUser.html", {"form": form, "players": Player.objects.filter(user=user)})
+
+@login_required
+def editFloor(request, pkFloor=None):
+    scripts = STANDARD_SCRIPTS + [static("common.js"), reverse("editFloorJS",kwargs={"pkFloor":pkFloor})]
+    if not pkFloor:
+        raise RuntimeError("You didn't pass in a floor")
+    floor = Floor.objects.get(pk=pkFloor)
+    if not floor:
+        raise RuntimeError("{} is not an available floor!".format(pkFloor))
+    if request.POST:
+        form = forms.EditFloorForm(request.POST)
+        if form.is_valid():
+            floor.name = form.cleaned_data["name"]
+            floor.permissiveness = form.cleaned_data["permissiveness"]
+            floor.stocks = form.cleaned_data["stocks"]
+            for player in Player.objects.filter(floor=floor):
+                for s in player.stocks.all():
+                    if not s in floor.stocks.all():
+                        player.stocks.remove(s)
+                player.save()
+            floor.save()
+            return redirect(reverse("dashboard"))
+    form = forms.EditFloorForm({"name": floor.name, "stocks": ",".join([s.symbol for s in floor.stocks.all()]), "permissiveness": floor.permissiveness})
+    return render(request, "editFloor.html", {"form": form, "floor": floor, "scripts": scripts})
+
+@login_required
+def changePassword(request):
+    if request.POST:
+        print(request.POST, file=sys.stderr)
+        form = forms.ChangePasswordForm(request.POST)
+        if form.is_valid():
+            if form.cleaned_data["new_password_2"] == form.cleaned_data["new_password"]:
+                old_password = form.cleaned_data["old_password"]
+                new_password = form.cleaned_data["new_password"]
+                user = request.user
+                if hashers.check_password(old_password, user.password):
+                    user.password = hashers.make_password(new_password)
+                    user.save()
+                    return redirect(reverse("dashboard"), permanent=False)
+                else:
+                    form.add_error("old_password", "Your old password is wrong!")
+            else:
+                form.add_error("new_password_2", "Your passwords don't match!")
+    else:
+        form = forms.ChangePasswordForm()
+    return render(request, "changePassword.html", {"form": form})
+
+@login_required
 def receivedTrade(request, pkTrade):
     trade = Trade.objects.get(pk=pkTrade)
     form = forms.ReceivedTradeForm(trade.toFormDict())
     return render(request, "trade.html", {"form" : form, "received": True, "trade": trade})
 
+@login_required
 def rejectTrade(request, pkTrade):
     Trade.objects.get(pk=pkTrade).delete()
     return redirect(reverse("dashboard"), permanent=False)
 
+@login_required
 def acceptTrade(request, pkTrade):
     Trade.objects.get(pk=pkTrade).accept()
     return redirect(reverse("dashboard"), permanent=False)
 
+@login_required
 def counterTrade(request, pkTrade, floor):
     trade = Trade.objects.get(pk=pkTrade)
     form = forms.TradeForm(initial=trade.toFormDict())
     outputDict = {"form": form, "request": request, "countering": trade}
     return render(request, "trade.html", outputDict)
 
+@login_required
 def userPage(request, pkUser):
     user = User.objects.get(pk=pkUser)
     scripts =  STANDARD_SCRIPTS + [static("common.js"), static("floorTabs.js")]
     outputDict = {"user": user, "players": Player.objects.filter(user=user), "scripts": scripts}
     return render(request, "userPage.html", outputDict)
+
 
 def playerFieldJavascript(request, identifier):
     return render(request, "playerField.js", {"id" : identifier})
@@ -224,7 +295,10 @@ def renderStockWidgetJavascript(request, identifier=None, player=0):
     return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
 def tradeFormJavaScript(request):
     return render(request, "trade.js")
+def editFloorJavaScript(request, pkFloor=None):
+    return render(request, "editFloor.js", {"floor": Floor.objects.get(pk=pkFloor)})
 
+@login_required
 def deletePlayer(request, pkPlayer=None):
     if not pkPlayer:
         raise RuntimeError("You didn't give me a player. God only knows how that happened.")
@@ -232,6 +306,7 @@ def deletePlayer(request, pkPlayer=None):
         Player.objects.get(pk=pkPlayer).delete()
         return redirect(reverse("dashboard"), permanent=False)
 
+@login_required
 def acceptSuggestion(request, pkSuggestion=None, delete=None):
     if not pkSuggestion:
         raise RuntimeError("You didn't give me a suggestion. God only knows how that happened.")
@@ -239,4 +314,10 @@ def acceptSuggestion(request, pkSuggestion=None, delete=None):
         StockSuggestion.objects.get(pk=pkSuggestion).delete()
     else:
         StockSuggestion.objects.get(pk=pkSuggestion).accept()
+    return redirect(reverse("dashboard"), permanent=False)
+
+def deleteFloor(request, pkFloor=None):
+    if not pkFloor:
+        raise RuntimeError("This should never happen. You didn't give a floor")
+    Floor.objects.get(pk=pkFloor).delete()
     return redirect(reverse("dashboard"), permanent=False)

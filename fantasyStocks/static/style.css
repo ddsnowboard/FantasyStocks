@@ -311,3 +311,7 @@ img.flipped {
     width: 75%;
     border: 5px inset grey;
 }
+
+.defaultCursor {
+    cursor: default;
+}

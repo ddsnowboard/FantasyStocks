@@ -265,3 +265,37 @@ class ReceivedTradeForm(TradeForm):
         js = (reverse("receivedTradeJavascript"), )
         return self.get_widget_media() + forms.Media(js=js)
     media = property(_media)
+
+class UserEditingForm(forms.Form):
+    """
+    This will be the form that will take care of letting the user
+    edit his or her account. I would use a ModelForm, but I want more 
+    control, so I'll do this.
+    """
+    username = forms.CharField(max_length=30, required=True)
+    first_name = forms.CharField(max_length=30, required=False)
+    last_name = forms.CharField(max_length=30, required=False)
+    email = forms.EmailField()
+    primary_key = forms.IntegerField(widget=forms.HiddenInput, required=True)
+    def save(self):
+        if self.is_valid():
+            try:
+                user = User.objects.get(pk=self.cleaned_data["primary_key"])
+                user.first_name = self.cleaned_data["first_name"]
+                user.last_name = self.cleaned_data["last_name"]
+                user.email = self.cleaned_data["email"]
+                user.save()
+            except User.DoesNotExist:
+                raise RuntimeError("{} is not an available primary key!".format(self.cleaned_data["primary_key"]))
+        else:
+            raise RuntimeError("This isn't valid!")
+
+class EditFloorForm(forms.Form):
+    name = forms.CharField(max_length=30, required=True)
+    permissiveness = forms.ChoiceField(choices=Floor.PERMISSIVENESS_CHOICES)
+    stocks = StockChoiceField(label="Stocks")
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(widget=forms.widgets.PasswordInput())
+    new_password = forms.CharField(widget=forms.widgets.PasswordInput())
+    new_password_2 = forms.CharField(widget=forms.widgets.PasswordInput(), label="Confirm new password")

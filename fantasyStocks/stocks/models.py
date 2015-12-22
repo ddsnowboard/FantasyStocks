@@ -217,6 +217,8 @@ class Player(models.Model):
         return self.floor.render_stockboard(self)
     def get_both_floor_boards(self):
         return self.floor.render_both_boards(self)
+    def get_users_owned_floors(self):
+        return Floor.objects.filter(owner=self.user)
 
 class Trade(models.Model):
     recipient = models.ForeignKey(Player)
