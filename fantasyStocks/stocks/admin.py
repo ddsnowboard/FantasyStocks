@@ -50,7 +50,7 @@ class PlayerAdmin(admin.ModelAdmin):
 @admin.register(stocks.models.Floor)
 class FloorAdmin(admin.ModelAdmin):
     actions = [resetToFloor]
-    fields = ("name", "owner", "floorPlayer", "stocks", "permissiveness")
+    fields = ("name", "owner", "floorPlayer", "stocks", "permissiveness", "num_stocks")
 
 @admin.register(stocks.models.Trade)
 class TradeAdmin(admin.ModelAdmin):

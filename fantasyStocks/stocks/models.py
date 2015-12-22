@@ -115,6 +115,8 @@ class Floor(models.Model):
     owner = models.ForeignKey(User, null=True)
     # The model for this ForeignKey is a string because it doesn't know what it is yet because it's down there. 
     floorPlayer = models.ForeignKey("Player", related_name="FloorPlayer", null=True)
+    public = models.BooleanField(default=True)
+    num_stocks = models.IntegerField(default=10)
     def __str__(self):
         return self.name
     def leaders(self):

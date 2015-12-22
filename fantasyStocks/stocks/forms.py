@@ -132,6 +132,8 @@ class RegistrationForm(forms.Form):
 
 class FloorForm(forms.Form):
     name = forms.CharField(label="Name", max_length=35)
+    privacy = forms.BooleanField(label="Private?", help_text="If the floor is private, it won't show up on the join floor page,<br /> and you'll have to send a link to allow people to join it.", required=False) 
+    number_of_stocks = forms.IntegerField(label="Maximum Number of Stocks (per player)", min_value=1)
     stocks = StockChoiceField(label="Stocks")
     permissiveness = forms.ChoiceField(label="Permissiveness", choices=Floor.PERMISSIVENESS_CHOICES)
     def __init__(self, *args, user=None, floor=None, **kwargs):
