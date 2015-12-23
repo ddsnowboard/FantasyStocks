@@ -118,7 +118,6 @@ def join(request, floorNumber):
 
 
 @login_required
-# These variables need to be renamed using Hungarian notation. This is ridiculous. 
 def trade(request, pkPlayer=None, pkStock=None, pkFloor=None, pkCountering=None):
     outputDict = {}
     outputDict["request"] = request

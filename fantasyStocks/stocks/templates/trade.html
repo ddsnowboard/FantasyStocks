@@ -47,8 +47,8 @@
         <input type="submit">
         {% else %}
         <input type="button" onclick="document.location.pathname = '{% url "counterTrade" pkTrade=trade.pk floor=trade.floor.pk %}';" value="Counter">
-        <input type="button" onclick="document.location.pathname = '{% url "rejectTrade" pkTrade=trade.pk%}';" value="Reject">
-        <input type="button" onclick="document.location.pathname = '{% url "acceptTrade" pkTrade=trade.pk%}';" value="Accept">
+        <input type="button" onclick="document.location.pathname = '{% url "rejectTrade" pkTrade=trade.pk %}';" value="Reject">
+        <input type="button" onclick="document.location.pathname = '{% url "acceptTrade" pkTrade=trade.pk %}';" value="Accept">
         {% endif %}
     </form>
 </div>
