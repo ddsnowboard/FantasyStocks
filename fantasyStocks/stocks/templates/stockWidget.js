@@ -111,6 +111,7 @@ var StockWidget = function(inputElement)
             that.$holder.append("<div class=\"redBackground selection warning\">You can't include a stock twice!</div>");
             setTimeout(function(){ $(".warning").fadeOut() }, WARNING_DURATION);
         }
+        that.runOnSelect(null, stock);
     }
 
     this.$value.parent().append(this.$holder).append(this.$box);
@@ -123,6 +124,7 @@ var StockWidget = function(inputElement)
         {
             this.onSelectFunctions[i](event, suggestion);
         }
+        this.runOnChange();
     }
 
     this.onSelect = function(func)
@@ -130,11 +132,22 @@ var StockWidget = function(inputElement)
         this.onSelectFunctions.push(func);
     }
 
+    this.onChangeFunctions = [];
+
+    this.runOnChange = function() {
+        for(var i = 0; i < this.onChangeFunctions.length; i++)
+        {
+            this.onChangeFunctions[i]();
+        }
+    }
+
+    this.onChange = function(func){
+        this.onChangeFunctions.push(func);
+    }
     this.$box.bind("typeahead:select", function(event, suggestion)
             {
                 that.$box.typeahead("val", "");
                 that.pushStock(suggestion);
-                that.runOnSelect(event, suggestion);
             });
 
     this.changeURL = function(url) 
@@ -169,6 +182,7 @@ var StockWidget = function(inputElement)
         this.selectedStocks.splice(this.selectedStocks.indexOf(symbol), 1);
         this.setBox(this.selectedStocks);
         $(".selection:not(.warning)#" + symbol.toUpperCase()).remove();
+        this.runOnChange();
     };
 
     this.clear = function()

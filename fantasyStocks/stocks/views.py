@@ -163,6 +163,7 @@ def trade(request, pkPlayer=None, pkStock=None, pkFloor=None, pkCountering=None)
     else:
         raise RuntimeError("You passed in the wrong arguments")
     outputDict["floor"] = Floor.objects.get(pk=pkFloor)
+    outputDict["userPlayer"] = Player.objects.get(user=request.user, floor=outputDict["floor"])
     return render(request, "trade.html", outputDict)
 
 @login_required

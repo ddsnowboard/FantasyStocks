@@ -4,8 +4,12 @@
 {% else %}Received Trade{% endif %}
 {% endblock %}
 {% block head %}{{ form.media }}{% endblock %}
+{% block script %} var userNumberOfStocks = {{ userPlayer.stocks.all|length }};{% endblock %}
 {% block content %}
 <div class="tradeHolder">
+    <div style="position: absolute; right: 0; top: 0">
+        <span id="currStocks"></span> of <span id="maxStocks">{{ floor.num_stocks }}</span>
+    </div>
     <form action="{% if received %}{% url "trade" pkFloor=trade.floor.pk %}{% elif countering %}{% url "trade" pkFloor=countering.floor.pk pkCountering=countering.pk %}{% endif %}" method="POST">
         {% csrf_token %}
         <table align="center">

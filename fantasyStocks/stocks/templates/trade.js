@@ -101,4 +101,12 @@ $(document).ready(function() {
                     otherUsername.name = suggestion.username;
                 }
             });
+    var numStocks = JSON.parse(userNumberOfStocks - otherStockbox.size() + userStockbox.size());
+    $("#currStocks").html(numStocks);
+    var onChangeFunction = function() {
+        var numStocks = JSON.parse(userNumberOfStocks - otherStockbox.size() + userStockbox.size());
+        $("#currStocks").html(numStocks);
+    }
+    userStockbox.onChange(onChangeFunction);
+    otherStockbox.onChange(onChangeFunction);
 });
