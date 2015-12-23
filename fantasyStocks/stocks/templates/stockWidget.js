@@ -180,6 +180,9 @@ var StockWidget = function(inputElement)
         }
     };
 
+    this.size = function(){
+        return this.selectedStocks.length;
+    };
 
     this.setTypeahead();
     this.enable();
