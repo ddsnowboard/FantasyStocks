@@ -192,17 +192,14 @@ def editFloor(request, pkFloor=None):
     if request.POST:
         form = forms.EditFloorForm(request.POST)
         if form.is_valid():
-            floor.name = form.cleaned_data["name"]
-            floor.permissiveness = form.cleaned_data["permissiveness"]
-            floor.stocks = form.cleaned_data["stocks"]
+            form.apply(floor)
             for player in Player.objects.filter(floor=floor):
                 for s in player.stocks.all():
                     if not s in floor.stocks.all():
                         player.stocks.remove(s)
                 player.save()
-            floor.save()
             return redirect(reverse("dashboard"))
-    form = forms.EditFloorForm({"name": floor.name, "stocks": ",".join([s.symbol for s in floor.stocks.all()]), "permissiveness": floor.permissiveness})
+    form = forms.EditFloorForm({"name": floor.name, "stocks": ",".join([s.symbol for s in floor.stocks.all()]), "permissiveness": floor.permissiveness, "privacy": not floor.public, "number_of_stocks": floor.num_stocks})
     return render(request, "editFloor.html", {"form": form, "floor": floor, "scripts": scripts})
 
 @login_required

@@ -289,9 +289,17 @@ class UserEditingForm(forms.Form):
 
 class EditFloorForm(forms.Form):
     name = forms.CharField(max_length=30, required=True)
+    privacy = forms.BooleanField(label="Private?:", required=False) 
+    number_of_stocks = forms.IntegerField(label="Maximum Number of Stocks (per player)", min_value=1, max_value=1000)
     permissiveness = forms.ChoiceField(choices=Floor.PERMISSIVENESS_CHOICES)
     stocks = StockChoiceField(label="Stocks")
-
+    def apply(self, oFloor):
+        oFloor.name = self.cleaned_data["name"]
+        oFloor.permissiveness = self.cleaned_data["permissiveness"]
+        oFloor.stocks = self.cleaned_data["stocks"]
+        oFloor.num_stocks = self.cleaned_data["number_of_stocks"]
+        oFloor.public = not self.cleaned_data["privacy"]
+        oFloor.save()
 
 class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(widget=forms.widgets.PasswordInput())
