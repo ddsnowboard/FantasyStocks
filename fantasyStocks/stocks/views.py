@@ -79,6 +79,7 @@ def logout(request):
 
 @login_required
 def create_floor(request):
+    scripts = STANDARD_SCRIPTS + [static("common.js"), static("createFloor.js")]
     if request.method == "POST":
         form = forms.FloorForm(request.POST)
         if form.is_valid():
@@ -93,7 +94,7 @@ def create_floor(request):
                 newFloorPlayer.stocks.add(s)
             return redirect(reverse("dashboard"), permanent=False)
         else:
-            return render(request, "createFloor.html", variableDict)
+            return render(request, "createFloor.html", {"form": form, "scripts": scripts})
     else:
         form = forms.FloorForm()
         return render(request, "createFloor.html", {"form": form})
