@@ -164,11 +164,6 @@ class TradeForm(forms.Form):
         You have to give this function the floor number or else it won't know where 
         to look. You also need to give it the user object so it can find its player.
         """
-        # There's got to be a better way to do this. This breaks the one page rule, 
-        # and also it's terrible (though effective). I think I can move all this 
-        # into the respective fields, but I'm not 100% sure. If I can do that, though, 
-        # it would be one line, if I'm not mistaken (specifically, the one below). 
-        # But for now it's OK, I think. I should do some stress testing though. 
         if not super().is_valid():
             return False
         error = False
@@ -296,6 +291,7 @@ class EditFloorForm(forms.Form):
     name = forms.CharField(max_length=30, required=True)
     permissiveness = forms.ChoiceField(choices=Floor.PERMISSIVENESS_CHOICES)
     stocks = StockChoiceField(label="Stocks")
+
 
 class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(widget=forms.widgets.PasswordInput())
