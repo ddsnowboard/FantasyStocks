@@ -118,14 +118,15 @@ def join(request, floorNumber):
 
 
 @login_required
-def trade(request, player=None, stock=None, floor=None, pkCountering=None):
+# These variables need to be renamed using Hungarian notation. This is ridiculous. 
+def trade(request, pkPlayer=None, pkStock=None, pkFloor=None, pkCountering=None):
     outputDict = {}
     outputDict["request"] = request
     if request.POST:
         form = forms.TradeForm(request.POST)
-        if form.is_valid(floor=floor, user=request.user, pkCountering=pkCountering):
+        if form.is_valid(floor=pkFloor, user=request.user, pkCountering=pkCountering):
             form.clean()
-            form.to_trade(floor=floor, user=request.user)
+            form.to_trade(floor=pkFloor, user=request.user)
             if pkCountering:
                 Trade.objects.get(pk=pkCountering).delete()
             return redirect(reverse("dashboard"), permanent=False)
@@ -133,33 +134,35 @@ def trade(request, player=None, stock=None, floor=None, pkCountering=None):
             if pkCountering:
                 outputDict["countering"] = Trade.objects.get(pk=pkCountering)
             outputDict["form"] = form
-    elif not (player or stock or floor):
+    elif not (pkPlayer or pkStock or pkFloor):
         raise RuntimeError("You need to at least pass in a floor")
-    elif player and floor and not stock:
-        otherPlayer = Player.objects.get(pk=player)
+    elif pkPlayer and pkFloor and not pkStock:
+        otherPlayer = Player.objects.get(pk=pkPlayer)
         init_dict = {}
         if otherPlayer.user == request.user:
             otherPlayer = None
         else:
             init_dict["other_user"] = otherPlayer.user.username
         outputDict["form"] = forms.TradeForm(initial=init_dict)
-    elif stock and floor and not player:
-        floor = Floor.objects.get(pk=floor)
-        # stocks__id means look for something with this id in the "stocks" many-to-many field. 
-        stocks = [Stock.objects.get(pk=stock)]
+    elif pkStock and pkFloor and not pkPlayer:
+        print("branch tested", file=sys.stderr)
+        floor = Floor.objects.get(pk=pkFloor)
+        stocks = [Stock.objects.get(pk=pkStock)]
         stocks_string = ",".join([s.symbol for s in stocks])
         try:
-            otherPlayer = Player.objects.get(floor=floor, stocks__id=stock)
+            # stocks__id means look for something with this id in the "stocks" many-to-many field. 
+            otherPlayer = Player.objects.get(floor=floor, stocks__id=pkStock)
             if otherPlayer.user == request.user:
                 outputDict["form"] = forms.TradeForm(initial={"user_stocks": stocks_string})
             else:
                 outputDict["form"] = forms.TradeForm(initial={"other_user": otherPlayer.user.username, "other_stocks": stocks_string})
         except Player.DoesNotExist:
             outputDict["form"] = forms.TradeForm(initial={"other_stocks": stocks_string})
-    elif floor and pkCountering:
+    elif pkFloor and pkCountering:
         raise RuntimeError("got floor and pk")
     else:
         raise RuntimeError("You passed in the wrong arguments")
+    outputDict["floor"] = Floor.objects.get(pk=pkFloor)
     return render(request, "trade.html", outputDict)
 
 @login_required

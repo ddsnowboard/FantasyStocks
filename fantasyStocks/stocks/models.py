@@ -137,7 +137,7 @@ class Floor(models.Model):
                                                 {% else %}
                                                 <td>
                                                     {% endif %}
-                                                    <a class="noUnderline" href="{% url "trade" stock=stock.pk floor=player.floor.pk %}">
+                                                    <a class="noUnderline" href="{% url "trade" pkStock=stock.pk pkFloor=player.floor.pk %}">
                                                         <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
                                                     </a>
                                                     {% with change=stock.get_change %}
