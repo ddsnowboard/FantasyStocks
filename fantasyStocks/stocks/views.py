@@ -324,3 +324,15 @@ def deleteFloor(request, pkFloor=None):
         raise RuntimeError("This should never happen. You didn't give a floor")
     Floor.objects.get(pk=pkFloor).delete()
     return redirect(reverse("dashboard"), permanent=False)
+
+def playerJson(request, pkPlayer=None):
+    if not pkPlayer:
+        raise RuntimeError("You need to supply a player to get information!")
+    else:
+        return HttpResponse(Player.objects.get(pk=pkPlayer).to_json())
+
+def floorJson(request, pkFloor=None):
+    if not pkFloor:
+        raise RuntimeError("You need to supply a floor to get information!")
+    else:
+        return HttpResponse(Floor.objects.get(pk=pkFloor).to_json())

@@ -39,6 +39,8 @@ urlpatterns = [
             url("^changePassword/$", views.changePassword, name="myChangePassword"), 
             url("^deleteAFloor/floor/(?P<pkFloor>[0-9]+)/$", views.deleteFloor, name="deleteFloor"), 
             url("^editFloorjavascript/floor/(?P<pkFloor>[0-9]+)/$", views.editFloorJavaScript, name="editFloorJS"), 
+            url("^playerJSON/player/(?P<pkPlayer>[0-9]+)/$", views.playerJson, name="playerJson"), 
+            url("^floorJSON/floor/(?P<pkFloor>[0-9]+)/$", views.floorJson, name="floorJson"), 
         ]
 
 

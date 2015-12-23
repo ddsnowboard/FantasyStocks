@@ -177,6 +177,10 @@ class Floor(models.Model):
         return self._render_board(player=player, stockboard=True)
     def render_both_boards(self, player):
         return self._render_board(player=player, stockboard=True, leaderboard=True)
+    def to_json(self):
+        return json.dumps({"stocks": ",".join(s.symbol for s in self.stocks.all()),
+            "name": self.name, "permissiveness": self.permissiveness, "pkOwner": self.owner.pk, 
+            "pkFloorPlayer": self.floorPlayer.pk, "public": self.public, "num_stocks": self.num_stocks})
 
 # NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
 # object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
@@ -221,6 +225,8 @@ class Player(models.Model):
         return self.floor.render_both_boards(self)
     def get_users_owned_floors(self):
         return Floor.objects.filter(owner=self.user)
+    def to_json(self):
+        return json.dumps({"pkUser": self.user.pk, "pkFloor": self.floor.pk, "stocks": ",".join([s.symbol for s in self.stocks.all()]), "points": self.points})
 
 class Trade(models.Model):
     recipient = models.ForeignKey(Player)
