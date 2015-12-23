@@ -80,6 +80,7 @@ def logout(request):
 @login_required
 def create_floor(request):
     scripts = STANDARD_SCRIPTS + [static("common.js"), static("createFloor.js")]
+    outputDict = {"scripts": scripts}
     if request.method == "POST":
         form = forms.FloorForm(request.POST)
         if form.is_valid():
