@@ -2,11 +2,13 @@ from datetime import timedelta
 from django.contrib import admin
 import stocks
 from stocks.models import Player, Floor
+import sys
 
 # Stock admin functions
 def update(modeladmin, request, queryset):
     for i in queryset:
         i.update()
+        print("Updated {}".format(i), file=sys.stderr)
 def force_update(modeladmin, request, queryset):
     for i in queryset:
         i.force_update()
