@@ -95,10 +95,11 @@ def create_floor(request):
                 newFloorPlayer.stocks.add(s)
             return redirect(reverse("dashboard"), permanent=False)
         else:
-            return render(request, "createFloor.html", {"form": form, "scripts": scripts})
+            outputDict["form"] = form
+            return render(request, "createFloor.html", outputDict)
     else:
-        form = forms.FloorForm()
-        return render(request, "createFloor.html", {"form": form})
+        outputDict["form"] = forms.FloorForm()
+        return render(request, "createFloor.html", outputDict)
 
 
 @login_required
