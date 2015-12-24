@@ -8,6 +8,7 @@
 {% block content %}
 <div class="tradeHolder">
     <div style="position: absolute; right: 0; top: 0">
+        <!-- This should show how many stocks you are using, not how many you have left. This doesn't make any sense. Also, this should have some more text with it explaining what it means -->
         <span id="currStocks"></span> of <span id="maxStocks">{{ floor.num_stocks }}</span>
     </div>
     <form action="{% if received %}{% url "trade" pkFloor=trade.floor.pk %}{% elif countering %}{% url "trade" pkFloor=countering.floor.pk pkCountering=countering.pk %}{% endif %}" method="POST">
