@@ -234,6 +234,13 @@ class TradeForm(forms.Form):
         if not other_stocks and not user_stocks:
             self.add_error(None, ValidationError("""The trade is empty!""", code="empty"))
             error = True
+        max_stocks = floor.num_stocks
+        if user_player.stocks.all().count() - len(user_stocks) + len(other_stocks) > max_stocks:
+            self.add_error(None, ValidationError("If this trade is accepted, you will have too many stocks."))
+            error = True
+        elif not other_player.isFloor() and other_player.stocks.all().count() - len(other_stocks) + len(user_stocks) > max_stocks:
+            self.add_error(None, ValidationError("If this trade is accepted, %(other)s will have too many stocks.", params={"other": other_player.get_name()}))
+            error = True
         return not error
     def to_trade(self, floor=None, user=None):
         floor = Floor.objects.get(pk=floor)
