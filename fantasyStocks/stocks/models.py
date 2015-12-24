@@ -239,6 +239,7 @@ class Trade(models.Model):
     def __str__(self):
         return "Trade from {} to {} on {}".format(self.sender.user, self.recipient.user, self.floor)
     def accept(self):
+        self.verify()
         for s in self.recipientStocks.all():
             self.recipient.stocks.remove(s)
             self.sender.stocks.add(s)
@@ -252,14 +253,18 @@ class Trade(models.Model):
         if not (self.recipient.isFloor() and not self.floor.permissiveness == "closed"):
             for s in self.recipientStocks.all():
                 if not s in self.recipient.stocks.all():
-                    raise TradeError("One of the recipient stocks ({}) doesn't belong to the recipient ({})".format(s, self.recipient.user))
+                    raise RuntimeError("One of the recipient stocks ({}) doesn't belong to the recipient ({})".format(s, self.recipient.user))
                 if not s in self.floor.stocks.all():
-                    raise TradeError("One of the recipient stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
+                    raise RuntimeError("One of the recipient stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
         for s in self.senderStocks.all():
             if not s in self.sender.stocks.all():
-                raise TradeError("One of the sender stocks ({}) doesn't belong to the sender ({})".format(s, self.recipient.user))
+                raise RuntimeError("One of the sender stocks ({}) doesn't belong to the sender ({})".format(s, self.recipient.user))
             if not s in self.floor.stocks.all():
-                raise TradeError("One of the sender stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
+                raise RuntimeError("One of the sender stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
+        if self.recipient.stocks.all().count() + self.senderStocks.all().count() - self.recipientStocks.all().count() > self.floor.num_stocks and not self.recipient.isFloor():
+            raise TradeError("{} will have too many stocks if this trade goes through".format(self.recipient))
+        if self.sender.stocks.all().count() + self.recipientStocks.all().count() - self.senderStocks.all().count() > self.floor.num_stocks:
+            raise TradeError("{} will have too many stocks if this trade goes through".format(self.sender))
         if self.recipient.isFloor():
             self.accept()
         elif self.sender.isFloor():

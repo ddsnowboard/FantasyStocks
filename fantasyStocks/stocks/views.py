@@ -244,7 +244,13 @@ def rejectTrade(request, pkTrade):
 
 @login_required
 def acceptTrade(request, pkTrade):
-    Trade.objects.get(pk=pkTrade).accept()
+    try:
+        Trade.objects.get(pk=pkTrade).accept()
+    except TradeError as e:
+        >>> # You need to figure out how to catch this error and display it nicely. I don't know how to do it though. 
+        # Maybe I can do something from the view itself instead of from here, like check before it shows the user. I don't know. 
+
+        return 
     return redirect(reverse("dashboard"), permanent=False)
 
 @login_required
