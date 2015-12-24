@@ -101,12 +101,15 @@ $(document).ready(function() {
                     otherUsername.name = suggestion.username;
                 }
             });
-    var numStocks = JSON.parse(userNumberOfStocks - otherStockbox.size() + userStockbox.size());
-    $("#currStocks").html(numStocks);
+
+
+    var max_stocks = parseInt($("#maxStocks").html());
+    var remainingStocks = max_stocks - (userNumberOfStocks + otherStockbox.size() - userStockbox.size());
+    $("#currStocks").html(remainingStocks);
     var onChangeFunction = function() {
-        var numStocks = JSON.parse(userNumberOfStocks - otherStockbox.size() + userStockbox.size());
-        $("#currStocks").html(numStocks);
-        if(numStocks <= 0){
+        remainingStocks = max_stocks - (userNumberOfStocks + otherStockbox.size() - userStockbox.size());
+        $("#currStocks").html(remainingStocks);
+        if(remainingStocks < 0){
             $("#count").css("color", "red");
         }
         else
