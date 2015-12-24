@@ -123,7 +123,7 @@ def trade(request, pkPlayer=None, pkStock=None, pkFloor=None, pkCountering=None)
     outputDict["request"] = request
     if request.POST:
         form = forms.TradeForm(request.POST)
-        if form.is_valid(floor=pkFloor, user=request.user, pkCountering=pkCountering):
+        if form.is_valid(pkFloor=pkFloor, user=request.user, pkCountering=pkCountering):
             form.clean()
             form.to_trade(floor=pkFloor, user=request.user)
             if pkCountering:

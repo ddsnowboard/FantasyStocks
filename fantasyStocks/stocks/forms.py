@@ -147,7 +147,10 @@ class FloorForm(forms.Form):
     def is_valid(self):
         return super(FloorForm, self).is_valid()
     def save(self):
-        floor = Floor(name=self.cleaned_data['name'], permissiveness=self.cleaned_data['permissiveness'])
+        floor = Floor(name=self.cleaned_data['name'],
+                permissiveness=self.cleaned_data['permissiveness'],
+                num_stocks=self.cleaned_data["number_of_stocks"],
+                public=not self.cleaned_data["privacy"])
         floor.save()
         for i in self.cleaned_data['stocks']:
             floor.stocks.add(i)
@@ -159,7 +162,7 @@ class TradeForm(forms.Form):
     other_user = UserField(label="Other Player")
     user_stocks = StockChoiceField(label="Your Stocks", required=False)
     other_stocks = StockChoiceField(label="Other player's stocks", required=False)
-    def is_valid(self, floor=None, user=None, pkCountering=None):
+    def is_valid(self, pkFloor=None, user=None, pkCountering=None):
         """
         You have to give this function the floor number or else it won't know where 
         to look. You also need to give it the user object so it can find its player.
@@ -167,14 +170,14 @@ class TradeForm(forms.Form):
         if not super().is_valid():
             return False
         error = False
-        if not floor:
+        if not pkFloor:
             raise RuntimeError("""You need to give a floor to 
                 TradeForm.is_valid() or else it won't know what to look for.""")
         elif not user:
             raise RuntimeError("""You need to give the user object to 
                 TradeForm.is_valid() or else it won't know what to look for.""")
         try:
-            floor = Floor.objects.get(pk=floor)
+            floor = Floor.objects.get(pk=pkFloor)
         except Floor.DoesNotExist:
             raise RuntimeError("""The floor with primary key {} doesn't exist""".format(floor))
         other = self.fields["other_user"].to_python(self.data["other_user"])
