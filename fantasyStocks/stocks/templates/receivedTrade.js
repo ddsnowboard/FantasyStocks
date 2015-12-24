@@ -1,4 +1,4 @@
-$("document").ready(function() {
+$(document).ready(function() {
     for(var i = 0; i < stockWidgets.length; i++)
     {
         stockWidgets[i].disable();

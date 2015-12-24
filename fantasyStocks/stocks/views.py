@@ -231,7 +231,11 @@ def changePassword(request):
 def receivedTrade(request, pkTrade):
     trade = Trade.objects.get(pk=pkTrade)
     form = forms.ReceivedTradeForm(trade.toFormDict())
-    return render(request, "trade.html", {"form" : form, "received": True, "trade": trade})
+    return render(request, "trade.html", {"form" : form,
+        "received": True,
+        "trade": trade,
+        "floor": trade.floor, 
+        "userPlayer": trade.recipient})
 
 @login_required
 def rejectTrade(request, pkTrade):
@@ -247,7 +251,12 @@ def acceptTrade(request, pkTrade):
 def counterTrade(request, pkTrade, floor):
     trade = Trade.objects.get(pk=pkTrade)
     form = forms.TradeForm(initial=trade.toFormDict())
-    outputDict = {"form": form, "request": request, "countering": trade}
+    # TODO: There is too much repitition for these template variables. I need to find a better way. 
+    outputDict = {"form": form,
+            "request": request,
+            "countering": trade, 
+            "floor": trade.floor, 
+            "userPlayer": trade.recipient}
     return render(request, "trade.html", outputDict)
 
 @login_required
@@ -298,6 +307,8 @@ def renderStockWidgetJavascript(request, identifier=None, player=0):
     return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
 def tradeFormJavaScript(request):
     return render(request, "trade.js")
+def tradeCommonJavaScript(request):
+    return render(request, "tradeCommon.js")
 def editFloorJavaScript(request, pkFloor=None):
     return render(request, "editFloor.js", {"floor": Floor.objects.get(pk=pkFloor)})
 

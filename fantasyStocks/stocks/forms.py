@@ -263,13 +263,13 @@ class TradeForm(forms.Form):
         # There is usually such good design in django. 
         # I don't know where it went here. O well. 
         # At least I know that the scripts will be in the order I want. 
-        js = (reverse("tradeFormJavaScript"), )
+        js = (reverse("tradeCommonJavaScript"), reverse("tradeFormJavaScript"), )
         return self.get_widget_media() + forms.Media(js=js)
     media = property(_media)
 
 class ReceivedTradeForm(TradeForm):
     def _media(self):
-        js = (reverse("receivedTradeJavascript"), )
+        js = (reverse("tradeCommonJavaScript"), reverse("receivedTradeJavascript"), )
         return self.get_widget_media() + forms.Media(js=js)
     media = property(_media)
 

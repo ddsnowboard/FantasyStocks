@@ -282,3 +282,4 @@ class StockSuggestion(models.Model):
             self.requesting_player.stocks.add(self.stock)
             self.requesting_player.save()
         self.delete()
+
