@@ -239,7 +239,8 @@ class Trade(models.Model):
     def __str__(self):
         return "Trade from {} to {} on {}".format(self.sender.user, self.recipient.user, self.floor)
     def accept(self):
-        self.verify()
+        if not self.recipient.isFloor():
+            self.verify()
         for s in self.recipientStocks.all():
             self.recipient.stocks.remove(s)
             self.sender.stocks.add(s)
@@ -262,9 +263,9 @@ class Trade(models.Model):
             if not s in self.floor.stocks.all():
                 raise RuntimeError("One of the sender stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
         if self.recipient.stocks.all().count() + self.senderStocks.all().count() - self.recipientStocks.all().count() > self.floor.num_stocks and not self.recipient.isFloor():
-            raise TradeError("{} will have too many stocks if this trade goes through".format(self.recipient))
+            raise TradeError("{} will have too many stocks if this trade goes through".format(self.recipient.get_name()))
         if self.sender.stocks.all().count() + self.recipientStocks.all().count() - self.senderStocks.all().count() > self.floor.num_stocks:
-            raise TradeError("{} will have too many stocks if this trade goes through".format(self.sender))
+            raise TradeError("{} will have too many stocks if this trade goes through".format(self.sender.get_name()))
         if self.recipient.isFloor():
             self.accept()
         elif self.sender.isFloor():

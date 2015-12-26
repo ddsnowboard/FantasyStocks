@@ -7,4 +7,8 @@ $(document).ready(function() {
     {
         playerPickers[i].disable();
     }
+    if($(".errorlist").length > 0)
+    {
+        $("#acceptButton").attr("disabled", "disabled").attr("title", "There is an error with this trade; you can't accept it.");
+    }
 });
