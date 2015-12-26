@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from stocks import forms
-from stocks.models import Player, Floor, Stock, Trade, StockSuggestion
+from stocks.models import Player, Floor, Stock, Trade, StockSuggestion, TradeError
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, hashers
 from django.contrib.auth.views import logout_then_login
@@ -231,6 +231,10 @@ def changePassword(request):
 def receivedTrade(request, pkTrade):
     trade = Trade.objects.get(pk=pkTrade)
     form = forms.ReceivedTradeForm(trade.toFormDict())
+    try:
+        errors = trade.verify()
+    except TradeError as e:
+        form.add_error(None, str(e))
     return render(request, "trade.html", {"form" : form,
         "received": True,
         "trade": trade,
@@ -244,13 +248,7 @@ def rejectTrade(request, pkTrade):
 
 @login_required
 def acceptTrade(request, pkTrade):
-    try:
-        Trade.objects.get(pk=pkTrade).accept()
-    except TradeError as e:
-        >>> # You need to figure out how to catch this error and display it nicely. I don't know how to do it though. 
-        # Maybe I can do something from the view itself instead of from here, like check before it shows the user. I don't know. 
-
-        return 
+    Trade.objects.get(pk=pkTrade).accept()
     return redirect(reverse("dashboard"), permanent=False)
 
 @login_required

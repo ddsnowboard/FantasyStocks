@@ -252,10 +252,7 @@ class TradeForm(forms.Form):
         for i in self.cleaned_data.get("user_stocks", []):
             trade.senderStocks.add(i)
         trade.save()
-            trade.verify()
-        except TradeError as e:
-            self.add_error(None, str(TradeError))
-            raise
+        trade.verify()
         return trade
     def get_widget_media(self):
         otherMedia = forms.Media()
