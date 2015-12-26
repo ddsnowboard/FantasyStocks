@@ -25,6 +25,7 @@ class ScoringStressTestCase(StaticLiveServerTestCase):
             user = User.objects.create_user("user_{}".format(i), "user_{}@mailmail.mail".format(i), "thePasswordIs{}".format(i))
             player = Player.objects.create(user=user, floor=floor)
             player.stocks.add(available_stocks.pop())
+            print(player.stocks.all()[0].price)
             user.save()
             player.save()
     def test_players_get_scores(self):
