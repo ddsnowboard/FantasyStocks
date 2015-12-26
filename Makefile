@@ -10,3 +10,5 @@ templates :
 test : 
 	python3 ./fantasyStocks/manage.py test ./fantasyStocks/
 	cd ..
+run : 
+	python3 ./fantasyStocks/manage.py runserver
