@@ -285,8 +285,15 @@ class StockSuggestion(models.Model):
         if not self.stock in self.floor.stocks.all():
             self.floor.stocks.add(self.stock)
             self.floor.save()
-            self.requesting_player.stocks.add(self.stock)
-            self.requesting_player.save()
+            if self.requesting_player.stocks.all().count() + 1 > self.floor.num_stocks:
+                print("Entered top!", file=sys.stderr)
+                self.floor.floorPlayer.stocks.add(self.stock)
+                self.floor.floorPlayer.save()
+                print(self.floor.floorPlayer.stocks.all())
+            else:
+                print("Entered bottom!", file=sys.stderr)
+                self.requesting_player.stocks.add(self.stock)
+                self.requesting_player.save()
         self.delete()
     def __str__(self):
         return "{} wants {} added to {}".format(self.requesting_player.get_name(), self.stock, self.floor)
