@@ -2,6 +2,7 @@
 var currentTradeSet;
 var received;
 var sent;
+var requests;
 var tradeInbox;
 function rebind()
 {
@@ -19,21 +20,23 @@ function rebind()
 $(document).ready(function() {
     received = $("#received");
     sent = $("#sent");
+    requests = $("#requests");
     tradeInbox = $(".tradeInbox");
     currentTradeSet = trades[pk];
     setTradeBox(tradeInbox, currentTradeSet.received);
     onTabClick = function(that) {
         received.addClass("selected");
         sent.removeClass("selected");
+        requests.removeClass("selected");
         currentTradeSet = trades[that.id];
         setTradeBox(tradeInbox, currentTradeSet.received);
         if(currentTradeSet.requests == undefined)
         {
-            $("#requests").css("visibility", "hidden");
+            requests.css("visibility", "hidden");
         }
         else
         {
-            $("#requests").css("visibility", "visible");
+            requests.css("visibility", "visible");
         }
         rebind();
     };

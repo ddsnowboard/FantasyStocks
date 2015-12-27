@@ -144,7 +144,6 @@ def trade(request, pkPlayer=None, pkStock=None, pkFloor=None, pkCountering=None)
             init_dict["other_user"] = otherPlayer.user.username
         outputDict["form"] = forms.TradeForm(initial=init_dict)
     elif pkStock and pkFloor and not pkPlayer:
-        print("branch tested", file=sys.stderr)
         floor = Floor.objects.get(pk=pkFloor)
         stocks = [Stock.objects.get(pk=pkStock)]
         stocks_string = ",".join([s.symbol for s in stocks])

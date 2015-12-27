@@ -205,7 +205,7 @@ class Player(models.Model):
     def sentTrades(self):
         return Trade.objects.filter(sender=self)
     def receivedRequests(self):
-        return StockSuggestion.objects.filter(floor__owner=self.user)
+        return StockSuggestion.objects.filter(floor__owner=self.user, floor=self.floor)
     def numMessages(self):
         num = self.receivedTrades().count()
         if self.floor.owner == self.user and self.floor.permissiveness == 'permissive':
@@ -241,7 +241,7 @@ class Trade(models.Model):
     def accept(self):
         if not self.recipient.isFloor():
             self.verify()
-        for s in self.recipientStocks.all():
+        for s in [i for i in self.recipientStocks.all() if not StockSuggestion.objects.filter(floor=self.floor, stock=i)]:
             self.recipient.stocks.remove(s)
             self.sender.stocks.add(s)
         for s in self.senderStocks.all():
@@ -288,4 +288,5 @@ class StockSuggestion(models.Model):
             self.requesting_player.stocks.add(self.stock)
             self.requesting_player.save()
         self.delete()
-
+    def __str__(self):
+        return "{} wants {} added to {}".format(self.requesting_player.get_name(), self.stock, self.floor)
