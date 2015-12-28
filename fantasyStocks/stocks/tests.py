@@ -10,7 +10,7 @@ import urllib
 
 class MainTestCase(StaticLiveServerTestCase):
     def setUp(self):
-        NUMBER_OF_USERS = 100
+        NUMBER_OF_USERS = 1000
         with urllib.request.urlopen(self.live_server_url + static("stocks.json")) as f:
             available_stocks = [Stock.objects.create(symbol=i["symbol"]) for i in json.loads(f.read().decode("UTF-8"))]
         floor_user = User.objects.create_user("Floor", "floor@floors.net", "flooring")
@@ -27,9 +27,12 @@ class MainTestCase(StaticLiveServerTestCase):
         for i in range(NUMBER_OF_USERS):
             user = User.objects.create_user("user_{}".format(i), "user_{}@mailmail.mail".format(i), "thePasswordIs{}".format(i))
             player = Player.objects.create(user=user, floor=floor)
-            player.stocks.add(available_stocks.pop())
+            stock = available_stocks.pop()
+            player.stocks.add(stock)
             user.save()
             player.save()
+            floor.stocks.add(stock)
+            floor.save()
         print("done creating users")
     def test_scoring_time(self):
         start = time.clock()
@@ -40,7 +43,7 @@ class MainTestCase(StaticLiveServerTestCase):
             s.update()
         for p in Player.objects.filter(floor=floor):
             if not p.isFloor():
-                self.assertEqual(p.points, reduce(lambda x, y: x + y, [s.price for s in p.stocks.all()]))
+                self.assertAlmostEqual(p.points, reduce(lambda x, y: x + y, [s.get_score() for s in p.stocks.all()]), delta=1)
         print("Finished! Took {} seconds!".format(time.clock() - start))
     def test_stock_cap_simple(self):
         SMALL_NUMBER = 2
@@ -57,8 +60,8 @@ class MainTestCase(StaticLiveServerTestCase):
             trade.verify()
     def test_trade_simple(self):
         floor = Floor.objects.all()[0]
-        playerA = Player.objects.filter(floor=floor)[0]
-        playerB = Player.objects.filter(floor=floor)[1]
+        playerA = [p for p in Player.objects.filter(floor=floor) if not p.isFloor()][0]
+        playerB = [p for p in Player.objects.filter(floor=floor) if not p.isFloor()][1]
         origAStocks = list(playerA.stocks.all())
         origBStocks = list(playerB.stocks.all())
         trade = Trade.objects.create(floor=floor, sender=playerA, recipient=playerB)
@@ -66,5 +69,5 @@ class MainTestCase(StaticLiveServerTestCase):
         trade.recipientStocks = playerB.stocks.all()
         trade.save()
         trade.accept()
-        self.assertEqual(origAStocks, playerB.stocks.all())
-        self.assertEqual(origBStocks, playerA.stocks.all())
+        self.assertEqual(list(playerB.stocks.all()), origAStocks)
+        self.assertEqual(list(playerA.stocks.all()), origBStocks)

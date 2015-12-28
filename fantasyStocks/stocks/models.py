@@ -95,6 +95,7 @@ class Stock(models.Model):
         """
         URL = "http://finance.yahoo.com/webservice/v1/symbols/{}/quote?format=json&view=detail"
         try:
+            print(URL.format(symbol), file=sys.stderr)
             jsonObj = json.loads(request.urlopen(URL.format(symbol)).read().decode("UTF-8"))['list']['resources'][0]['resource']['fields']
         except IndexError:
             raise RuntimeError("The stock with symbol {} can't be found!".format(symbol))
