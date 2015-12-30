@@ -200,7 +200,7 @@ def editFloor(request, pkFloor=None):
                 player.save()
             return redirect(reverse("dashboard"))
     form = forms.EditFloorForm({"name": floor.name, "stocks": ",".join([s.symbol for s in floor.stocks.all()]), "permissiveness": floor.permissiveness, "privacy": not floor.public, "number_of_stocks": floor.num_stocks})
-    return render(request, "editFloor.html", {"form": form, "floor": floor, "scripts": scripts})
+    return render(request, "editFloor.html", {"form": form, "floor": floor, "scripts": scripts, "absolute_join_url": request.build_absolute_uri(reverse("join", args=[floor.pk]))})
 
 @login_required
 def changePassword(request):

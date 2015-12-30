@@ -1,6 +1,11 @@
 {% extends "loggedIn.html" %}
 {% block head %}{{ form.media }}{% endblock %}
 {% block content %}
+{% if not floor.public %}
+<p>
+For others to join your floor, send them this link: <span style="color: blue; text-decoration: underline;">{{ absolute_join_url }}</span>
+</p>
+{% endif %}
 <form action="" method="POST">
     {% csrf_token %}
     <table>
