@@ -242,8 +242,8 @@ class TradeForm(forms.Form):
             self.add_error(None, ValidationError("If this trade is accepted, %(other)s will have too many stocks.", params={"other": other_player.get_name()}))
             error = True
         return not error
-    def to_trade(self, floor=None, user=None):
-        floor = Floor.objects.get(pk=floor)
+    def to_trade(self, pkFloor=None, user=None):
+        floor = Floor.objects.get(pk=pkFloor)
         trade = Trade.objects.create(floor=floor,
                 sender=Player.objects.get(floor=floor, user=user),
                 recipient=Player.objects.get(user=self.cleaned_data["other_user"], floor=floor))
