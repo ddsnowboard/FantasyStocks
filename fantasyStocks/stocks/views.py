@@ -205,7 +205,6 @@ def editFloor(request, pkFloor=None):
 @login_required
 def changePassword(request):
     if request.POST:
-        print(request.POST, file=sys.stderr)
         form = forms.ChangePasswordForm(request.POST)
         if form.is_valid():
             if form.cleaned_data["new_password_2"] == form.cleaned_data["new_password"]:
