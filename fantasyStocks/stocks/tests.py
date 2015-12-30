@@ -11,44 +11,8 @@ import time
 from functools import reduce
 import urllib
 
-class MainTestCase(StaticLiveServerTestCase):
+class TradeTestCase(StaticLiveServerTestCase):
     fixtures = ["fixture.json"]
-#   def setUp(self):
-#      NUMBER_OF_USERS = 100
-#      with urllib.request.urlopen(self.live_server_url + static("stocks.json")) as f:
-#          available_stocks = [Stock.objects.create(symbol=i["symbol"]) for i in json.loads(f.read().decode("UTF-8"))]
-#      floor_user = User.objects.create_user("Floor", "floor@floors.net", "flooring")
-#      floor_group = Group.objects.create(name="Floor")
-#      floor_group.save()
-#      floor_user.groups.add(floor_group)
-#      floor_user.save()
-#      floor = Floor.objects.create(name="TestingFloor", permissiveness="open")
-#      floor_player = Player.objects.create(user=floor_user, points=0, floor=floor)
-#      floor.floorPlayer = floor_player
-#      floor_player.save()
-#      floor.save()
-#      print("start creating users")
-#      for i in range(NUMBER_OF_USERS):
-#          user = User.objects.create_user("user_{}".format(i), "user_{}@mailmail.mail".format(i), "thePasswordIs{}".format(i))
-#          player = Player.objects.create(user=user, floor=floor)
-#          stock = available_stocks.pop()
-#          player.stocks.add(stock)
-#          user.save()
-#          player.save()
-#          floor.stocks.add(stock)
-#          floor.save()
-#      print("done creating users")
-    def test_scoring(self):
-        start = time.clock()
-        floor = Floor.objects.all()[0]
-        DEFAULT_PRICE = 5
-        for s in floor.stocks.all():
-            s.price = DEFAULT_PRICE
-            s.update()
-        for p in Player.objects.filter(floor=floor):
-            if not p.isFloor():
-                self.assertAlmostEqual(p.points, reduce(lambda x, y: x + y, [s.get_score() for s in p.stocks.all()]), delta=1)
-        print("Finished! Took {} seconds!".format(time.clock() - start))
     def test_stock_cap_simple(self):
         SMALL_NUMBER = 2
         floor = Floor.objects.all()[0]
@@ -89,32 +53,52 @@ class MainTestCase(StaticLiveServerTestCase):
         floor.save()
         response = client.get(reverse("joinFloor"))
         self.assertListEqual(response.context[2]["floors"], [floor])
-    def test_suggestions(self):
+
+class PlayerTestCase(StaticLiveServerTestCase):
+    fixtures = ["fixture.json"]
+    def test_scoring(self):
+        start = time.clock()
         floor = Floor.objects.all()[0]
-        floor.permissiveness = "permissive"
-        floor.save()
-        player = Player.objects.filter(floor=floor)[0]
-        user = player.user
+        DEFAULT_PRICE = 5
+        for s in floor.stocks.all():
+            s.price = DEFAULT_PRICE
+            s.update()
+        for p in Player.objects.filter(floor=floor):
+            if not p.isFloor():
+                self.assertAlmostEqual(p.points, reduce(lambda x, y: x + y, [s.get_score() for s in p.stocks.all()]), delta=1)
+        print("Finished! Took {} seconds!".format(time.clock() - start))
+class SuggestionTestCase(StaticLiveServerTestCase):
+    fixtures = ["fixture.json"]
+    def setUp(self):
+        self.floor = Floor.objects.all()[0]
+        self.floor.permissiveness = "permissive"
+        self.floor.save()
+        self.player = [p for p in Player.objects.filter(floor=self.floor) if not p.isFloor()][0]
+        self.user = self.player.user
         for i in Stock.objects.all():
-            if not i in floor.stocks.all():
-                new_stock = i
+            if not i in self.floor.stocks.all():
+                self.new_stock = i
                 break
             else:
                 continue
-        form = TradeForm({"other_user": floor.floorPlayer.user.username, "other_stocks": new_stock.symbol, "user_stocks": ""})
-        if form.is_valid(pkFloor=floor.pk, user=user):
-            trade = form.to_trade(pkFloor=floor.pk, user=user)
+        self.form = TradeForm({"other_user": self.floor.floorPlayer.user.username, "other_stocks": self.new_stock.symbol, "user_stocks": ""})
+        if self.form.is_valid(pkFloor=self.floor.pk, user=self.user):
+            self.trade = self.form.to_trade(pkFloor=self.floor.pk, user=self.user)
         else:
             raise RuntimeError("There was an error in validation. {}".format(form.errors))
+    def test_suggestions(self):
         # If this fails, the trade isn't getting automatically accepted by the floor. 
         self.assertQuerysetEqual(Trade.objects.all(), [])
-        self.assertNotIn(new_stock, player.stocks.all())
-        self.assertNotIn(new_stock, floor.stocks.all())
+        self.assertNotIn(self.new_stock, self.player.stocks.all())
+        self.assertNotIn(self.new_stock, self.floor.stocks.all())
         self.assertNotEqual(StockSuggestion.objects.all(), [])
-        self.assertNotIn(new_stock, floor.stocks.all())
-        StockSuggestion.objects.filter(stock=new_stock)[0].accept()
-        self.assertIn(new_stock, player.stocks.all())
-        self.assertIn(new_stock, floor.stocks.all())
+        self.assertNotIn(self.new_stock, self.floor.stocks.all())
+        StockSuggestion.objects.filter(stock=self.new_stock)[0].accept()
+        self.assertIn(self.new_stock, self.player.stocks.all())
+        self.assertIn(self.new_stock, self.floor.stocks.all())
+# This is stuff I don't need anymore. If I need to change the standard database
+# setup, I might though. 
+# class OldTests(StaticLiveServerTestCase):
 #   def test_serialize(self):
 #       from django.core.serializers import serialize
 #       l = []
@@ -122,3 +106,28 @@ class MainTestCase(StaticLiveServerTestCase):
 #           l += list(i.objects.all())
 #       with open("fixture", "w") as w:
 #           w.write(serialize("json", l))
+#   def setUp(self):
+#      NUMBER_OF_USERS = 100
+#      with urllib.request.urlopen(self.live_server_url + static("stocks.json")) as f:
+#          available_stocks = [Stock.objects.create(symbol=i["symbol"]) for i in json.loads(f.read().decode("UTF-8"))]
+#      floor_user = User.objects.create_user("Floor", "floor@floors.net", "flooring")
+#      floor_group = Group.objects.create(name="Floor")
+#      floor_group.save()
+#      floor_user.groups.add(floor_group)
+#      floor_user.save()
+#      floor = Floor.objects.create(name="TestingFloor", permissiveness="open")
+#      floor_player = Player.objects.create(user=floor_user, points=0, floor=floor)
+#      floor.floorPlayer = floor_player
+#      floor_player.save()
+#      floor.save()
+#      print("start creating users")
+#      for i in range(NUMBER_OF_USERS):
+#          user = User.objects.create_user("user_{}".format(i), "user_{}@mailmail.mail".format(i), "thePasswordIs{}".format(i))
+#          player = Player.objects.create(user=user, floor=floor)
+#          stock = available_stocks.pop()
+#          player.stocks.add(stock)
+#          user.save()
+#          player.save()
+#          floor.stocks.add(stock)
+#          floor.save()
+#      print("done creating users")
