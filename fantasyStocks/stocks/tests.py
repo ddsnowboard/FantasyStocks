@@ -37,7 +37,7 @@ class MainTestCase(StaticLiveServerTestCase):
             floor.stocks.add(stock)
             floor.save()
         print("done creating users")
-    def test_scoring_time(self):
+    def test_scoring(self):
         start = time.clock()
         floor = Floor.objects.all()[0]
         DEFAULT_PRICE = 5
