@@ -5,6 +5,7 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse
 from stocks.models import *
 from stocks.views import join_floor
+from stocks.forms import TradeForm
 import json
 import time
 from functools import reduce
@@ -87,3 +88,29 @@ class MainTestCase(StaticLiveServerTestCase):
         floor.save()
         response = client.get(reverse("joinFloor"))
         self.assertListEqual(response.context[2]["floors"], [floor])
+    def test_suggestions(self):
+        floor = Floor.objects.all()[0]
+        floor.permissiveness = "permissive"
+        floor.save()
+        player = Player.objects.filter(floor=floor)[0]
+        user = player.user
+        for i in Stock.objects.all():
+            if not i in floor.stocks.all():
+                new_stock = i
+                break
+            else:
+                continue
+        form = TradeForm({"other_user": floor.floorPlayer.user.username, "other_stocks": new_stock.symbol, "user_stocks": ""})
+        if form.is_valid(pkFloor=floor.pk, user=user):
+            trade = form.to_trade(pkFloor=floor.pk, user=user)
+        else:
+            raise RuntimeError("There was an error in validation. {}".format(form.errors))
+        # If this fails, the trade isn't getting automatically accepted by the floor. 
+        self.assertQuerysetEqual(Trade.objects.all(), [])
+        self.assertNotIn(new_stock, player.stocks.all())
+        self.assertNotIn(new_stock, floor.stocks.all())
+        self.assertNotEqual(StockSuggestion.objects.all(), [])
+        self.assertNotIn(new_stock, floor.stocks.all())
+        StockSuggestion.objects.filter(stock=new_stock)[0].accept()
+        self.assertIn(new_stock, player.stocks.all())
+        self.assertIn(new_stock, floor.stocks.all())
