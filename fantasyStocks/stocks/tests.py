@@ -96,6 +96,30 @@ class SuggestionTestCase(StaticLiveServerTestCase):
         StockSuggestion.objects.filter(stock=self.new_stock)[0].accept()
         self.assertIn(self.new_stock, self.player.stocks.all())
         self.assertIn(self.new_stock, self.floor.stocks.all())
+    def test_capped_suggestion(self):
+        SMALL_NUMBER = 2
+        self.floor.num_stocks = SMALL_NUMBER
+        self.floor.save()
+        suggestion = StockSuggestion.objects.all()[0]
+        for i in Player.objects.all():
+            if i != self.player and not i.isFloor():
+                otherPlayer = i
+                break
+            else:
+                continue
+        newTrade = Trade.objects.create(recipient=otherPlayer, floor=self.floor, sender=self.player)
+        newStock = otherPlayer.stocks.all()[0]
+        newTrade.recipientStocks.add(newStock)
+        newTrade.save()
+        newTrade.verify()
+        newTrade.accept()
+        self.assertEqual(list(otherPlayer.stocks.all()), [])
+        self.assertIn(newStock, self.player.stocks.all())
+        self.assertEqual(self.player.stocks.count(), SMALL_NUMBER)
+        suggestion.accept()
+        self.assertNotIn(self.new_stock, self.player.stocks.all())
+        self.assertIn(self.new_stock, self.floor.stocks.all())
+        self.assertIn(self.new_stock, self.floor.floorPlayer.stocks.all())
 # This is stuff I don't need anymore. If I need to change the standard database
 # setup, I might though. 
 # class OldTests(StaticLiveServerTestCase):
