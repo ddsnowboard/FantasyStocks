@@ -112,3 +112,5 @@ STATICFILES_DIRS = (
         )
 MEDIA_ROOT = BASE_DIR + "/res/"
 MEDIA_URL = "/images/"
+
+FIXTURE_DIRS = [os.path.join(BASE_DIR, "/stocks/fixtures/")]

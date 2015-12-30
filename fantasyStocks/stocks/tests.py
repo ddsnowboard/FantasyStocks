@@ -12,31 +12,32 @@ from functools import reduce
 import urllib
 
 class MainTestCase(StaticLiveServerTestCase):
-    def setUp(self):
-        NUMBER_OF_USERS = 100
-        with urllib.request.urlopen(self.live_server_url + static("stocks.json")) as f:
-            available_stocks = [Stock.objects.create(symbol=i["symbol"]) for i in json.loads(f.read().decode("UTF-8"))]
-        floor_user = User.objects.create_user("Floor", "floor@floors.net", "flooring")
-        floor_group = Group.objects.create(name="Floor")
-        floor_group.save()
-        floor_user.groups.add(floor_group)
-        floor_user.save()
-        floor = Floor.objects.create(name="TestingFloor", permissiveness="open")
-        floor_player = Player.objects.create(user=floor_user, points=0, floor=floor)
-        floor.floorPlayer = floor_player
-        floor_player.save()
-        floor.save()
-        print("start creating users")
-        for i in range(NUMBER_OF_USERS):
-            user = User.objects.create_user("user_{}".format(i), "user_{}@mailmail.mail".format(i), "thePasswordIs{}".format(i))
-            player = Player.objects.create(user=user, floor=floor)
-            stock = available_stocks.pop()
-            player.stocks.add(stock)
-            user.save()
-            player.save()
-            floor.stocks.add(stock)
-            floor.save()
-        print("done creating users")
+    fixtures = ["fixture.json"]
+#   def setUp(self):
+#      NUMBER_OF_USERS = 100
+#      with urllib.request.urlopen(self.live_server_url + static("stocks.json")) as f:
+#          available_stocks = [Stock.objects.create(symbol=i["symbol"]) for i in json.loads(f.read().decode("UTF-8"))]
+#      floor_user = User.objects.create_user("Floor", "floor@floors.net", "flooring")
+#      floor_group = Group.objects.create(name="Floor")
+#      floor_group.save()
+#      floor_user.groups.add(floor_group)
+#      floor_user.save()
+#      floor = Floor.objects.create(name="TestingFloor", permissiveness="open")
+#      floor_player = Player.objects.create(user=floor_user, points=0, floor=floor)
+#      floor.floorPlayer = floor_player
+#      floor_player.save()
+#      floor.save()
+#      print("start creating users")
+#      for i in range(NUMBER_OF_USERS):
+#          user = User.objects.create_user("user_{}".format(i), "user_{}@mailmail.mail".format(i), "thePasswordIs{}".format(i))
+#          player = Player.objects.create(user=user, floor=floor)
+#          stock = available_stocks.pop()
+#          player.stocks.add(stock)
+#          user.save()
+#          player.save()
+#          floor.stocks.add(stock)
+#          floor.save()
+#      print("done creating users")
     def test_scoring(self):
         start = time.clock()
         floor = Floor.objects.all()[0]
@@ -114,3 +115,10 @@ class MainTestCase(StaticLiveServerTestCase):
         StockSuggestion.objects.filter(stock=new_stock)[0].accept()
         self.assertIn(new_stock, player.stocks.all())
         self.assertIn(new_stock, floor.stocks.all())
+#   def test_serialize(self):
+#       from django.core.serializers import serialize
+#       l = []
+#       for i in [Stock, User, Group, Floor, Player]:
+#           l += list(i.objects.all())
+#       with open("fixture", "w") as w:
+#           w.write(serialize("json", l))
