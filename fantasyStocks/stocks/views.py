@@ -105,9 +105,7 @@ def create_floor(request):
 @login_required
 def join_floor(request):
     scripts = STANDARD_SCRIPTS + [static("joinFloor.js")]
-    floors = list(Floor.objects.all())
-    for i in Player.objects.filter(user=request.user):
-        floors.remove(i.floor)
+    floors = [f for f in Floor.objects.filter(public=True) if not request.user in (p.user for p in Player.objects.filter(floor=f))]
     return render(request, "joinFloor.html", {"floors": floors, "scripts": scripts})
 
 @login_required

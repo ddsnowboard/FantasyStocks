@@ -1,8 +1,11 @@
-from django.test import TestCase
+from pprint import pprint
+from django.test import TestCase, Client
 from django import test
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.core.urlresolvers import reverse
 from stocks.models import *
+from stocks.views import join_floor
 import json
 import time
 from functools import reduce
@@ -10,7 +13,7 @@ import urllib
 
 class MainTestCase(StaticLiveServerTestCase):
     def setUp(self):
-        NUMBER_OF_USERS = 1000
+        NUMBER_OF_USERS = 100
         with urllib.request.urlopen(self.live_server_url + static("stocks.json")) as f:
             available_stocks = [Stock.objects.create(symbol=i["symbol"]) for i in json.loads(f.read().decode("UTF-8"))]
         floor_user = User.objects.create_user("Floor", "floor@floors.net", "flooring")
@@ -71,3 +74,17 @@ class MainTestCase(StaticLiveServerTestCase):
         trade.accept()
         self.assertEqual(list(playerB.stocks.all()), origAStocks)
         self.assertEqual(list(playerA.stocks.all()), origBStocks)
+    def test_private_floor(self):
+        floor = Floor.objects.all()[0]
+        floor.public = False
+        floor.save()
+        client = Client()
+        user = User.objects.create_user("privateFloorUser", "privateer@mailmail.mail", "thePasswordIs")
+        client.force_login(user)
+        response = client.get(reverse("joinFloor"))
+        # This has to be number 2 because there are three templates: base (0), loggedIn (1), and joinFloor (2). 
+        self.assertListEqual(response.context[2]["floors"], [])
+        floor.public = True
+        floor.save()
+        response = client.get(reverse("joinFloor"))
+        self.assertListEqual(response.context[2]["floors"], [floor])
