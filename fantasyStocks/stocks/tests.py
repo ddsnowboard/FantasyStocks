@@ -13,6 +13,22 @@ import urllib
 
 class TradeTestCase(StaticLiveServerTestCase):
     fixtures = ["fixture.json"]
+    def set_trade(self):
+        self.floor = Floor.objects.all()[0]
+        available_players = [p for p in Player.objects.filter(floor=self.floor) if not p.isFloor()]
+        self.sender = available_players[0]
+        self.recipient = available_players[1]
+        self.sender_stocks = list(self.sender.stocks.all())
+        self.recipient_stocks = list(self.recipient.stocks.all())
+        self.trade = Trade.objects.create(floor=self.floor, sender=self.sender, recipient=self.recipient)
+        self.trade.senderStocks = self.sender.stocks.all()
+        self.trade.recipientStocks = self.recipient.stocks.all()
+        self.trade.save()
+    def test_trade_simple(self):
+        self.set_trade()
+        self.trade.accept()
+        self.assertEqual(list(self.recipient.stocks.all()), self.sender_stocks)
+        self.assertEqual(list(self.sender.stocks.all()), self.recipient_stocks)
     def test_stock_cap_simple(self):
         SMALL_NUMBER = 2
         floor = Floor.objects.all()[0]
@@ -26,20 +42,6 @@ class TradeTestCase(StaticLiveServerTestCase):
             trade = Trade.objects.create(sender=player, floor=floor, recipient=floor.floorPlayer)
             trade.recipientStocks = [Stock.objects.all()[SMALL_NUMBER + 1]]
             trade.verify()
-    def test_trade_simple(self):
-        floor = Floor.objects.all()[0]
-        available_players = [p for p in Player.objects.filter(floor=floor) if not p.isFloor()]
-        playerA = available_players[0]
-        playerB = available_players[1]
-        origAStocks = list(playerA.stocks.all())
-        origBStocks = list(playerB.stocks.all())
-        trade = Trade.objects.create(floor=floor, sender=playerA, recipient=playerB)
-        trade.senderStocks = playerA.stocks.all()
-        trade.recipientStocks = playerB.stocks.all()
-        trade.save()
-        trade.accept()
-        self.assertEqual(list(playerB.stocks.all()), origAStocks)
-        self.assertEqual(list(playerA.stocks.all()), origBStocks)
     def test_private_floor(self):
         floor = Floor.objects.all()[0]
         floor.public = False
