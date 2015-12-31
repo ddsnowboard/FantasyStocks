@@ -135,7 +135,7 @@ class FloorForm(forms.Form):
     privacy = forms.BooleanField(label="Private?:", help_text="<em>If the floor is private, it won't show up on the join floor page,<br /> and you'll have to send a link to allow people to join it.</em>", required=False) 
     number_of_stocks = forms.IntegerField(label="Maximum Number of Stocks (per player)", min_value=1, max_value=1000)
     stocks = StockChoiceField(label="Stocks")
-    permissiveness = forms.ChoiceField(label="Permissiveness", choices=Floor.PERMISSIVENESS_CHOICES)
+    permissiveness = forms.ChoiceField(label="Permissiveness", choices=Floor.PERMISSIVENESS_CHOICES, help_text="<em>\"Open\" means that  anyone can add any stock at any time. <br />\"Permissive\" means that anyone can request any stock to be added, but it must be allowed by the owner of the floor (you). <br />\"Closed\" means that no new stocks can be added. Note that you can change this setting later.</em>")
     def __init__(self, *args, user=None, floor=None, **kwargs):
         super().__init__(*args, **kwargs)
         if user and floor:
