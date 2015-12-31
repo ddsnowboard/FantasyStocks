@@ -28,8 +28,9 @@ class TradeTestCase(StaticLiveServerTestCase):
             trade.verify()
     def test_trade_simple(self):
         floor = Floor.objects.all()[0]
-        playerA = [p for p in Player.objects.filter(floor=floor) if not p.isFloor()][0]
-        playerB = [p for p in Player.objects.filter(floor=floor) if not p.isFloor()][1]
+        available_players = [p for p in Player.objects.filter(floor=floor) if not p.isFloor()]
+        playerA = available_players[0]
+        playerB = available_players[1]
         origAStocks = list(playerA.stocks.all())
         origBStocks = list(playerB.stocks.all())
         trade = Trade.objects.create(floor=floor, sender=playerA, recipient=playerB)
