@@ -53,6 +53,8 @@ class TradeTestCase(StaticLiveServerTestCase):
         floor.save()
         response = client.get(reverse("joinFloor"))
         self.assertListEqual(response.context[2]["floors"], [floor])
+    def test_trade_counter(self):
+        pass
 
 class PlayerTestCase(StaticLiveServerTestCase):
     fixtures = ["fixture.json"]
