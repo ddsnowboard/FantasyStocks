@@ -249,7 +249,7 @@ def acceptTrade(request, pkTrade):
 
 @login_required
 # floor is here for the sake of the JavaScript on the page. 
-def counterTrade(request, pkTrade, floor):
+def counterTrade(request, pkTrade, pkFloor):
     trade = Trade.objects.get(pk=pkTrade)
     form = forms.TradeForm(initial=trade.toFormDict())
     # TODO: There is too much repitition for these template variables. I need to find a better way. 
