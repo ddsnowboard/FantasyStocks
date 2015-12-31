@@ -123,7 +123,7 @@ def trade(request, pkPlayer=None, pkStock=None, pkFloor=None, pkCountering=None)
         form = forms.TradeForm(request.POST)
         if form.is_valid(pkFloor=pkFloor, user=request.user, pkCountering=pkCountering):
             form.clean()
-            form.to_trade(floor=pkFloor, user=request.user)
+            form.to_trade(pkFloor=pkFloor, user=request.user)
             if pkCountering:
                 Trade.objects.get(pk=pkCountering).delete()
             return redirect(reverse("dashboard"), permanent=False)
