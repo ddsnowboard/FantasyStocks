@@ -58,11 +58,20 @@ class TradeTestCase(StaticLiveServerTestCase):
         self.assertListEqual(response.context[2]["floors"], [floor])
     def test_trade_counter(self):
         self.set_trade()
+        old_recipientStocks = list(self.trade.recipientStocks.all())
+        old_senderStocks = list(self.trade.senderStocks.all())
         client = Client()
         client.force_login(self.recipient.user)
         response = client.get(reverse("receivedTrade", kwargs={"pkTrade": self.trade.pk}))
         self.assertEqual(self.trade.toFormDict(), response.context[-1]["form"].data)
         self.assertContains(response, reverse("counterTrade", kwargs={"pkTrade": self.trade.pk, "pkFloor": self.trade.floor.pk}))
+        response = client.get(reverse("counterTrade", kwargs={"pkTrade": self.trade.pk, "pkFloor": self.trade.floor.pk}))
+        response = client.post(reverse("trade", kwargs={"pkCountering": self.trade.pk, "pkFloor": self.trade.floor.pk}), {"other_user": self.trade.sender.user.username, "user_stocks": ",".join(i.symbol for i in self.trade.recipientStocks.all()), "other_stocks": ",".join(i.symbol for i in self.trade.senderStocks.all())})
+        self.assertRedirects(response, reverse("dashboard"))
+        self.assertQuerysetEqual(Trade.objects.filter(pk=self.trade.pk), [])
+        newTrade = Trade.objects.all()[0]
+        self.assertEqual(list(newTrade.senderStocks.all()), old_recipientStocks)
+        self.assertEqual(list(newTrade.recipientStocks.all()), old_senderStocks)
 
 class PlayerTestCase(StaticLiveServerTestCase):
     fixtures = ["fixture.json"]
