@@ -248,7 +248,7 @@ def acceptTrade(request, pkTrade):
     return redirect(reverse("dashboard"), permanent=False)
 
 @login_required
-# floor is here for the sake of the JavaScript on the page. 
+# pkFloor is here for the sake of the JavaScript on the page. 
 def counterTrade(request, pkTrade, pkFloor):
     trade = Trade.objects.get(pk=pkTrade)
     form = forms.TradeForm(initial=trade.toFormDict())
