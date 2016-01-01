@@ -61,10 +61,8 @@ class TradeTestCase(StaticLiveServerTestCase):
         client = Client()
         client.force_login(self.recipient.user)
         response = client.get(reverse("receivedTrade", kwargs={"pkTrade": self.trade.pk}))
-        self.assertEqual(TradeForm(self.trade.toFormDict()).fields, response.context[-1]["form"].fields)
-        # This doesn't work. Fix this and then keep going.
-        self.asssertIn(reverse("counterTrade", kwargs={"pkTrade": self.trade.pk, "pkFloor": self.trade.floor.pk}), response.content)
-
+        self.assertEqual(self.trade.toFormDict(), response.context[-1]["form"].data)
+        self.assertContains(response, reverse("counterTrade", kwargs={"pkTrade": self.trade.pk, "pkFloor": self.trade.floor.pk}))
 
 class PlayerTestCase(StaticLiveServerTestCase):
     fixtures = ["fixture.json"]
