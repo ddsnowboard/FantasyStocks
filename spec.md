@@ -104,7 +104,7 @@ The page will be little more than a list of options you can set. There will be t
 
 ###Join Floor Page
 
-The Join Floor page will be pretty simple: in the middle, there will be a real-time search box, with dropdown suggestions similar to the ones in other parts of the site, that will let you have your pick of public floors and private floors open to you. There will also be a link near the top to create your own floor. 
+The Join Floor page will be pretty simple: in the middle, there will be a real-time search box, with dropdown suggestions similar to the ones in other parts of the site, that will let you have your pick of public floors. There will also be a link near the top to create your own floor. 
 
 ###Epilogue: The Game
 

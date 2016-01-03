@@ -42,6 +42,8 @@ urlpatterns = [
             url("^playerJSON/player/(?P<pkPlayer>[0-9]+)/$", views.playerJson, name="playerJson"), 
             url("^floorJSON/floor/(?P<pkFloor>[0-9]+)/$", views.floorJson, name="floorJson"), 
             url("^tradeCommonJavaScript/$", views.tradeCommonJavaScript, name="tradeCommonJavaScript"), 
+            url("^joinFloorJavaScript/$", views.joinFloorJavaScript, name="joinFloorJavaScript"), 
+            url("^getFloorsJSON/$", views.floorsJSON, name="floorsJson"), 
         ]
 
 
