@@ -277,17 +277,17 @@ def receivedTradeJavaScript(request):
 def userList(request):
     return HttpResponse(json.dumps([{"username": u.username if u.username else u.email, "email": u.email} for u in User.objects.all()]), content_type="text/json")
 
-def stockLookup(request, query=None, key=None, user=None, floor=None):
+def stockLookup(request, query=None, key=None, user=None, pkFloor=None):
     # This if branch is depricated
     if query:
         STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
         return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
     elif key:
         return HttpResponse(json.dumps([s.format_for_json() for s in Player.objects.get(pk=key).stocks.all()]), content_type="text/json")
-    elif user and floor:
-        oFloor = Floor.objects.get(pk=floor)
-        player = Player.objects.get(user__username=user, floor=oFloor)
-        if player.isFloor() and not oFloor.permissiveness == "closed":
+    elif user and pkFloor:
+        floor = Floor.objects.get(pk=pkFloor)
+        player = Player.objects.get(user__username=user, floor=floor)
+        if player.isFloor() and not floor.permissiveness == "closed":
             return redirect(static("stocks.json"))
         return HttpResponse(json.dumps([i.format_for_json() for i in player.stocks.all()]))
     else:

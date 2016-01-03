@@ -13,7 +13,7 @@ function getUserURL(username, floor)
     var NAME_REPLACEMENT = "replacement";
     // This has to be numbers so it matches the regex.
     var FLOOR_REPLACEMENT = "12345";
-    return "{% url 'prefetch' user='replacement' floor=12345 %}"
+    return "{% url 'prefetch' user='replacement' pkFloor=12345 %}"
         .replace(NAME_REPLACEMENT, username).replace(FLOOR_REPLACEMENT, floor);
 }
 function getFloor()
