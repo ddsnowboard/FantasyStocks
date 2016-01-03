@@ -12,26 +12,23 @@ urlpatterns = [
             url("^dashboard/$", views.dashboard, name="dashboard"),
             url("^createfloor/$", views.create_floor, name="createFloor"), 
             url("^joinfloor/$", views.join_floor, name="joinFloor"),
-            url("^joinAFloor/([0-9]+)/$", views.join, name="join"), 
+            url("^joinAFloor/floor/([0-9]+)/$", views.join, name="join"), 
             url("^stockLookupURL/stock/(.+?)/$", views.stockLookup, name="lookup"), 
             url("^stockLookupURL/$", views.stockLookup, name="prefetch"), 
             url("^stockLookupURL/user/(?P<key>[0-9]+)/$", views.stockLookup, name="prefetch"), 
-            url("^stockLookupURL/user/(?P<user>[A-Za-z0-9]+)/(?P<floor>[0-9]+)/$", views.stockLookup, name="prefetch"), 
+            url("^stockLookupURL/user/(?P<user>[A-Za-z0-9]+)/(?P<pkFloor>[0-9]+)/$", views.stockLookup, name="prefetch"), 
             url("^thisCANbAEASAReallyHardURL/(?P<identifier>[A-Za-z0-9_]+)/(?P<player>[A-Za-z0-9]+)/$", views.renderStockWidgetJavascript, name="stockWidgetJavascript"), 
             url("^thisCANbAEASAReallyHardURL/(?P<identifier>[A-Za-z0-9_]+)/$", views.renderStockWidgetJavascript, name="stockWidgetJavascript"), 
-            url("^trade/floor/(?P<floor>[0-9]+)/$", views.trade, name="trade"), 
-            url("^trade/floor/(?P<floor>[0-9]+)/counter/(?P<pkCountering>[0-9]+)/$", views.trade, name="trade"), 
-            # player is the primary key of the other player involved in the trade
-            url("^trade/player/(?P<player>[0-9]+)/floor/(?P<floor>[0-9]+)/$", views.trade, name="trade"), 
-            # stock is primary key of the stock that was clicked, and floor is the 
-            # primary key of the floor.
-            url("^trade/floor/(?P<floor>[0-9]+)/stock/(?P<stock>[0-9]+)/$", views.trade, name="trade"), 
+            url("^trade/floor/(?P<pkFloor>[0-9]+)/$", views.trade, name="trade"), 
+            url("^trade/floor/(?P<pkFloor>[0-9]+)/counter/(?P<pkCountering>[0-9]+)/$", views.trade, name="trade"), 
+            url("^trade/player/(?P<pkPlayer>[0-9]+)/floor/(?P<pkFloor>[0-9]+)/$", views.trade, name="trade"), 
+            url("^trade/floor/(?P<pkFloor>[0-9]+)/stock/(?P<pkStock>[0-9]+)/$", views.trade, name="trade"), 
             url("^playerFieldJavaScript/(?P<identifier>[A-Za-z0-9]+)/$", views.playerFieldJavascript, name="playerFieldJS"), 
             url("^userList/$", views.userList, name="users"), 
             url("^tradeFormJavaScript/$", views.tradeFormJavaScript, name="tradeFormJavaScript"), 
             url("^receivedTrade/(?P<pkTrade>[0-9]+)/$", views.receivedTrade, name="receivedTrade"),
             url("^youWillNeverGuessThisURLHAHahahhahaha/$", views.receivedTradeJavaScript, name="receivedTradeJavascript"), 
-            url("^counterATrade/(?P<pkTrade>[0-9]+)/floor/(?P<floor>[0-9]+)/$", views.counterTrade, name="counterTrade"), 
+            url("^counterATrade/(?P<pkTrade>[0-9]+)/floor/(?P<pkFloor>[0-9]+)/$", views.counterTrade, name="counterTrade"), 
             url("^acceptATrade/(?P<pkTrade>[0-9]+)/$", views.acceptTrade, name="acceptTrade"), 
             url("^rejectATrade/(?P<pkTrade>[0-9]+)/$", views.rejectTrade, name="rejectTrade"), 
             url("^deletePlayerFromFloor/pkPlayer/(?P<pkPlayer>[0-9]+)/$", views.deletePlayer, name="deletePlayer"),
@@ -42,6 +39,9 @@ urlpatterns = [
             url("^changePassword/$", views.changePassword, name="myChangePassword"), 
             url("^deleteAFloor/floor/(?P<pkFloor>[0-9]+)/$", views.deleteFloor, name="deleteFloor"), 
             url("^editFloorjavascript/floor/(?P<pkFloor>[0-9]+)/$", views.editFloorJavaScript, name="editFloorJS"), 
+            url("^playerJSON/player/(?P<pkPlayer>[0-9]+)/$", views.playerJson, name="playerJson"), 
+            url("^floorJSON/floor/(?P<pkFloor>[0-9]+)/$", views.floorJson, name="floorJson"), 
+            url("^tradeCommonJavaScript/$", views.tradeCommonJavaScript, name="tradeCommonJavaScript"), 
         ]
 
 

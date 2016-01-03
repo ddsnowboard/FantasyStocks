@@ -4,9 +4,13 @@
 {% else %}Received Trade{% endif %}
 {% endblock %}
 {% block head %}{{ form.media }}{% endblock %}
+{% block script %} var userNumberOfStocks = {{ userPlayer.stocks.all|length }};{% endblock %}
 {% block content %}
 <div class="tradeHolder">
-    <form action="{% if received %}{% url "trade" floor=trade.floor.pk %}{% elif countering %}{% url "trade" floor=countering.floor.pk pkCountering=countering.pk %}{% endif %}" method="POST">
+    <div style="position: absolute; right: 0; top: 0" id="count">
+        <span id="currStocks"></span> of <span id="maxStocks">{{ floor.num_stocks }}</span> stocks remaining
+    </div>
+    <form action="{% if received %}{% url "trade" pkFloor=trade.floor.pk %}{% elif countering %}{% url "trade" pkFloor=countering.floor.pk pkCountering=countering.pk %}{% endif %}" method="POST">
         {% csrf_token %}
         <table align="center">
             <tr>
@@ -42,9 +46,9 @@
         {% if not received %}
         <input type="submit">
         {% else %}
-        <input type="button" onclick="document.location.pathname = '{% url "counterTrade" pkTrade=trade.pk floor=trade.floor.pk %}';" value="Counter">
-        <input type="button" onclick="document.location.pathname = '{% url "rejectTrade" pkTrade=trade.pk%}';" value="Reject">
-        <input type="button" onclick="document.location.pathname = '{% url "acceptTrade" pkTrade=trade.pk%}';" value="Accept">
+        <input type="button" onclick="document.location.pathname = '{% url "counterTrade" pkTrade=trade.pk pkFloor=trade.floor.pk %}';" value="Counter">
+        <input type="button" onclick="document.location.pathname = '{% url "rejectTrade" pkTrade=trade.pk %}';" value="Reject">
+        <input type="button" onclick="document.location.pathname = '{% url "acceptTrade" pkTrade=trade.pk %}';" value="Accept" id="acceptButton">
         {% endif %}
     </form>
 </div>

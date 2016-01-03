@@ -132,8 +132,10 @@ class RegistrationForm(forms.Form):
 
 class FloorForm(forms.Form):
     name = forms.CharField(label="Name", max_length=35)
+    privacy = forms.BooleanField(label="Private?:", help_text="<em>If the floor is private, it won't show up on the join floor page,<br /> and you'll have to send a link to allow people to join it.</em>", required=False) 
+    number_of_stocks = forms.IntegerField(label="Maximum Number of Stocks (per player)", min_value=1, max_value=1000)
     stocks = StockChoiceField(label="Stocks")
-    permissiveness = forms.ChoiceField(label="Permissiveness", choices=Floor.PERMISSIVENESS_CHOICES)
+    permissiveness = forms.ChoiceField(label="Permissiveness", choices=Floor.PERMISSIVENESS_CHOICES, help_text="<em>\"Open\" means that  anyone can add any stock at any time. <br />\"Permissive\" means that anyone can request any stock to be added, but it must be allowed by the owner of the floor (you). <br />\"Closed\" means that no new stocks can be added. Note that you can change this setting later.</em>")
     def __init__(self, *args, user=None, floor=None, **kwargs):
         super().__init__(*args, **kwargs)
         if user and floor:
@@ -145,7 +147,10 @@ class FloorForm(forms.Form):
     def is_valid(self):
         return super(FloorForm, self).is_valid()
     def save(self):
-        floor = Floor(name=self.cleaned_data['name'], permissiveness=self.cleaned_data['permissiveness'])
+        floor = Floor(name=self.cleaned_data['name'],
+                permissiveness=self.cleaned_data['permissiveness'],
+                num_stocks=self.cleaned_data["number_of_stocks"],
+                public=not self.cleaned_data["privacy"])
         floor.save()
         for i in self.cleaned_data['stocks']:
             floor.stocks.add(i)
@@ -157,27 +162,22 @@ class TradeForm(forms.Form):
     other_user = UserField(label="Other Player")
     user_stocks = StockChoiceField(label="Your Stocks", required=False)
     other_stocks = StockChoiceField(label="Other player's stocks", required=False)
-    def is_valid(self, floor=None, user=None, pkCountering=None):
+    def is_valid(self, pkFloor=None, user=None, pkCountering=None):
         """
         You have to give this function the floor number or else it won't know where 
         to look. You also need to give it the user object so it can find its player.
         """
-        # There's got to be a better way to do this. This breaks the one page rule, 
-        # and also it's terrible (though effective). I think I can move all this 
-        # into the respective fields, but I'm not 100% sure. If I can do that, though, 
-        # it would be one line, if I'm not mistaken (specifically, the one below). 
-        # But for now it's OK, I think. I should do some stress testing though. 
         if not super().is_valid():
             return False
         error = False
-        if not floor:
+        if not pkFloor:
             raise RuntimeError("""You need to give a floor to 
                 TradeForm.is_valid() or else it won't know what to look for.""")
         elif not user:
             raise RuntimeError("""You need to give the user object to 
                 TradeForm.is_valid() or else it won't know what to look for.""")
         try:
-            floor = Floor.objects.get(pk=floor)
+            floor = Floor.objects.get(pk=pkFloor)
         except Floor.DoesNotExist:
             raise RuntimeError("""The floor with primary key {} doesn't exist""".format(floor))
         other = self.fields["other_user"].to_python(self.data["other_user"])
@@ -234,9 +234,16 @@ class TradeForm(forms.Form):
         if not other_stocks and not user_stocks:
             self.add_error(None, ValidationError("""The trade is empty!""", code="empty"))
             error = True
+        max_stocks = floor.num_stocks
+        if user_player.stocks.all().count() - len(user_stocks) + len(other_stocks) > max_stocks:
+            self.add_error(None, ValidationError("If this trade is accepted, you will have too many stocks."))
+            error = True
+        elif not other_player.isFloor() and other_player.stocks.all().count() - len(other_stocks) + len(user_stocks) > max_stocks:
+            self.add_error(None, ValidationError("If this trade is accepted, %(other)s will have too many stocks.", params={"other": other_player.get_name()}))
+            error = True
         return not error
-    def to_trade(self, floor=None, user=None):
-        floor = Floor.objects.get(pk=floor)
+    def to_trade(self, pkFloor=None, user=None):
+        floor = Floor.objects.get(pk=pkFloor)
         trade = Trade.objects.create(floor=floor,
                 sender=Player.objects.get(floor=floor, user=user),
                 recipient=Player.objects.get(user=self.cleaned_data["other_user"], floor=floor))
@@ -256,13 +263,13 @@ class TradeForm(forms.Form):
         # There is usually such good design in django. 
         # I don't know where it went here. O well. 
         # At least I know that the scripts will be in the order I want. 
-        js = (reverse("tradeFormJavaScript"), )
+        js = (reverse("tradeCommonJavaScript"), reverse("tradeFormJavaScript"), )
         return self.get_widget_media() + forms.Media(js=js)
     media = property(_media)
 
 class ReceivedTradeForm(TradeForm):
     def _media(self):
-        js = (reverse("receivedTradeJavascript"), )
+        js = (reverse("tradeCommonJavaScript"), reverse("receivedTradeJavascript"), )
         return self.get_widget_media() + forms.Media(js=js)
     media = property(_media)
 
@@ -292,8 +299,17 @@ class UserEditingForm(forms.Form):
 
 class EditFloorForm(forms.Form):
     name = forms.CharField(max_length=30, required=True)
+    privacy = forms.BooleanField(label="Private?:", required=False) 
+    number_of_stocks = forms.IntegerField(label="Maximum Number of Stocks (per player)", min_value=1, max_value=1000)
     permissiveness = forms.ChoiceField(choices=Floor.PERMISSIVENESS_CHOICES)
     stocks = StockChoiceField(label="Stocks")
+    def apply(self, floor):
+        floor.name = self.cleaned_data["name"]
+        floor.permissiveness = self.cleaned_data["permissiveness"]
+        floor.stocks = self.cleaned_data["stocks"]
+        floor.num_stocks = self.cleaned_data["number_of_stocks"]
+        floor.public = not self.cleaned_data["privacy"]
+        floor.save()
 
 class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(widget=forms.widgets.PasswordInput())

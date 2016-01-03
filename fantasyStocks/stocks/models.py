@@ -95,6 +95,7 @@ class Stock(models.Model):
         """
         URL = "http://finance.yahoo.com/webservice/v1/symbols/{}/quote?format=json&view=detail"
         try:
+            print(URL.format(symbol), file=sys.stderr)
             jsonObj = json.loads(request.urlopen(URL.format(symbol)).read().decode("UTF-8"))['list']['resources'][0]['resource']['fields']
         except IndexError:
             raise RuntimeError("The stock with symbol {} can't be found!".format(symbol))
@@ -115,6 +116,8 @@ class Floor(models.Model):
     owner = models.ForeignKey(User, null=True)
     # The model for this ForeignKey is a string because it doesn't know what it is yet because it's down there. 
     floorPlayer = models.ForeignKey("Player", related_name="FloorPlayer", null=True)
+    public = models.BooleanField(default=True)
+    num_stocks = models.IntegerField(default=10)
     def __str__(self):
         return self.name
     def leaders(self):
@@ -135,7 +138,7 @@ class Floor(models.Model):
                                                 {% else %}
                                                 <td>
                                                     {% endif %}
-                                                    <a class="noUnderline" href="{% url "trade" stock=stock.pk floor=player.floor.pk %}">
+                                                    <a class="noUnderline" href="{% url "trade" pkStock=stock.pk pkFloor=player.floor.pk %}">
                                                         <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
                                                     </a>
                                                     {% with change=stock.get_change %}
@@ -175,6 +178,10 @@ class Floor(models.Model):
         return self._render_board(player=player, stockboard=True)
     def render_both_boards(self, player):
         return self._render_board(player=player, stockboard=True, leaderboard=True)
+    def to_json(self):
+        return json.dumps({"stocks": ",".join(s.symbol for s in self.stocks.all()),
+            "name": self.name, "permissiveness": self.permissiveness, "pkOwner": self.owner.pk, 
+            "pkFloorPlayer": self.floorPlayer.pk, "public": self.public, "num_stocks": self.num_stocks})
 
 # NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
 # object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
@@ -199,7 +206,7 @@ class Player(models.Model):
     def sentTrades(self):
         return Trade.objects.filter(sender=self)
     def receivedRequests(self):
-        return StockSuggestion.objects.filter(floor__owner=self.user)
+        return StockSuggestion.objects.filter(floor__owner=self.user, floor=self.floor)
     def numMessages(self):
         num = self.receivedTrades().count()
         if self.floor.owner == self.user and self.floor.permissiveness == 'permissive':
@@ -219,6 +226,8 @@ class Player(models.Model):
         return self.floor.render_both_boards(self)
     def get_users_owned_floors(self):
         return Floor.objects.filter(owner=self.user)
+    def to_json(self):
+        return json.dumps({"pkUser": self.user.pk, "pkFloor": self.floor.pk, "stocks": ",".join([s.symbol for s in self.stocks.all()]), "points": self.points})
 
 class Trade(models.Model):
     recipient = models.ForeignKey(Player)
@@ -231,7 +240,9 @@ class Trade(models.Model):
     def __str__(self):
         return "Trade from {} to {} on {}".format(self.sender.user, self.recipient.user, self.floor)
     def accept(self):
-        for s in self.recipientStocks.all():
+        if not self.recipient.isFloor():
+            self.verify()
+        for s in [i for i in self.recipientStocks.all() if not StockSuggestion.objects.filter(floor=self.floor, stock=i)]:
             self.recipient.stocks.remove(s)
             self.sender.stocks.add(s)
         for s in self.senderStocks.all():
@@ -244,14 +255,18 @@ class Trade(models.Model):
         if not (self.recipient.isFloor() and not self.floor.permissiveness == "closed"):
             for s in self.recipientStocks.all():
                 if not s in self.recipient.stocks.all():
-                    raise TradeError("One of the recipient stocks ({}) doesn't belong to the recipient ({})".format(s, self.recipient.user))
+                    raise RuntimeError("One of the recipient stocks ({}) doesn't belong to the recipient ({})".format(s, self.recipient.user))
                 if not s in self.floor.stocks.all():
-                    raise TradeError("One of the recipient stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
+                    raise RuntimeError("One of the recipient stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
         for s in self.senderStocks.all():
             if not s in self.sender.stocks.all():
-                raise TradeError("One of the sender stocks ({}) doesn't belong to the sender ({})".format(s, self.recipient.user))
+                raise RuntimeError("One of the sender stocks ({}) doesn't belong to the sender ({})".format(s, self.recipient.user))
             if not s in self.floor.stocks.all():
-                raise TradeError("One of the sender stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
+                raise RuntimeError("One of the sender stocks ({}) doesn't belong to the floor ({})".format(s, self.floor))
+        if self.recipient.stocks.all().count() + self.senderStocks.all().count() - self.recipientStocks.all().count() > self.floor.num_stocks and not self.recipient.isFloor():
+            raise TradeError("{} will have too many stocks if this trade goes through".format(self.recipient.get_name()))
+        if self.sender.stocks.all().count() + self.recipientStocks.all().count() - self.senderStocks.all().count() > self.floor.num_stocks:
+            raise TradeError("{} will have too many stocks if this trade goes through".format(self.sender.get_name()))
         if self.recipient.isFloor():
             self.accept()
         elif self.sender.isFloor():
@@ -271,6 +286,12 @@ class StockSuggestion(models.Model):
         if not self.stock in self.floor.stocks.all():
             self.floor.stocks.add(self.stock)
             self.floor.save()
-            self.requesting_player.stocks.add(self.stock)
-            self.requesting_player.save()
+            if self.requesting_player.stocks.all().count() + 1 > self.floor.num_stocks:
+                self.floor.floorPlayer.stocks.add(self.stock)
+                self.floor.floorPlayer.save()
+            else:
+                self.requesting_player.stocks.add(self.stock)
+                self.requesting_player.save()
         self.delete()
+    def __str__(self):
+        return "{} wants {} added to {}".format(self.requesting_player.get_name(), self.stock, self.floor)

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from stocks import forms
-from stocks.models import Player, Floor, Stock, Trade, StockSuggestion
+from stocks.models import Player, Floor, Stock, Trade, StockSuggestion, TradeError
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, hashers
 from django.contrib.auth.views import logout_then_login
@@ -79,6 +79,8 @@ def logout(request):
 
 @login_required
 def create_floor(request):
+    scripts = STANDARD_SCRIPTS + [static("common.js"), static("createFloor.js")]
+    outputDict = {"scripts": scripts}
     if request.method == "POST":
         form = forms.FloorForm(request.POST)
         if form.is_valid():
@@ -93,36 +95,37 @@ def create_floor(request):
                 newFloorPlayer.stocks.add(s)
             return redirect(reverse("dashboard"), permanent=False)
         else:
-            return render(request, "createFloor.html", variableDict)
+            outputDict["form"] = form
+            return render(request, "createFloor.html", outputDict)
     else:
-        form = forms.FloorForm()
-        return render(request, "createFloor.html", {"form": form})
+        outputDict["form"] = forms.FloorForm()
+        return render(request, "createFloor.html", outputDict)
 
 
 @login_required
 def join_floor(request):
     scripts = STANDARD_SCRIPTS + [static("joinFloor.js")]
-    floors = list(Floor.objects.all())
-    for i in Player.objects.filter(user=request.user):
-        floors.remove(i.floor)
+    floors = [f for f in Floor.objects.filter(public=True) if not request.user in (p.user for p in Player.objects.filter(floor=f))]
     return render(request, "joinFloor.html", {"floors": floors, "scripts": scripts})
 
 @login_required
-def join(request, floorNumber):
-    player = Player.objects.create(user=request.user, floor=Floor.objects.get(pk=floorNumber))
-    player.save()
+def join(request, pkFloor):
+    floor = Floor.objects.get(pk=pkFloor)
+    if not Player.objects.filter(user=request.user, floor=floor):
+        player = Player.objects.create(user=request.user, floor=floor)
+        player.save()
     return redirect(reverse("dashboard"), permanent=False)
 
 
 @login_required
-def trade(request, player=None, stock=None, floor=None, pkCountering=None):
+def trade(request, pkPlayer=None, pkStock=None, pkFloor=None, pkCountering=None):
     outputDict = {}
     outputDict["request"] = request
     if request.POST:
         form = forms.TradeForm(request.POST)
-        if form.is_valid(floor=floor, user=request.user, pkCountering=pkCountering):
+        if form.is_valid(pkFloor=pkFloor, user=request.user, pkCountering=pkCountering):
             form.clean()
-            form.to_trade(floor=floor, user=request.user)
+            form.to_trade(pkFloor=pkFloor, user=request.user)
             if pkCountering:
                 Trade.objects.get(pk=pkCountering).delete()
             return redirect(reverse("dashboard"), permanent=False)
@@ -130,33 +133,35 @@ def trade(request, player=None, stock=None, floor=None, pkCountering=None):
             if pkCountering:
                 outputDict["countering"] = Trade.objects.get(pk=pkCountering)
             outputDict["form"] = form
-    elif not (player or stock or floor):
+    elif not (pkPlayer or pkStock or pkFloor):
         raise RuntimeError("You need to at least pass in a floor")
-    elif player and floor and not stock:
-        otherPlayer = Player.objects.get(pk=player)
+    elif pkPlayer and pkFloor and not pkStock:
+        otherPlayer = Player.objects.get(pk=pkPlayer)
         init_dict = {}
         if otherPlayer.user == request.user:
             otherPlayer = None
         else:
             init_dict["other_user"] = otherPlayer.user.username
         outputDict["form"] = forms.TradeForm(initial=init_dict)
-    elif stock and floor and not player:
-        floor = Floor.objects.get(pk=floor)
-        # stocks__id means look for something with this id in the "stocks" many-to-many field. 
-        stocks = [Stock.objects.get(pk=stock)]
+    elif pkStock and pkFloor and not pkPlayer:
+        floor = Floor.objects.get(pk=pkFloor)
+        stocks = [Stock.objects.get(pk=pkStock)]
         stocks_string = ",".join([s.symbol for s in stocks])
         try:
-            otherPlayer = Player.objects.get(floor=floor, stocks__id=stock)
+            # stocks__id means look for something with this id in the "stocks" many-to-many field. 
+            otherPlayer = Player.objects.get(floor=floor, stocks__id=pkStock)
             if otherPlayer.user == request.user:
                 outputDict["form"] = forms.TradeForm(initial={"user_stocks": stocks_string})
             else:
                 outputDict["form"] = forms.TradeForm(initial={"other_user": otherPlayer.user.username, "other_stocks": stocks_string})
         except Player.DoesNotExist:
             outputDict["form"] = forms.TradeForm(initial={"other_stocks": stocks_string})
-    elif floor and pkCountering:
+    elif pkFloor and pkCountering:
         raise RuntimeError("got floor and pk")
     else:
         raise RuntimeError("You passed in the wrong arguments")
+    outputDict["floor"] = Floor.objects.get(pk=pkFloor)
+    outputDict["userPlayer"] = Player.objects.get(user=request.user, floor=outputDict["floor"])
     return render(request, "trade.html", outputDict)
 
 @login_required
@@ -189,23 +194,19 @@ def editFloor(request, pkFloor=None):
     if request.POST:
         form = forms.EditFloorForm(request.POST)
         if form.is_valid():
-            floor.name = form.cleaned_data["name"]
-            floor.permissiveness = form.cleaned_data["permissiveness"]
-            floor.stocks = form.cleaned_data["stocks"]
+            form.apply(floor)
             for player in Player.objects.filter(floor=floor):
                 for s in player.stocks.all():
                     if not s in floor.stocks.all():
                         player.stocks.remove(s)
                 player.save()
-            floor.save()
             return redirect(reverse("dashboard"))
-    form = forms.EditFloorForm({"name": floor.name, "stocks": ",".join([s.symbol for s in floor.stocks.all()]), "permissiveness": floor.permissiveness})
-    return render(request, "editFloor.html", {"form": form, "floor": floor, "scripts": scripts})
+    form = forms.EditFloorForm({"name": floor.name, "stocks": ",".join([s.symbol for s in floor.stocks.all()]), "permissiveness": floor.permissiveness, "privacy": not floor.public, "number_of_stocks": floor.num_stocks})
+    return render(request, "editFloor.html", {"form": form, "floor": floor, "scripts": scripts, "absolute_join_url": request.build_absolute_uri(reverse("join", args=[floor.pk]))})
 
 @login_required
 def changePassword(request):
     if request.POST:
-        print(request.POST, file=sys.stderr)
         form = forms.ChangePasswordForm(request.POST)
         if form.is_valid():
             if form.cleaned_data["new_password_2"] == form.cleaned_data["new_password"]:
@@ -228,7 +229,15 @@ def changePassword(request):
 def receivedTrade(request, pkTrade):
     trade = Trade.objects.get(pk=pkTrade)
     form = forms.ReceivedTradeForm(trade.toFormDict())
-    return render(request, "trade.html", {"form" : form, "received": True, "trade": trade})
+    try:
+        errors = trade.verify()
+    except TradeError as e:
+        form.add_error(None, str(e))
+    return render(request, "trade.html", {"form" : form,
+        "received": True,
+        "trade": trade,
+        "floor": trade.floor, 
+        "userPlayer": trade.recipient})
 
 @login_required
 def rejectTrade(request, pkTrade):
@@ -241,10 +250,16 @@ def acceptTrade(request, pkTrade):
     return redirect(reverse("dashboard"), permanent=False)
 
 @login_required
-def counterTrade(request, pkTrade, floor):
+# pkFloor is here for the sake of the JavaScript on the page. 
+def counterTrade(request, pkTrade, pkFloor):
     trade = Trade.objects.get(pk=pkTrade)
     form = forms.TradeForm(initial=trade.toFormDict())
-    outputDict = {"form": form, "request": request, "countering": trade}
+    # TODO: There is too much repitition for these template variables. I need to find a better way. 
+    outputDict = {"form": form,
+            "request": request,
+            "countering": trade, 
+            "floor": trade.floor, 
+            "userPlayer": trade.recipient}
     return render(request, "trade.html", outputDict)
 
 @login_required
@@ -264,17 +279,17 @@ def receivedTradeJavaScript(request):
 def userList(request):
     return HttpResponse(json.dumps([{"username": u.username if u.username else u.email, "email": u.email} for u in User.objects.all()]), content_type="text/json")
 
-def stockLookup(request, query=None, key=None, user=None, floor=None):
+def stockLookup(request, query=None, key=None, user=None, pkFloor=None):
     # This if branch is depricated
     if query:
         STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
         return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
     elif key:
         return HttpResponse(json.dumps([s.format_for_json() for s in Player.objects.get(pk=key).stocks.all()]), content_type="text/json")
-    elif user and floor:
-        oFloor = Floor.objects.get(pk=floor)
-        player = Player.objects.get(user__username=user, floor=oFloor)
-        if player.isFloor() and not oFloor.permissiveness == "closed":
+    elif user and pkFloor:
+        floor = Floor.objects.get(pk=pkFloor)
+        player = Player.objects.get(user__username=user, floor=floor)
+        if player.isFloor() and not floor.permissiveness == "closed":
             return redirect(static("stocks.json"))
         return HttpResponse(json.dumps([i.format_for_json() for i in player.stocks.all()]))
     else:
@@ -295,6 +310,8 @@ def renderStockWidgetJavascript(request, identifier=None, player=0):
     return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
 def tradeFormJavaScript(request):
     return render(request, "trade.js")
+def tradeCommonJavaScript(request):
+    return render(request, "tradeCommon.js")
 def editFloorJavaScript(request, pkFloor=None):
     return render(request, "editFloor.js", {"floor": Floor.objects.get(pk=pkFloor)})
 
@@ -321,3 +338,15 @@ def deleteFloor(request, pkFloor=None):
         raise RuntimeError("This should never happen. You didn't give a floor")
     Floor.objects.get(pk=pkFloor).delete()
     return redirect(reverse("dashboard"), permanent=False)
+
+def playerJson(request, pkPlayer=None):
+    if not pkPlayer:
+        raise RuntimeError("You need to supply a player to get information!")
+    else:
+        return HttpResponse(Player.objects.get(pk=pkPlayer).to_json())
+
+def floorJson(request, pkFloor=None):
+    if not pkFloor:
+        raise RuntimeError("You need to supply a floor to get information!")
+    else:
+        return HttpResponse(Floor.objects.get(pk=pkFloor).to_json())
