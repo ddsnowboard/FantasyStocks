@@ -104,9 +104,14 @@ def create_floor(request):
 
 @login_required
 def join_floor(request):
-    scripts = STANDARD_SCRIPTS + [static("joinFloor.js")]
-    floors = [f for f in Floor.objects.filter(public=True) if not request.user in (p.user for p in Player.objects.filter(floor=f))]
-    return render(request, "joinFloor.html", {"floors": floors, "scripts": scripts})
+    if not request.POST:
+        scripts = STANDARD_SCRIPTS + [static("common.js"), reverse("joinFloorJavaScript"), static("typeahead.bundle.js")]
+        floors = [f for f in Floor.objects.filter(public=True) if not request.user in (p.user for p in Player.objects.filter(floor=f))]
+        return render(request, "joinFloor.html", {"form": forms.JoinFloorForm, "scripts": scripts})
+    else:
+        form = forms.JoinFloorForm(request.POST)
+        if form.is_valid():
+            return redirect(reverse("join", args=(Floor.objects.get(name=form.cleaned_data["floor_name"]).pk, )))
 
 @login_required
 def join(request, pkFloor):
@@ -350,3 +355,8 @@ def floorJson(request, pkFloor=None):
         raise RuntimeError("You need to supply a floor to get information!")
     else:
         return HttpResponse(Floor.objects.get(pk=pkFloor).to_json())
+def joinFloorJavaScript(request):
+    return render(request, "joinFloor.js")
+
+def floorsJSON(request):
+    return HttpResponse(json.dumps([{"name": i.name} for i in Floor.objects.filter(public=True) if not Player.objects.filter(user=request.user, floor=i)]))

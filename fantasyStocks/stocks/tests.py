@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase, Client
 from django import test
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -49,13 +50,13 @@ class TradeTestCase(StaticLiveServerTestCase):
         client = Client()
         user = User.objects.create_user("privateFloorUser", "privateer@mailmail.mail", "thePasswordIs")
         client.force_login(user)
-        response = client.get(reverse("joinFloor"))
+        response = client.get(reverse("floorsJson"))
         # This has to be number 2 because there are three templates: base (0), loggedIn (1), and joinFloor (2). 
-        self.assertListEqual(response.context[2]["floors"], [])
+        self.assertListEqual([Floor.objects.get(name=i["name"]) for i in json.loads(response.content.decode("UTF-8"))], [])
         floor.public = True
         floor.save()
-        response = client.get(reverse("joinFloor"))
-        self.assertListEqual(response.context[2]["floors"], [floor])
+        response = client.get(reverse("floorsJson"))
+        self.assertListEqual([Floor.objects.get(name=i["name"]) for i in json.loads(response.content.decode("UTF-8"))], [floor])
     def test_trade_counter(self):
         self.set_trade()
         old_recipientStocks = list(self.trade.recipientStocks.all())

@@ -3,42 +3,10 @@
 
 {% block content %}
 <p>Pick a floor to join, or you can <a href="{% url "createFloor" %}">create one</a>. 
-<table class="floorSelection">
-    <thead class="head">
-        <tr>
-            <th>
-                Name
-            </th>
-            <th>
-                Creator
-            </th>
-            <th>
-                Size
-            </th>
-            <th>
-                Floor Type
-            </th>
-        </tr>
-    </thead>
-    {% for floor in floors %}
-    <tr>
-        <td>
-            <!-- This <a> is captured by javascript and cast over the whole <tr>. It doesn't need to contain anything. 
-                Don't be alarmed -->
-                <a style="display: none" href="{% url 'join' floor.pk %}"></a>{{ floor.name }}
-        </td>
-        <td>
-            {{ floor.owner|default_if_none:"ddsnowboard" }}
-        </td>
-        <td>
-            {% with players=floor.leaders %}
-            {{ players|length }} player{{ players|pluralize }}
-            {% endwith %}
-        </td>
-        <td>
-            {{ floor.permissiveness|capfirst }}
-        </td>
-            </tr>
-            {% endfor %}
-</table>
+<form action="" method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <br />
+    <input type="submit" value="Join">
+</form>
 {% endblock %}

@@ -156,7 +156,14 @@ class FloorForm(forms.Form):
             floor.stocks.add(i)
         floor.save()
         return floor
-
+class JoinFloorForm(forms.Form):
+    floor_name = forms.CharField(label="", max_length=35)
+    def is_valid(self):
+        if not super().is_valid():
+            return False
+        if not Floor.objects.filter(name=self.cleaned_data["floor_name"]):
+            return False
+        return True
 
 class TradeForm(forms.Form):
     other_user = UserField(label="Other Player")
