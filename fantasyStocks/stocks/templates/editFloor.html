@@ -3,7 +3,7 @@
 {% block content %}
 {% if not floor.public %}
 <p>
-For others to join your floor, send them this link: <span style="color: blue; text-decoration: underline;">{{ absolute_join_url }}</span>
+For others to join your floor, send them this link: <a href="{{ absolute_join_url }}">{{ absolute_join_url }}</a>
 </p>
 {% endif %}
 <form action="" method="POST">

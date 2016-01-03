@@ -109,9 +109,11 @@ def join_floor(request):
     return render(request, "joinFloor.html", {"floors": floors, "scripts": scripts})
 
 @login_required
-def join(request, floorNumber):
-    player = Player.objects.create(user=request.user, floor=Floor.objects.get(pk=floorNumber))
-    player.save()
+def join(request, pkFloor):
+    floor = Floor.objects.get(pk=pkFloor)
+    if not Player.objects.filter(user=request.user, floor=floor):
+        player = Player.objects.create(user=request.user, floor=floor)
+        player.save()
     return redirect(reverse("dashboard"), permanent=False)
 
 
