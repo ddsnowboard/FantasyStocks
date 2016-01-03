@@ -104,14 +104,16 @@ def create_floor(request):
 
 @login_required
 def join_floor(request):
+    scripts = STANDARD_SCRIPTS + [static("common.js"), reverse("joinFloorJavaScript"), static("typeahead.bundle.js")]
     if not request.POST:
-        scripts = STANDARD_SCRIPTS + [static("common.js"), reverse("joinFloorJavaScript"), static("typeahead.bundle.js")]
-        floors = [f for f in Floor.objects.filter(public=True) if not request.user in (p.user for p in Player.objects.filter(floor=f))]
-        return render(request, "joinFloor.html", {"form": forms.JoinFloorForm, "scripts": scripts})
+        form = forms.JoinFloorForm()
     else:
         form = forms.JoinFloorForm(request.POST)
         if form.is_valid():
             return redirect(reverse("join", args=(Floor.objects.get(name=form.cleaned_data["floor_name"]).pk, )))
+        else:
+            pass
+    return render(request, "joinFloor.html", {"form": form, "scripts": scripts})
 
 @login_required
 def join(request, pkFloor):

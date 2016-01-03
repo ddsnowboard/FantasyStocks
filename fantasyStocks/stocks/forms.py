@@ -145,7 +145,12 @@ class FloorForm(forms.Form):
         else:
             raise RuntimeError("You have to either pass in a user and a floor, or neither.")
     def is_valid(self):
-        return super(FloorForm, self).is_valid()
+        if not super(FloorForm, self).is_valid():
+            return False
+        if Floor.objects.filter(name=self.cleaned_data["name"]):
+            self.add_error("name", "That name is already taken")
+            return False
+        return True
     def save(self):
         floor = Floor(name=self.cleaned_data['name'],
                 permissiveness=self.cleaned_data['permissiveness'],
@@ -162,6 +167,7 @@ class JoinFloorForm(forms.Form):
         if not super().is_valid():
             return False
         if not Floor.objects.filter(name=self.cleaned_data["floor_name"]):
+            self.add_error("floor_name", "There is no floor by that name") 
             return False
         return True
 

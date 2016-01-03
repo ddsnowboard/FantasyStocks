@@ -110,7 +110,7 @@ class Floor(models.Model):
             (CLOSED, "Closed"), 
             (PERMISSIVE, "Permissive")
             )
-    name = models.CharField(max_length=35)
+    name = models.CharField(max_length=35, unique=True)
     stocks = models.ManyToManyField(Stock)
     permissiveness = models.CharField(max_length=15, choices=PERMISSIVENESS_CHOICES, default=PERMISSIVE)
     owner = models.ForeignKey(User, null=True)
