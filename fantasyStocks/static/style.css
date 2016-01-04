@@ -316,3 +316,10 @@ img.flipped {
 .defaultCursor {
     cursor: default;
 }
+
+.suggestion { 
+    margin-bottom: 5px;
+}
+.suggestion:last-child { 
+    margin-bottom: 0;
+}
