@@ -4,6 +4,7 @@ from functools import reduce
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.core.urlresolvers import reverse_lazy, reverse
 from stocks.models import Floor, Stock, StockAPIError, StockSuggestion
 from django.core.exceptions import ValidationError
@@ -102,6 +103,18 @@ class LoginForm(forms.Form):
     username = forms.CharField(label="Username", max_length=25)
     password = forms.CharField(label="Password", max_length=50, widget=forms.PasswordInput)
     nextPage = forms.CharField(label="next page", max_length=30, widget=forms.HiddenInput(), initial=reverse_lazy("dashboard"))
+    def is_valid(self):
+        if not super().is_valid():
+            return False
+        if User.objects.filter(username=self.cleaned_data["username"]):
+            if authenticate(username=self.cleaned_data["username"], password=self.cleaned_data["password"]):
+                return True
+            else:
+                self.add_error(None, "That is the wrong password")
+                return False
+        else:
+            self.add_error(None, "That username does not exist")
+            return False
 
 class RegistrationForm(forms.Form):
     # The order of this constant matters. Tripping `already_exists` doesn't make 
