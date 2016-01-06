@@ -372,4 +372,4 @@ def getStockPrice(request, symbol=None):
     stock = Stock.objects.get(symbol=symbol)
     if not stock.has_current_price():
         stock.update()
-    return HttpResponse(json.dumps({"price": float(stock.price)}))
+    return HttpResponse(json.dumps({"price": float(stock.price), "change": float(stock.change)}))
