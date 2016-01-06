@@ -21,7 +21,7 @@ STANDARD_SCRIPTS = ["//code.jquery.com/jquery-1.11.3.min.js"]
 @login_required
 def dashboard(request):
     # IMPORTANT: Keep jQuery at the beginning or else it won't load first and bad stuff will happen.
-    scripts =  STANDARD_SCRIPTS + [static("common.js"), static("floorTabs.js"), static("dashboard.js")]
+    scripts =  STANDARD_SCRIPTS + [static("common.js"), static("floorTabs.js"), reverse("dashboardJavaScript")]
     players = Player.objects.filter(user=request.user)
     if not players:
         return redirect(reverse("joinFloor"), permanent=False)
@@ -362,3 +362,14 @@ def joinFloorJavaScript(request):
 
 def floorsJSON(request):
     return HttpResponse(json.dumps([{"name": i.name} for i in Floor.objects.filter(public=True) if not Player.objects.filter(user=request.user, floor=i)]))
+
+def dashboardJavaScript(request):
+    return render(request, "dashboard.js")
+
+def getStockPrice(request, symbol=None):
+    if not symbol:
+        raise RuntimeError("You need to give a symbol, fool!")
+    stock = Stock.objects.get(symbol=symbol)
+    if not stock.has_current_price():
+        stock.update()
+    return HttpResponse(json.dumps({"price": float(stock.price)}))

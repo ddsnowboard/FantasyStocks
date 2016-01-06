@@ -40,7 +40,45 @@ $(document).ready(function() {
         }
         rebind();
     };
-
+    var loadingPrices = $(".loadingPrice");
+    var STOCK_PRICE_URL = "{% url "stockPrice" symbol="ZZZ" %}";
+    var DONE = 4;
+    for(var i = 0; i < loadingPrices.length; i++)
+    {
+        var price = loadingPrices[i];
+        var symbol = price.id;
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function(event){
+            if(this.readyState === DONE)
+            {
+                var klass;
+                var sign;
+                var jsonObj = JSON.parse(this.response)
+                if(jsonObj.price > 0)
+                {
+                    klass = "green";
+                    sign = "+";
+                }
+                else if(jsonObj.price < 0)
+                {
+                    klass = "red";
+                    sign = "";
+                }
+                else
+                {
+                    klass = "blue";
+                    sign = "";
+                }
+                $(price).addClass(klass).removeClass("loadingPrice").html(sign + jsonObj.price.toString());
+            }
+            else
+            {
+                console.log("error!");
+            }
+        };
+        xhr.open("GET", STOCK_PRICE_URL.replace("ZZZ", symbol));
+        xhr.send();
+    }
     $(".tradeTab").click(function() {
         if(this.className.indexOf("selected") == -1)
         {

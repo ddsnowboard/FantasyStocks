@@ -316,3 +316,12 @@ img.flipped {
 .defaultCursor {
     cursor: default;
 }
+
+.stockPrice { 
+    display: inline-block; 
+    float: right;
+}
+
+.loadingPrice { 
+    width: 10%;
+}
