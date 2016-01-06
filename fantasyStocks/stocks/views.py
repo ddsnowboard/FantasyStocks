@@ -57,8 +57,8 @@ def index(request):
                 user = authenticate(username=username, password=password)
                 if user:
                     login(request, user)
-                else:
-                    return render(request, "index.html", {"loginError": "That username or password doesn't exist", "loginForm" : form,  "registrationForm" : forms.RegistrationForm()})
+            else:
+                return render(request, "index.html", {"loginForm" : form,  "registrationForm" : forms.RegistrationForm()})
         return HttpResponseRedirect(form.cleaned_data["nextPage"])
     # If there is no POST from a prior submission...
     else:

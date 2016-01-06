@@ -6,7 +6,7 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse
 from stocks.models import *
 from stocks.views import join_floor
-from stocks.forms import TradeForm
+from stocks.forms import TradeForm, LoginForm, RegistrationForm
 import json
 import time
 from functools import reduce
@@ -140,6 +140,32 @@ class SuggestionTestCase(StaticLiveServerTestCase):
         self.assertNotIn(self.new_stock, self.player.stocks.all())
         self.assertIn(self.new_stock, self.floor.stocks.all())
         self.assertIn(self.new_stock, self.floor.floorPlayer.stocks.all())
+
+class UserTestCase(StaticLiveServerTestCase):
+    fixtures = ["fixture.json"]
+    def test_login_page(self):
+        user = User.objects.all().exclude(username="Floor")[0]
+        client = Client()
+        origResponse = client.get(reverse("dashboard"), follow=True)
+        self.assertTemplateUsed(origResponse, "index.html")
+        self.assertTrue(origResponse.context[-1]["registrationForm"])
+        self.assertTrue(origResponse.context[-1]["loginForm"])
+        response = client.post(origResponse.redirect_chain[-1][0], {"username": "notAusername", "password": "certainlynotapassword", "nextPage": reverse("dashboard")})
+        self.assertFormError(response, "loginForm", None, "That username does not exist") 
+
+        response = client.get(reverse("dashboard"), follow=True)
+        response = client.post(origResponse.redirect_chain[-1][0], {"username": user.username, "password": "certainlynotapassword", "nextPage": reverse("dashboard")})
+        self.assertFormError(response, "loginForm", None, "That is the wrong password") 
+
+        response = client.get(reverse("dashboard"), follow=True)
+        # See the code I used to create the fixture for how I'm getting the password
+        response = client.post(origResponse.redirect_chain[-1][0], {"username": user.username, "password": "thePasswordIs{}".format(user.username.split("_")[1]), "nextPage": reverse("dashboard")}, follow=True)
+        self.assertEqual(response.redirect_chain[-1][0], reverse("dashboard")) 
+
+
+
+
+
 # This is stuff I don't need anymore. If I need to change the standard database
 # setup, I might though. 
 # class OldTests(StaticLiveServerTestCase):
