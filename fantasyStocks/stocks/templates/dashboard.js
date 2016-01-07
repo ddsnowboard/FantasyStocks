@@ -38,9 +38,8 @@ function setPrice(el, price)
                 klass = "blue";
                 sign = "";
                 // No one else has to know about this...
-                price = "0.00";
             }
-            $(el).addClass(klass).removeClass("loadingPrice").html(sign + price.toString());
+            $(el).addClass(klass).removeClass("loadingPrice").html(sign + price.toFixed(2));
 }
 function getPriceCallback(el, xhr)
 {

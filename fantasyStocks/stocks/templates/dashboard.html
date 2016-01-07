@@ -49,7 +49,7 @@ requests: "{% filter escapejs %}{% for request in player.receivedRequests %}
             <div class="tabs">
                 <ul>
                     {% for player in players %}
-                    <li {% if forloop.first %}class="selected"{% endif %} id="{{ player.floor.pk }}">
+                    <li class="unselectable {% if forloop.first %}selected{% endif %}" id="{{ player.floor.pk }}">
                         {{ player.floor }} {% with len=player.numMessages %} 
                         {% if len %}<strong>{% endif %}
                             ({{ len }})
