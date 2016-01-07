@@ -22,7 +22,6 @@ function getPriceCallback(el, xhr)
 {
     return function(){
         var DONE = 4;
-        console.log(xhr);
         if(xhr.readyState === DONE)
         {
             var klass;
@@ -42,6 +41,8 @@ function getPriceCallback(el, xhr)
             {
                 klass = "blue";
                 sign = "";
+                // No one else has to know about this...
+                jsonObj.change = "0.00";
             }
             $(el).addClass(klass).removeClass("loadingPrice").html(sign + jsonObj.change.toString());
         }
