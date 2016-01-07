@@ -1,4 +1,5 @@
 "use strict"
+var stockChanges = {};
 var currentTradeSet;
 var received;
 var sent;
@@ -18,21 +19,16 @@ function rebind()
             }); 
 }
 
-function getPriceCallback(el, xhr)
+function setPrice(el, price)
 {
-    return function(){
-        var DONE = 4;
-        if(xhr.readyState === DONE)
-        {
             var klass;
             var sign;
-            var jsonObj = JSON.parse(xhr.response);
-            if(jsonObj.change > 0)
+            if(price > 0)
             {
                 klass = "green";
                 sign = "+";
             }
-            else if(jsonObj.change < 0)
+            else if(price < 0)
             {
                 klass = "red";
                 sign = "";
@@ -42,9 +38,19 @@ function getPriceCallback(el, xhr)
                 klass = "blue";
                 sign = "";
                 // No one else has to know about this...
-                jsonObj.change = "0.00";
+                price = "0.00";
             }
-            $(el).addClass(klass).removeClass("loadingPrice").html(sign + jsonObj.change.toString());
+            $(el).addClass(klass).removeClass("loadingPrice").html(sign + price.toString());
+}
+function getPriceCallback(el, xhr)
+{
+    return function(){
+        var DONE = 4;
+        if(xhr.readyState === DONE)
+        {
+            var jsonObj = JSON.parse(xhr.response);
+            setPrice(el, jsonObj.change);
+            stockChanges[jsonObj.symbol] = jsonObj.change;
         }
     };
 }
@@ -56,10 +62,18 @@ function loadPrices(){
     {
         var price = loadingPrices[i];
         var symbol = price.id;
-        xhrs.push(new XMLHttpRequest());
-        xhrs[i].onreadystatechange = getPriceCallback(price, xhrs[i]);
-        xhrs[i].open("GET", STOCK_PRICE_URL.replace("ZZZ", symbol));
-        xhrs[i].send();
+        if(stockChanges[symbol] === undefined)
+        {
+            xhrs.push(new XMLHttpRequest());
+            xhrs[i].onreadystatechange = getPriceCallback(price, xhrs[i]);
+            xhrs[i].open("GET", STOCK_PRICE_URL.replace("ZZZ", symbol));
+            xhrs[i].send();
+        }
+        else
+        {
+            xhrs[i] = null;
+            setPrice(price, stockChanges[symbol]);
+        }
     }
 }
 
