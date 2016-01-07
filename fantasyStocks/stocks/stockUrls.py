@@ -46,6 +46,7 @@ urlpatterns = [
             url("^getFloorsJSON/$", views.floorsJSON, name="floorsJson"), 
             url("^dashboardJavaScript/$", views.dashboardJavaScript, name="dashboardJavaScript"), 
             url("^getStockPrice/stock/(?P<symbol>[A-Za-z]+)/$", views.getStockPrice, name="stockPrice"), 
+            url("^stockBoardJavaScript/$", views.getStockBoardJavaScript, name="stockBoardJavaScript"), 
         ]
 
 

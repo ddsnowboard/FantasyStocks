@@ -173,7 +173,7 @@ class Floor(models.Model):
                                             </td>
                                             {% endif %}
                                             </tr>
-                                            
+                            <script src="{% url "stockBoardJavaScript" %}"></script>
                 """
         tem = Template(TEMPLATE_STRING)
         con = Context({"leaderboard" : leaderboard, "stockboard" : stockboard, "player": player, "leaders": self.leaders(), "stocks": self.stocks.all()})

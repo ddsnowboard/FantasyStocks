@@ -373,3 +373,6 @@ def getStockPrice(request, symbol=None):
     if not stock.has_current_price():
         stock.update()
     return HttpResponse(json.dumps({"price": float(stock.price), "change": float(stock.change), "symbol": stock.symbol}))
+
+def getStockBoardJavaScript(request):
+    return render(request, "stockBoard.js")
