@@ -149,7 +149,7 @@ class Floor(models.Model):
                                                     <span class="stockPrice {% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" id="{{ stock.symbol }}">{% if change > 0 %}+{% endif %}{{ change }}</span>
                                                     {% endwith %}
                                                     {% else %}
-                                                    <span class="loadingPrice stockPrice" id="{{ stock.symbol }}"><img src="{% static "spinning-wheel.gif" %}" style="height: auto; width: 100%; display: inline" /></span>
+                                                    <span class="loadingPrice stockPrice" id="{{ stock.symbol }}"><img class="loadingWheel" src="{% static "spinning-wheel.gif" %}" /></span>
                                                     {% endif %}
                                                 </td>
                                         </tr>
