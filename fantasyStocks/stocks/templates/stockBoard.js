@@ -3,25 +3,25 @@
 var stockChanges = stockChanges || {};
 function setPrice(el, price)
 {
-            var klass;
-            var sign;
-            if(price > 0)
-            {
-                klass = "green";
-                sign = "+";
-            }
-            else if(price < 0)
-            {
-                klass = "red";
-                sign = "";
-            }
-            else
-            {
-                klass = "blue";
-                sign = "";
-                // No one else has to know about this...
-            }
-            $(el).addClass(klass).removeClass("loadingPrice").html(sign + price.toFixed(2));
+    var klass;
+    var sign;
+    if(price > 0)
+    {
+        klass = "green";
+        sign = "+";
+    }
+    else if(price < 0)
+    {
+        klass = "red";
+        sign = "";
+    }
+    else
+    {
+        klass = "blue";
+        sign = "";
+        // No one else has to know about this...
+    }
+    $(el).addClass(klass).removeClass("loadingPrice").html(sign + price.toFixed(2));
 }
 function getPriceCallback(el, xhr)
 {
