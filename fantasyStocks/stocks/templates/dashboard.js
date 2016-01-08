@@ -1,5 +1,4 @@
 "use strict"
-var stockChanges = {};
 var currentTradeSet;
 var received;
 var sent;

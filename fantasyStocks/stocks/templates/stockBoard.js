@@ -1,3 +1,6 @@
+// Apparently this line gets run over and over. God only knows why. 
+// Anyway, because of that, I have to do this or else it's always empty. 
+var stockChanges = stockChanges || {};
 function setPrice(el, price)
 {
             var klass;
@@ -54,3 +57,7 @@ function loadPrices(){
         }
     }
 }
+
+$(document).ready(function() {
+    loadPrices();
+});
