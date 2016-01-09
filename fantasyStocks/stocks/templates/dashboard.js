@@ -17,6 +17,8 @@ function rebind()
                 event.preventDefault();
             }); 
 }
+
+
 $(document).ready(function() {
     received = $("#received");
     sent = $("#sent");
@@ -39,8 +41,9 @@ $(document).ready(function() {
             requests.css("visibility", "visible");
         }
         rebind();
+        loadPrices();
     };
-
+    loadPrices();
     $(".tradeTab").click(function() {
         if(this.className.indexOf("selected") == -1)
         {

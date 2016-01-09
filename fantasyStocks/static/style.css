@@ -320,6 +320,22 @@ img.flipped {
 .suggestion { 
     margin-bottom: 5px;
 }
+
 .suggestion:last-child { 
     margin-bottom: 0;
+}
+
+.stockPrice { 
+    display: inline-block; 
+    float: right;
+}
+
+.loadingPrice { 
+    height: 0;
+}
+
+img.loadingWheel {
+    height: 1em;
+    width: auto;
+    display: inline;
 }

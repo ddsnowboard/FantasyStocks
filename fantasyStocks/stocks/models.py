@@ -56,8 +56,10 @@ class Stock(models.Model):
     last_price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     def __str__(self):
         return "{} ({})".format(self.company_name, self.symbol)
+    def has_current_price(self):
+        return not timezone.now() - self.last_updated > timedelta(minutes=15)
     def update(self):
-        if timezone.now() - self.last_updated > timedelta(minutes=15):
+        if not self.has_current_price():
             Stock.remote_load_price(self.symbol).apply(self)
             self.last_updated = timezone.now()
             self.save()
@@ -127,6 +129,7 @@ class Floor(models.Model):
         The output from this needs to be surrounded by `<table>` tags. 
         """
         TEMPLATE_STRING = """
+                            {% load staticfiles %}
                             <tr>
                                 {% if stockboard %}
                                 <td style="width: 50%">
@@ -141,9 +144,13 @@ class Floor(models.Model):
                                                     <a class="noUnderline" href="{% url "trade" pkStock=stock.pk pkFloor=player.floor.pk %}">
                                                         <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
                                                     </a>
+                                                    {% if stock.has_current_price %}
                                                     {% with change=stock.get_change %}
-                                                    <span class="{% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" style="display: inline-block; float: right">{% if change > 0 %}+{% endif %}{{ change }}</span>
+                                                    <span class="stockPrice {% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" id="{{ stock.symbol }}">{% if change > 0 %}+{% endif %}{{ change }}</span>
                                                     {% endwith %}
+                                                    {% else %}
+                                                    <span class="loadingPrice stockPrice" id="{{ stock.symbol }}"><img class="loadingWheel" src="{% static "spinning-wheel.gif" %}" /></span>
+                                                    {% endif %}
                                                 </td>
                                         </tr>
                                         {% endfor %}
@@ -166,7 +173,7 @@ class Floor(models.Model):
                                             </td>
                                             {% endif %}
                                             </tr>
-                                            
+                            <script src="{% url "stockBoardJavaScript" %}"></script>
                 """
         tem = Template(TEMPLATE_STRING)
         con = Context({"leaderboard" : leaderboard, "stockboard" : stockboard, "player": player, "leaders": self.leaders(), "stocks": self.stocks.all()})
