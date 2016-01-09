@@ -113,7 +113,8 @@ def join_floor(request):
             return redirect(reverse("join", args=(Floor.objects.get(name=form.cleaned_data["floor_name"]).pk, )))
         else:
             pass
-    return render(request, "joinFloor.html", {"form": form, "scripts": scripts})
+    return render(request, "joinFloor.html", {"form": form, "scripts": scripts,
+        "floors_exist": len([f for f in Floor.objects.all() if not f in [p.floor for p in Player.objects.filter(user=request.user)]]) > 0})
 
 @login_required
 def join(request, pkFloor):

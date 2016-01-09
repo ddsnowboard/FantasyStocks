@@ -2,7 +2,11 @@
 {% block title %}Join Floor{% endblock %}
 
 {% block content %}
+{% if floors_exist %}
 <p>Pick a floor to join, or you can <a href="{% url "createFloor" %}">create one</a>. 
+{% else %}
+<p>There are no floors available, however, you can  <a href="{% url "createFloor" %}">create one</a>. 
+{% endif %}
 <form action="" method="POST">
     {% csrf_token %}
     {{ form }}

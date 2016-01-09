@@ -76,6 +76,20 @@ class TradeTestCase(StaticLiveServerTestCase):
 
 class PlayerTestCase(StaticLiveServerTestCase):
     fixtures = ["fixture.json"]
+    def test_join_empty_floor(self):
+        floor = Floor.objects.all()[0]
+        user = User.objects.all().exclude(username="Floor")[0]
+        player = Player.objects.get(user=user, floor=floor)
+        client = Client()
+        client.force_login(user)
+        for i in [f for f in Floor.objects.all() if not f in [p for p in Player.objects.filter(user=user)]]:
+            client.get(reverse("join", args=[i.pk]))
+
+        response = client.get(reverse("joinFloor"))
+        self.assertFalse(response.context[-1]["floors_exist"])
+        Player.objects.filter(user=user).delete()
+        response = client.get(reverse("joinFloor"))
+        self.assertTrue(response.context[-1]["floors_exist"])
     def test_scoring(self):
         start = time.clock()
         floor = Floor.objects.all()[0]
