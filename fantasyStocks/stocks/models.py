@@ -163,7 +163,7 @@ class Floor(models.Model):
                                                 <table class="leaderBoard">
                                                     {% for competitor in leaders %}
                                                     <tr>
-                                                        <td {% if forloop.last %}style="border-bottom: none;"{% endif %} id="{{ competitor.pk }}" data-stocks={{ competitor.stocks.all|join "," }}">
+                                                        <td {% if forloop.last %}style="border-bottom: none;"{% endif %} id="{{ competitor.pk }}" data-stocks="{{ symbols.competitor|join:"," }}">
                                                             <a class="noUnderline" href="{% url "userPage" pkUser=competitor.user.pk %}"<span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.get_name }}</span></a>
                                                             <span style="display: inline-block; float: right">{{ competitor.points }}</span>
                                                         </td>
@@ -176,7 +176,12 @@ class Floor(models.Model):
                             <script src="{% url "stockBoardJavaScript" %}"></script>
                 """
         tem = Template(TEMPLATE_STRING)
-        con = Context({"leaderboard" : leaderboard, "stockboard" : stockboard, "player": player, "leaders": self.leaders(), "stocks": self.stocks.all()})
+        con = Context({"leaderboard" : leaderboard,
+            "stockboard" : stockboard,
+            "player": player,
+            "leaders": self.leaders(),
+            "stocks": self.stocks.all(), 
+            "symbols": {p : (s.symbol for s in p.stocks.all()) for p in self.leaders()}})
         return tem.render(con)
 
     def render_leaderboard(self, player):

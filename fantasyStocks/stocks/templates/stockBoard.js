@@ -37,6 +37,7 @@ function getPriceCallback(el, xhr)
 }
 function loadPrices(){
     var loadingPrices = $(".loadingPrice");
+    var STOCK_URL_PLACEHOLDER = "ZZZ";
     var STOCK_PRICE_URL = "{% url "stockPrice" symbol="ZZZ" %}";
     var xhrs = [];
     for(var i = 0; i < loadingPrices.length; i++)
@@ -47,7 +48,7 @@ function loadPrices(){
         {
             xhrs.push(new XMLHttpRequest());
             xhrs[i].onreadystatechange = getPriceCallback(price, xhrs[i]);
-            xhrs[i].open("GET", STOCK_PRICE_URL.replace("ZZZ", symbol));
+            xhrs[i].open("GET", STOCK_PRICE_URL.replace(STOCK_URL_PLACEHOLDER, symbol));
             xhrs[i].send();
         }
         else
@@ -60,12 +61,11 @@ function loadPrices(){
 
 $(document).ready(function() {
     loadPrices();
+    var owners = {};
     $(".stock").mouseover(function(){
         $("#" + this.dataset.owner).addClass("highlighted");
-        console.log(this.dataset.owner);
     });
     $(".stock").mouseout(function(){
-        console.log(this.dataset.owner);
         $("#" + this.dataset.owner).removeClass("highlighted");
     });
 });
