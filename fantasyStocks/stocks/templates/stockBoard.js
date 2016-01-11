@@ -60,4 +60,12 @@ function loadPrices(){
 
 $(document).ready(function() {
     loadPrices();
+    $(".stock").mouseover(function(){
+        $("#" + this.dataset.owner).addClass("highlighted");
+        console.log(this.dataset.owner);
+    });
+    $(".stock").mouseout(function(){
+        console.log(this.dataset.owner);
+        $("#" + this.dataset.owner).removeClass("highlighted");
+    });
 });

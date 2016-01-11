@@ -139,7 +139,7 @@ class Floor(models.Model):
                                             {% if stock in player.stocks.all %}
                                             <td class="userStock">
                                                 {% else %}
-                                                <td>
+                                                <td class="stock">
                                                     {% endif %}
                                                     <a class="noUnderline" href="{% url "trade" pkStock=stock.pk pkFloor=player.floor.pk %}">
                                                         <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
@@ -163,7 +163,7 @@ class Floor(models.Model):
                                                 <table class="leaderBoard">
                                                     {% for competitor in leaders %}
                                                     <tr>
-                                                        <td {% if forloop.last %}style="border-bottom: none;"{% endif %}>
+                                                        <td {% if forloop.last %}style="border-bottom: none;"{% endif %} id="{{ competitor.pk }}" data-stocks={{ competitor.stocks.all|join "," }}">
                                                             <a class="noUnderline" href="{% url "userPage" pkUser=competitor.user.pk %}"<span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.get_name }}</span></a>
                                                             <span style="display: inline-block; float: right">{{ competitor.points }}</span>
                                                         </td>

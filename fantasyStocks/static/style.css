@@ -339,3 +339,7 @@ img.loadingWheel {
     width: auto;
     display: inline;
 }
+
+.highlighted {
+    border: 1px solid red;
+}
