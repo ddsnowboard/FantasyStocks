@@ -341,9 +341,6 @@ img.loadingWheel {
 }
 
 .highlighted {
-    border: 1px solid red !important;
-}
-
-.playerLine { 
-    border: 1px solid white;
+    background-color: lightgreen !important;
+    color: black !important;
 }
