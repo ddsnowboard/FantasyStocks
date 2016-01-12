@@ -1,6 +1,20 @@
 // Apparently this line gets run over and over. God only knows why. 
 // Anyway, because of that, I have to do this or else it's always empty. 
 var stockChanges = stockChanges || {};
+
+var owners = {};
+function calculateOwners(){
+    owners = {};
+    var players = $(".playerLine");
+    for(var i = 0; i < players.length; i++)
+    {
+        var stocks = players[i].dataset.stocks.split(",");
+        for(var s = 0; s < stocks.length; s++)
+        {
+            owners[stocks[s]] = players[i];
+        }
+    }
+}
 function setPrice(el, price)
 {
     var klass;
@@ -60,11 +74,23 @@ function loadPrices(){
 
 $(document).ready(function() {
     loadPrices();
-    var owners = {};
     $(".stock").mouseover(function(){
-        $("#" + this.dataset.owner).addClass("highlighted");
+        $(owners[this.id]).addClass("highlighted");
+    })
+    .mouseout(function(){
+        $(owners[this.id]).removeClass("highlighted");
     });
-    $(".stock").mouseout(function(){
-        $("#" + this.dataset.owner).removeClass("highlighted");
+    $(".playerLine").mouseover(function() {
+        var stocks = this.dataset.stocks.split(",");
+        for(var i = 0; i < stocks.length; i++){
+            $("#" + stocks[i]).addClass("highlighted");
+        }
+    }).mouseout(function() {
+        var stocks = this.dataset.stocks.split(",");
+        for(var i = 0; i < stocks.length; i++){
+            $("#" + stocks[i]).removeClass("highlighted");
+        }
     });
+    calculateOwners();
+    onTabClick = calculateOwners;
 });

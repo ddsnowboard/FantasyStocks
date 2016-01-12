@@ -136,17 +136,13 @@ class Floor(models.Model):
                                     <table class="stockBoard">
                                         {% for stock in stocks %}
                                         <tr>
-                                            {% if stock in player.stocks.all %}
-                                            <td class="userStock">
-                                                {% else %}
-                                                <td class="stock">
-                                                    {% endif %}
+                                                <td class="stock {% if stock in player.stocks.all %}userStock{% endif %}" id="{{ stock.symbol }}">
                                                     <a class="noUnderline" href="{% url "trade" pkStock=stock.pk pkFloor=player.floor.pk %}">
                                                         <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
                                                     </a>
                                                     {% if stock.has_current_price %}
                                                     {% with change=stock.get_change %}
-                                                    <span class="stockPrice {% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" id="{{ stock.symbol }}">{% if change > 0 %}+{% endif %}{{ change }}</span>
+                                                    <span class="stockPrice {% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}">{% if change > 0 %}+{% endif %}{{ change }}</span>
                                                     {% endwith %}
                                                     {% else %}
                                                     <span class="loadingPrice stockPrice" id="{{ stock.symbol }}"><img class="loadingWheel" src="{% static "spinning-wheel.gif" %}" /></span>
@@ -163,9 +159,11 @@ class Floor(models.Model):
                                                 <table class="leaderBoard">
                                                     {% for competitor in leaders %}
                                                     <tr>
-                                                        <td {% if forloop.last %}style="border-bottom: none;"{% endif %} id="{{ competitor.pk }}" data-stocks="{{ symbols.competitor|join:"," }}">
-                                                            <a class="noUnderline" href="{% url "userPage" pkUser=competitor.user.pk %}"<span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.get_name }}</span></a>
-                                                            <span style="display: inline-block; float: right">{{ competitor.points }}</span>
+                                                        <td {% if forloop.last %}style="border-bottom: none;"{% endif %} class="playerLine" id="{{ competitor.player.pk }}" data-stocks="{{ competitor.stocks|join:"," }}">
+                                                            <a class="noUnderline" href="{% url "userPage" pkUser=competitor.player.user.pk %}"<span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.player.get_name }}
+                                                            </span></a>
+                                                            <span style="display: inline-block; float: right">{{ competitor.player.points }}
+                                                            </span>
                                                         </td>
                                                     </tr>
                                                     {% endfor %}
@@ -175,13 +173,14 @@ class Floor(models.Model):
                                             </tr>
                             <script src="{% url "stockBoardJavaScript" %}"></script>
                 """
+        test = {p.pk : [s.symbol for s in p.stocks.all()] for p in self.leaders()}
         tem = Template(TEMPLATE_STRING)
         con = Context({"leaderboard" : leaderboard,
             "stockboard" : stockboard,
             "player": player,
-            "leaders": self.leaders(),
-            "stocks": self.stocks.all(), 
-            "symbols": {p : (s.symbol for s in p.stocks.all()) for p in self.leaders()}})
+            "leaders": [{"player": p, "stocks": [s.symbol for s in p.stocks.all()]} for p in self.leaders()],
+            "stocks": self.stocks.all()})
+
         return tem.render(con)
 
     def render_leaderboard(self, player):
