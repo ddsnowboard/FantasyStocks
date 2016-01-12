@@ -192,10 +192,10 @@ class Floor(models.Model):
         return self._render_board(player=player, stockboard=True, leaderboard=True)
     def to_json(self):
         return {"stocks": ",".join(s.symbol for s in self.stocks.all()),
-            "name": self.name, "permissiveness": self.permissiveness, "pkOwner": self.owner.pk, 
-            "pkFloorPlayer": self.floorPlayer.pk, "public": self.public, "num_stocks": self.num_stocks}
+                "name": self.name, "permissiveness": self.permissiveness, "pkOwner": self.owner.pk, 
+                "pkFloorPlayer": self.floorPlayer.pk, "public": self.public, "num_stocks": self.num_stocks}
 
-# NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
+        # NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
 # object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
 # deleted if the it's `User` object or its floor is deleted. 
 class Player(models.Model):
@@ -285,8 +285,8 @@ class Trade(models.Model):
             raise RuntimeError("The floor sent a trade. This isn't good at all.")
     def toFormDict(self):
         d = {"other_user": self.sender.get_name(),
-            "user_stocks": ",".join(i.symbol for i in self.recipientStocks.all()),
-            "other_stocks": ",".join(i.symbol for i in self.senderStocks.all())}
+                "user_stocks": ",".join(i.symbol for i in self.recipientStocks.all()),
+                "other_stocks": ",".join(i.symbol for i in self.senderStocks.all())}
         return d
 
 class StockSuggestion(models.Model):

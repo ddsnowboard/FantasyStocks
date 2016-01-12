@@ -1,7 +1,7 @@
 "use strict"
 var main;
 var pk;
-var onTabClick = function(){};
+var onTabClick = function(domObj){};
 function setTradeBox($box, text)
 {
     if(text === "" || /^\s*$/.test(text))

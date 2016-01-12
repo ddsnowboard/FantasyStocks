@@ -19,7 +19,6 @@ function setPrice(el, price)
     {
         klass = "blue";
         sign = "";
-        // No one else has to know about this...
     }
     $(el).addClass(klass).removeClass("loadingPrice").html(sign + price.toFixed(2));
 }
