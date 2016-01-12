@@ -343,3 +343,7 @@ img.loadingWheel {
 .highlighted {
     border: 1px solid red !important;
 }
+
+.playerLine { 
+    border: 1px solid white;
+}
