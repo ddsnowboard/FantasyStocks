@@ -136,7 +136,7 @@ class Floor(models.Model):
                                     <table class="stockBoard">
                                         {% for stock in stocks %}
                                         <tr>
-                                                <td class="stock {% if stock in player.stocks.all %}userStock{% endif %}" id="{{ stock.symbol }}">
+                                                <td class="stock" id="{{ stock.symbol }}">
                                                     <a class="noUnderline" href="{% url "trade" pkStock=stock.pk pkFloor=player.floor.pk %}">
                                                         <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
                                                     </a>
