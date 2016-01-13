@@ -124,7 +124,7 @@ class Floor(models.Model):
         return self.name
     def leaders(self):
         return Player.objects.filter(floor=self).exclude(user__groups__name__exact="Floor").order_by("-points")
-    def _render_board(self, player=None, leaderboard=False, stockboard=False):
+    def _render_board(self, player=None, leaderboard=False, stockboard=False, links=False):
         """
         The output from this needs to be surrounded by `<table>` tags. 
         """
@@ -141,9 +141,13 @@ class Floor(models.Model):
                                                 {% else %}
                                                 <td>
                                                     {% endif %}
+                                                    {% if links %}
                                                     <a class="noUnderline" href="{% url "trade" pkStock=stock.pk pkFloor=player.floor.pk %}">
+                                                    {% endif %}
                                                         <span style="display: inline-block; float: left">{{ stock.symbol }}</span>
+                                                    {% if links %}
                                                     </a>
+                                                    {% endif %}
                                                     {% if stock.has_current_price %}
                                                     {% with change=stock.get_change %}
                                                     <span class="stockPrice {% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" id="{{ stock.symbol }}">{% if change > 0 %}+{% endif %}{{ change }}</span>
@@ -164,7 +168,9 @@ class Floor(models.Model):
                                                     {% for competitor in leaders %}
                                                     <tr>
                                                         <td {% if forloop.last %}style="border-bottom: none;"{% endif %}>
-                                                            <a class="noUnderline" href="{% url "userPage" pkUser=competitor.user.pk %}"<span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.get_name }}</span></a>
+                                                            <a class="noUnderline" href="{% url "userPage" pkUser=competitor.user.pk %}">
+                                                            <span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.get_name }}</span>
+                                                            </a>
                                                             <span style="display: inline-block; float: right">{{ competitor.points }}</span>
                                                         </td>
                                                     </tr>
@@ -176,15 +182,15 @@ class Floor(models.Model):
                             <script src="{% url "stockBoardJavaScript" %}"></script>
                 """
         tem = Template(TEMPLATE_STRING)
-        con = Context({"leaderboard" : leaderboard, "stockboard" : stockboard, "player": player, "leaders": self.leaders(), "stocks": self.stocks.all()})
+        con = Context({"leaderboard" : leaderboard, "stockboard" : stockboard, "player": player, "leaders": self.leaders(), "stocks": self.stocks.all(), "links": links})
         return tem.render(con)
 
-    def render_leaderboard(self, player):
-        return self._render_board(player=player, leaderboard=True)
-    def render_stockboard(self, player):
-        return self._render_board(player=player, stockboard=True)
-    def render_both_boards(self, player):
-        return self._render_board(player=player, stockboard=True, leaderboard=True)
+    def render_leaderboard(self, player, links=False):
+        return self._render_board(player=player, leaderboard=True, links=links)
+    def render_stockboard(self, player, links=False):
+        return self._render_board(player=player, stockboard=True, links=links)
+    def render_both_boards(self, player, links=False):
+        return self._render_board(player=player, stockboard=True, leaderboard=True, links=links)
     def to_json(self):
         return {"stocks": ",".join(s.symbol for s in self.stocks.all()),
             "name": self.name, "permissiveness": self.permissiveness, "pkOwner": self.owner.pk, 
@@ -231,6 +237,12 @@ class Player(models.Model):
         return self.floor.render_stockboard(self)
     def get_both_floor_boards(self):
         return self.floor.render_both_boards(self)
+    def get_floor_leaderboard_clickable(self):
+        return self.floor.render_leaderboard(self, links=True)
+    def get_floor_stockboard_clickable(self):
+        return self.floor.render_stockboard(self, links=True)
+    def get_both_floor_boards_clickable(self):
+        return self.floor.render_both_boards(self, links=True)
     def get_users_owned_floors(self):
         return Floor.objects.filter(owner=self.user)
     def to_json(self):
