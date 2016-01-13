@@ -332,7 +332,18 @@ class EditFloorForm(forms.Form):
     def apply(self, floor):
         floor.name = self.cleaned_data["name"]
         floor.permissiveness = self.cleaned_data["permissiveness"]
-        floor.stocks = self.cleaned_data["stocks"]
+        new_stocks = [s for s in self.cleaned_data["stocks"] if not s in floor.stocks.all()]
+        for s in new_stocks:
+            floor.stocks.add(s)
+            floor.floorPlayer.stocks.add(s)
+        deleted_stocks = [s for s in floor.stocks.all() if not s in self.cleaned_data["stocks"]]
+        for s in deleted_stocks:
+            floor.stocks.remove(s)
+            owning_player = [p for p in Player.objects.filter(floor=floor) if s in p.stocks.all()][0]
+            owning_player.stocks.remove(s)
+            owning_player.save()
+        floor.save()
+        floor.floorPlayer.save()
         floor.num_stocks = self.cleaned_data["number_of_stocks"]
         floor.public = not self.cleaned_data["privacy"]
         floor.save()
