@@ -1,4 +1,5 @@
 import json
+from random import choice
 from django.test import TestCase, Client
 from django import test
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -88,6 +89,18 @@ class TradeTestCase(StaticLiveServerTestCase):
         stock = Stock.objects.get(symbol=new_stock)
         self.assertTrue(stock)
         self.assertIn(stock, floor.floorPlayer.stocks.all())
+    def test_delete_stock(self):
+        floor = Floor.objects.all()[0]
+        stock_to_delete = choice(floor.stocks.all())
+        new_stocks = ','.join([s.symbol for s in floor.stocks.all() if not s.symbol == stock_to_delete.symbol])
+        form = EditFloorForm({"name": floor.name, "privacy": not floor.public, "number_of_stocks": floor.num_stocks, "stocks": new_stocks, "permissiveness": floor.permissiveness})
+        self.assertIn(stock_to_delete, floor.stocks.all())
+        self.assertTrue([p for p in Player.objects.filter(floor=floor) if stock_to_delete in p.stocks.all()])
+        self.assertTrue(form.is_valid())
+        self.assertTrue(form.cleaned_data['stocks'])
+        form.apply(floor)
+        self.assertNotIn(stock_to_delete, floor.stocks.all())
+        self.assertFalse([p for p in Player.objects.filter(floor=floor) if stock_to_delete in p.stocks.all()])
 
 class PlayerTestCase(StaticLiveServerTestCase):
     fixtures = ["fixture.json"]
