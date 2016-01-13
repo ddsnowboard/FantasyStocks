@@ -1,6 +1,20 @@
 // Apparently this line gets run over and over. God only knows why. 
 // Anyway, because of that, I have to do this or else it's always empty. 
 var stockChanges = stockChanges || {};
+
+var owners = {};
+function calculateOwners(){
+    owners = {};
+    var players = $(".playerLine");
+    for(var i = 0; i < players.length; i++)
+    {
+        var stocks = players[i].dataset.stocks.split(",");
+        for(var s = 0; s < stocks.length; s++)
+        {
+            owners[stocks[s]] = players[i];
+        }
+    }
+}
 function setPrice(el, price)
 {
     var klass;
@@ -19,7 +33,6 @@ function setPrice(el, price)
     {
         klass = "blue";
         sign = "";
-        // No one else has to know about this...
     }
     $(el).addClass(klass).removeClass("loadingPrice").html(sign + price.toFixed(2));
 }
@@ -37,6 +50,7 @@ function getPriceCallback(el, xhr)
 }
 function loadPrices(){
     var loadingPrices = $(".loadingPrice");
+    var STOCK_URL_PLACEHOLDER = "ZZZ";
     var STOCK_PRICE_URL = "{% url "stockPrice" symbol="ZZZ" %}";
     var xhrs = [];
     for(var i = 0; i < loadingPrices.length; i++)
@@ -47,7 +61,7 @@ function loadPrices(){
         {
             xhrs.push(new XMLHttpRequest());
             xhrs[i].onreadystatechange = getPriceCallback(price, xhrs[i]);
-            xhrs[i].open("GET", STOCK_PRICE_URL.replace("ZZZ", symbol));
+            xhrs[i].open("GET", STOCK_PRICE_URL.replace(STOCK_URL_PLACEHOLDER, symbol));
             xhrs[i].send();
         }
         else
@@ -60,4 +74,23 @@ function loadPrices(){
 
 $(document).ready(function() {
     loadPrices();
+    $(".stock").mouseover(function(){
+        $(owners[this.id]).addClass("highlighted");
+    })
+    .mouseout(function(){
+        $(owners[this.id]).removeClass("highlighted");
+    });
+    $(".playerLine").mouseover(function() {
+        var stocks = this.dataset.stocks.split(",");
+        for(var i = 0; i < stocks.length; i++){
+            $("#" + stocks[i]).addClass("highlighted");
+        }
+    }).mouseout(function() {
+        var stocks = this.dataset.stocks.split(",");
+        for(var i = 0; i < stocks.length; i++){
+            $("#" + stocks[i]).removeClass("highlighted");
+        }
+    });
+    calculateOwners();
+    onTabClick = calculateOwners;
 });

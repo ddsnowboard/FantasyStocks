@@ -136,11 +136,8 @@ class Floor(models.Model):
                                     <table class="stockBoard">
                                         {% for stock in stocks %}
                                         <tr>
-                                            {% if stock in player.stocks.all %}
-                                            <td class="userStock">
-                                                {% else %}
                                                 <td>
-                                                    {% endif %}
+                                                <td class="stock" id="{{ stock.symbol }}">
                                                     {% if links %}
                                                     <a class="noUnderline" href="{% url "trade" pkStock=stock.pk pkFloor=player.floor.pk %}">
                                                     {% endif %}
@@ -150,7 +147,7 @@ class Floor(models.Model):
                                                     {% endif %}
                                                     {% if stock.has_current_price %}
                                                     {% with change=stock.get_change %}
-                                                    <span class="stockPrice {% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}" id="{{ stock.symbol }}">{% if change > 0 %}+{% endif %}{{ change }}</span>
+                                                    <span class="stockPrice {% if change > 0 %}green{% elif change == 0 %}blue{% else %}red{% endif %}">{% if change > 0 %}+{% endif %}{{ change }}</span>
                                                     {% endwith %}
                                                     {% else %}
                                                     <span class="loadingPrice stockPrice" id="{{ stock.symbol }}"><img class="loadingWheel" src="{% static "spinning-wheel.gif" %}" /></span>
@@ -167,11 +164,13 @@ class Floor(models.Model):
                                                 <table class="leaderBoard">
                                                     {% for competitor in leaders %}
                                                     <tr>
-                                                        <td {% if forloop.last %}style="border-bottom: none;"{% endif %}>
+                                                        <td {% if forloop.last %}style="border-bottom: none;"{% endif %} class="playerLine" id="{{ competitor.player.pk }}" data-stocks="{{ competitor.stocks|join:"," }}">
                                                             <a class="noUnderline" href="{% url "userPage" pkUser=competitor.user.pk %}">
-                                                            <span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.get_name }}</span>
+                                                            <span style="display: inline-block; float: left">{{ forloop.counter }}. {{ competitor.player.get_name }}
+                                                            </span>
                                                             </a>
-                                                            <span style="display: inline-block; float: right">{{ competitor.points }}</span>
+                                                            <span style="display: inline-block; float: right">{{ competitor.player.points }}
+                                                            </span>
                                                         </td>
                                                     </tr>
                                                     {% endfor %}
@@ -181,8 +180,14 @@ class Floor(models.Model):
                                             </tr>
                             <script src="{% url "stockBoardJavaScript" %}"></script>
                 """
+        test = {p.pk : [s.symbol for s in p.stocks.all()] for p in self.leaders()}
         tem = Template(TEMPLATE_STRING)
-        con = Context({"leaderboard" : leaderboard, "stockboard" : stockboard, "player": player, "leaders": self.leaders(), "stocks": self.stocks.all(), "links": links})
+        con = Context({"leaderboard" : leaderboard,
+            "stockboard" : stockboard,
+            "player": player,
+            "leaders": [{"player": p, "stocks": [s.symbol for s in p.stocks.all()]} for p in self.leaders()],
+            "stocks": self.stocks.all(), 
+            "links": links})
         return tem.render(con)
 
     def render_leaderboard(self, player, links=False):
@@ -193,10 +198,10 @@ class Floor(models.Model):
         return self._render_board(player=player, stockboard=True, leaderboard=True, links=links)
     def to_json(self):
         return {"stocks": ",".join(s.symbol for s in self.stocks.all()),
-            "name": self.name, "permissiveness": self.permissiveness, "pkOwner": self.owner.pk, 
-            "pkFloorPlayer": self.floorPlayer.pk, "public": self.public, "num_stocks": self.num_stocks}
+                "name": self.name, "permissiveness": self.permissiveness, "pkOwner": self.owner.pk, 
+                "pkFloorPlayer": self.floorPlayer.pk, "public": self.public, "num_stocks": self.num_stocks}
 
-# NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
+        # NB This model represents a specific player on a specific floor. The player account is represented by a Django `User`
 # object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
 # deleted if the it's `User` object or its floor is deleted. 
 class Player(models.Model):
@@ -292,8 +297,8 @@ class Trade(models.Model):
             raise RuntimeError("The floor sent a trade. This isn't good at all.")
     def toFormDict(self):
         d = {"other_user": self.sender.get_name(),
-            "user_stocks": ",".join(i.symbol for i in self.recipientStocks.all()),
-            "other_stocks": ",".join(i.symbol for i in self.senderStocks.all())}
+                "user_stocks": ",".join(i.symbol for i in self.recipientStocks.all()),
+                "other_stocks": ",".join(i.symbol for i in self.senderStocks.all())}
         return d
 
 class StockSuggestion(models.Model):
