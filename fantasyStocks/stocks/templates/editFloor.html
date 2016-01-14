@@ -6,13 +6,31 @@
 For others to join your floor, send them this link: <a href="{{ absolute_join_url }}">{{ absolute_join_url }}</a>
 </p>
 {% endif %}
-<form action="" method="POST">
-    {% csrf_token %}
-    <table>
-        {{ form.as_table }}
-    </table>
-    <input type="submit">
-</form>
+<table>
+    <tr>
+        <td>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <table>
+                    {{ form.as_table }}
+                </table>
+                <input type="submit">
+            </form>
+        </td>
+        <td style="vertical-align: top">
+            <h3>
+                Players
+            </h3>
+            <ol class="floorPlayers">
+                {% for p in floor.leaders %}
+                <li>
+                    {{ p.get_name }}
+                </li>
+                {% endfor %}
+            </ol>
+        </td>
+    </tr>
+</table>
 <br />
 <input type="button" value="Delete floor {{ floor.name }}" id="deleteButton" />
 {% endblock %}
