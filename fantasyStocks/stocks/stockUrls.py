@@ -47,6 +47,7 @@ urlpatterns = [
             url("^dashboardJavaScript/$", views.dashboardJavaScript, name="dashboardJavaScript"), 
             url("^getStockPrice/stock/(?P<symbol>[A-Za-z]+)/$", views.getStockPrice, name="stockPrice"), 
             url("^stockBoardJavaScript/$", views.getStockBoardJavaScript, name="stockBoardJavaScript"), 
+            url("^floorPlayers/floor/(?P<pkFloor>[0-9]+)/$", views.getPlayersOnFloor, name="floorPlayers"),
         ]
 
 

@@ -377,3 +377,8 @@ def getStockPrice(request, symbol=None):
 
 def getStockBoardJavaScript(request):
     return render(request, "stockBoard.js")
+
+def getPlayersOnFloor(request, pkFloor=None):
+    if not pkFloor:
+        raise RuntimeError("You need to pass in a floor, fool!")
+    return HttpResponse(json.dumps([i.get_name() for i in Player.objects.filter(floor__pk=pkFloor)]))
