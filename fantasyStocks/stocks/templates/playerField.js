@@ -36,7 +36,7 @@ function PlayerPicker(inputElement){
     this.setURL = function(url){
         this.$box.typeahead("destroy");
         this.$box.typeahead({
-            minLength: 1,
+            minLength: 0,
             highlight: false, 
             hint: false,
         }, { 

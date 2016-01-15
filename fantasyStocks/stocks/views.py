@@ -381,4 +381,4 @@ def getStockBoardJavaScript(request):
 def getPlayersOnFloor(request, pkFloor=None):
     if not pkFloor:
         raise RuntimeError("You need to pass in a floor, fool!")
-    return HttpResponse(json.dumps([i.get_name() for i in Player.objects.filter(floor__pk=pkFloor)]))
+    return HttpResponse(json.dumps([{"username": i.get_name()} for i in Player.objects.filter(floor__pk=pkFloor)]))

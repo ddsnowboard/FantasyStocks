@@ -16,6 +16,12 @@ function getUserURL(username, floor)
     return "{% url 'prefetch' user='replacement' pkFloor=12345 %}"
         .replace(NAME_REPLACEMENT, username).replace(FLOOR_REPLACEMENT, floor);
 }
+function getFloorPlayersURL(floor){
+    var FLOOR_REPLACEMENT = "124512352354";
+    console.log("{% url "floorPlayers" pkFloor=124512352354 %}".replace(FLOOR_REPLACEMENT, floor));
+    return "{% url "floorPlayers" pkFloor=124512352354 %}".replace(FLOOR_REPLACEMENT, floor);
+}
+
 function getFloor()
 {
     var parts = window.location.pathname.split('/');
@@ -64,10 +70,12 @@ $(document).ready(function() {
             otherUsername = w;
         }
     }
+    otherUsername.setURL(getFloorPlayersURL(floor));
     $username = $("#" + USER_NAMEBOX_ID);
     var max_stocks = parseInt($("#maxStocks").html());
     var remainingStocks = max_stocks - (userNumberOfStocks + otherStockbox.size() - userStockbox.size());
     $("#currStocks").html(remainingStocks);
+
     var onChangeFunction = function() {
         remainingStocks = max_stocks - (userNumberOfStocks + otherStockbox.size() - userStockbox.size());
         $("#currStocks").html(remainingStocks);
