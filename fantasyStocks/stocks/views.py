@@ -353,11 +353,11 @@ def playerJson(request, pkPlayer=None):
     else:
         return HttpResponse(Player.objects.get(pk=pkPlayer).to_json())
 
-def floorJson(request, pkFloor=None):
+def floorJSON(request, pkFloor=None):
     if not pkFloor:
         raise RuntimeError("You need to supply a floor to get information!")
     else:
-        return HttpResponse(Floor.objects.get(pk=pkFloor).to_json())
+        return HttpResponse(json.dumps(Floor.objects.get(pk=pkFloor).to_json()))
 def joinFloorJavaScript(request):
     return render(request, "joinFloor.js")
 

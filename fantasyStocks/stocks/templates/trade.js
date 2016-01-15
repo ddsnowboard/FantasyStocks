@@ -1,4 +1,3 @@
-
 $(document).ready(function() {
     if($username.val() !== "")
     {
@@ -37,6 +36,4 @@ $(document).ready(function() {
                     otherUsername.name = suggestion.username;
                 }
             });
-
-
 });
