@@ -33,7 +33,7 @@ function getFloor()
 }
 function setStockbox(sb, username, floor)
 {
-    sb.changeURL(getUserURL(username, floor));
+    sb.setURL(getUserURL(username, floor));
 }
 function setUserStockbox(username, floor)
 {
