@@ -26,6 +26,30 @@ class TradeTestCase(StaticLiveServerTestCase):
         trade.senderStocks = sender.stocks.all()
         trade.recipientStocks = recipient.stocks.all()
         return trade
+    def test_self_trade(self):
+        trade = self.get_trade()
+        recipient = trade.recipient
+        sender = trade.sender
+        floor = trade.floor
+        senderStocks = list(trade.senderStocks.all())
+        recipientStocks = list(trade.recipientStocks.all())
+        recipient = sender
+        for i in Stock.objects.all():
+            if not i in floor.stocks.all():
+                new_stock = i
+                break
+        floor.stocks.add(new_stock)
+        sender.stocks.add(new_stock)
+        floor.save()
+        sender.save()
+        recipientStocks = [recipient.stocks.all().exclude(symbol=new_stock.symbol)[0]]
+        senderStocks = [new_stock]
+        trade.delete()
+        form = TradeForm({"other_user": recipient.user.username,
+            "user_stocks": ",".join(s.symbol for s in senderStocks),
+            "other_stocks": ",".join(s.symbol for s in recipientStocks)})
+        self.assertFalse(form.is_valid(pkFloor=floor.pk, user=sender.user))
+        self.assertIn("You can't send a trade to yourself", repr(form.errors))
     def test_trade_simple(self):
         trade = self.get_trade()
         recipient = trade.recipient
