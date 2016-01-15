@@ -1,6 +1,7 @@
 # This is the stocks app urlconf. It is named differently for speedier Vimming. 
 
 from stocks import views
+from django.http import HttpResponse
 from django.conf.urls import url, patterns, include
 
 urlpatterns = [
@@ -48,6 +49,7 @@ urlpatterns = [
             url("^getStockPrice/stock/(?P<symbol>[A-Za-z]+)/$", views.getStockPrice, name="stockPrice"), 
             url("^stockBoardJavaScript/$", views.getStockBoardJavaScript, name="stockBoardJavaScript"), 
             url("^floorPlayers/floor/(?P<pkFloor>[0-9]+)/$", views.getPlayersOnFloor, name="floorPlayers"),
+            url("^blankPage/$", lambda request: HttpResponse(""), name="blank"),
         ]
 
 

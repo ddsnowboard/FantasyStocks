@@ -8,6 +8,11 @@ $(document).ready(function() {
         setOtherStockbox(otherUsername.$box.val(), floor);
         otherUsername.name = otherUsername.$box.val();
     }
+    else
+    {
+        otherStockbox.url = "{% url "blank" %}";
+        otherStockbox.setTypeahead();
+    }
     // This makes sure that the JavaScript prevents you from putting in a bunch of stocks 
     // for a person who doesn't have them. 
     otherUsername.onSelect(function(event, suggestion)
