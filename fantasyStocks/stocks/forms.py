@@ -218,6 +218,9 @@ class TradeForm(forms.Form):
         except Player.DoesNotExist:
             self.add_error(None, ValidationError("""The user player does not exist""", code="invaliduser"))
             error = True
+        if user_player == other_player:
+            self.add_error("other_user", ValidationError("You can't send a trade to yourself", code="selftrade"))
+            error = True
         user_stocks = self.fields["user_stocks"].to_python(self.data["user_stocks"])
         for s in user_stocks:
             if not s in user_player.stocks.all():
