@@ -16,8 +16,8 @@ function PlayerPicker(inputElement){
      * makes it really hard to keep everything separate if you want to 
      * do stuff to them in other scripts. Doing it this way, combined with the
      * array above, lets you access everything together in a nice package from 
-     * anwhere else in the JavaScript code for a page as long as this is executed 
-     * before.
+     * anwhere else in the JavaScript code for a page, as long as this script is executed 
+     * first.
      */
     this.enabled = false;
     this.onSelectFunctions = [];
@@ -36,7 +36,7 @@ function PlayerPicker(inputElement){
     this.setURL = function(url){
         this.$box.typeahead("destroy");
         this.$box.typeahead({
-            minLength: 1,
+            minLength: 0,
             highlight: false, 
             hint: false,
         }, { 

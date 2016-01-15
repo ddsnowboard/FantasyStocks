@@ -150,7 +150,7 @@ var StockWidget = function(inputElement)
                 that.pushStock(suggestion);
             });
 
-    this.changeURL = function(url) 
+    this.setURL = function(url) 
     {
         this.url = url;
         this.setTypeahead();
