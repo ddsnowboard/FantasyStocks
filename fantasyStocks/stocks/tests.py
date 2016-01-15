@@ -15,22 +15,51 @@ import urllib
 
 class TradeTestCase(StaticLiveServerTestCase):
     fixtures = ["fixture.json"]
-    def set_trade(self):
-        self.floor = Floor.objects.all()[0]
-        available_players = [p for p in Player.objects.filter(floor=self.floor) if not p.isFloor()]
-        self.sender = available_players[0]
-        self.recipient = available_players[1]
-        self.sender_stocks = list(self.sender.stocks.all())
-        self.recipient_stocks = list(self.recipient.stocks.all())
-        self.trade = Trade.objects.create(floor=self.floor, sender=self.sender, recipient=self.recipient)
-        self.trade.senderStocks = self.sender.stocks.all()
-        self.trade.recipientStocks = self.recipient.stocks.all()
-        self.trade.save()
+    def get_trade(self):
+        floor = Floor.objects.all()[0]
+        available_players = [p for p in Player.objects.filter(floor=floor) if not p.isFloor()]
+        sender = available_players[0]
+        recipient = available_players[1]
+        sender_stocks = list(sender.stocks.all())
+        recipient_stocks = list(recipient.stocks.all())
+        trade = Trade.objects.create(floor=floor, sender=sender, recipient=recipient)
+        trade.senderStocks = sender.stocks.all()
+        trade.recipientStocks = recipient.stocks.all()
+        return trade
+    def test_self_trade(self):
+        trade = self.get_trade()
+        recipient = trade.recipient
+        sender = trade.sender
+        floor = trade.floor
+        senderStocks = list(trade.senderStocks.all())
+        recipientStocks = list(trade.recipientStocks.all())
+        recipient = sender
+        for i in Stock.objects.all():
+            if not i in floor.stocks.all():
+                new_stock = i
+                break
+        floor.stocks.add(new_stock)
+        sender.stocks.add(new_stock)
+        floor.save()
+        sender.save()
+        recipientStocks = [recipient.stocks.all().exclude(symbol=new_stock.symbol)[0]]
+        senderStocks = [new_stock]
+        trade.delete()
+        form = TradeForm({"other_user": recipient.user.username,
+            "user_stocks": ",".join(s.symbol for s in senderStocks),
+            "other_stocks": ",".join(s.symbol for s in recipientStocks)})
+        self.assertFalse(form.is_valid(pkFloor=floor.pk, user=sender.user))
+        self.assertIn("You can't send a trade to yourself", repr(form.errors))
     def test_trade_simple(self):
-        self.set_trade()
-        self.trade.accept()
-        self.assertEqual(list(self.recipient.stocks.all()), self.sender_stocks)
-        self.assertEqual(list(self.sender.stocks.all()), self.recipient_stocks)
+        trade = self.get_trade()
+        recipient = trade.recipient
+        sender = trade.sender
+        senderStocks = list(trade.senderStocks.all())
+        recipientStocks = list(trade.recipientStocks.all())
+        trade.accept()
+        trade.save()
+        self.assertEqual(list(recipient.stocks.all()), senderStocks)
+        self.assertEqual(list(sender.stocks.all()), recipientStocks)
     def test_stock_cap_simple(self):
         SMALL_NUMBER = 2
         floor = Floor.objects.all()[0]
@@ -59,18 +88,18 @@ class TradeTestCase(StaticLiveServerTestCase):
         response = client.get(reverse("floorsJson"))
         self.assertListEqual([Floor.objects.get(name=i["name"]) for i in json.loads(response.content.decode("UTF-8"))], [floor])
     def test_trade_counter(self):
-        self.set_trade()
-        old_recipientStocks = list(self.trade.recipientStocks.all())
-        old_senderStocks = list(self.trade.senderStocks.all())
+        trade = self.get_trade()
+        old_recipientStocks = list(trade.recipientStocks.all())
+        old_senderStocks = list(trade.senderStocks.all())
         client = Client()
-        client.force_login(self.recipient.user)
-        response = client.get(reverse("receivedTrade", kwargs={"pkTrade": self.trade.pk}))
-        self.assertEqual(self.trade.toFormDict(), response.context[-1]["form"].data)
-        self.assertContains(response, reverse("counterTrade", kwargs={"pkTrade": self.trade.pk, "pkFloor": self.trade.floor.pk}))
-        response = client.get(reverse("counterTrade", kwargs={"pkTrade": self.trade.pk, "pkFloor": self.trade.floor.pk}))
-        response = client.post(reverse("trade", kwargs={"pkCountering": self.trade.pk, "pkFloor": self.trade.floor.pk}), {"other_user": self.trade.sender.user.username, "user_stocks": ",".join(i.symbol for i in self.trade.recipientStocks.all()), "other_stocks": ",".join(i.symbol for i in self.trade.senderStocks.all())})
+        client.force_login(trade.recipient.user)
+        response = client.get(reverse("receivedTrade", kwargs={"pkTrade": trade.pk}))
+        self.assertEqual(trade.toFormDict(), response.context[-1]["form"].data)
+        self.assertContains(response, reverse("counterTrade", kwargs={"pkTrade": trade.pk, "pkFloor": trade.floor.pk}))
+        response = client.get(reverse("counterTrade", kwargs={"pkTrade": trade.pk, "pkFloor": trade.floor.pk}))
+        response = client.post(reverse("trade", kwargs={"pkCountering": trade.pk, "pkFloor": trade.floor.pk}), {"other_user": trade.sender.user.username, "user_stocks": ",".join(i.symbol for i in trade.recipientStocks.all()), "other_stocks": ",".join(i.symbol for i in trade.senderStocks.all())})
         self.assertRedirects(response, reverse("dashboard"))
-        self.assertQuerysetEqual(Trade.objects.filter(pk=self.trade.pk), [])
+        self.assertQuerysetEqual(Trade.objects.filter(pk=trade.pk), [])
         newTrade = Trade.objects.all()[0]
         self.assertEqual(list(newTrade.senderStocks.all()), old_recipientStocks)
         self.assertEqual(list(newTrade.recipientStocks.all()), old_senderStocks)

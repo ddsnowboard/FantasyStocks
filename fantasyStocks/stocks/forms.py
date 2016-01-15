@@ -209,14 +209,17 @@ class TradeForm(forms.Form):
         other = self.fields["other_user"].to_python(self.data["other_user"])
         try:
             other_player = Player.objects.get(floor=floor,
-                    user=other)
+                                              user=other)
         except Player.DoesNotExist:
-            self.add_error("other_player", ValidationError("""The other player does not exist""", code="invalidother"))
+            self.add_error("other_user", ValidationError("""The other player does not exist""", code="invalidother"))
             error = True
         try:
             user_player = Player.objects.get(floor=floor, user=user)
         except Player.DoesNotExist:
             self.add_error(None, ValidationError("""The user player does not exist""", code="invaliduser"))
+            error = True
+        if user_player == other_player:
+            self.add_error("other_user", ValidationError("You can't send a trade to yourself", code="selftrade"))
             error = True
         user_stocks = self.fields["user_stocks"].to_python(self.data["user_stocks"])
         for s in user_stocks:
