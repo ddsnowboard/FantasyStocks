@@ -92,5 +92,5 @@ $(document).ready(function() {
         }
     });
     calculateOwners();
-    onTabClick = calculateOwners;
+    onTabClick(calculateOwners);
 });

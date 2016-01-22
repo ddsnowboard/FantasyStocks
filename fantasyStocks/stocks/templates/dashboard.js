@@ -26,7 +26,7 @@ $(document).ready(function() {
     tradeInbox = $(".tradeInbox");
     currentTradeSet = trades[pk];
     setTradeBox(tradeInbox, currentTradeSet.received);
-    onTabClick = function(that) {
+    onTabClick(function(that) {
         received.addClass("selected");
         sent.removeClass("selected");
         requests.removeClass("selected");
@@ -42,7 +42,7 @@ $(document).ready(function() {
         }
         rebind();
         loadPrices();
-    };
+    });
     loadPrices();
     $(".tradeTab").click(function() {
         if(this.className.indexOf("selected") == -1)

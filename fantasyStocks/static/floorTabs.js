@@ -1,7 +1,15 @@
 "use strict"
 var main;
 var pk;
-var onTabClick = function(domObj){};
+var tabFunctions = [];
+var onTabClick = function(func){
+    tabFunctions.push(func)
+};
+var runTabFunctions = function(domObject) {
+    for(var i = 0; i < tabFunctions.length; i++) {
+        tabFunctions[i](domObject);
+    } 
+};
 function setTradeBox($box, text)
 {
     if(text === "" || /^\s*$/.test(text))
@@ -23,7 +31,7 @@ $(document).ready(function(){
             $(".tabs li").removeClass("selected");
             $(this).addClass("selected");
             main.html(floors[this.id]);
-            onTabClick(this);
+            runTabFunctions(this);
         }
     });
     $($(".tabs li")[0]).removeClass("selected").click();
