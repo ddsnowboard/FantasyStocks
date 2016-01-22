@@ -17,8 +17,15 @@ $(document).ready(function() {
         if(num_stocks < max_stocks * EXAMPLE_NUMBER_OF_PLAYERS && permissiveness == "closed")
         {
             $(document.body).append((new ConfirmationBox("You only have " + num_stocks +" stocks, so your floor will be unable to support " + EXAMPLE_NUMBER_OF_PLAYERS.toString() +" players unless you change the permissiveness. Are you sure you want to do this?", 
-                            [{text: "Yes", func: function() {/* Please don't ever tell anyone I did this */ console.log("clicked");$("#select").unbind().click(); }},
-                            {text: "No", func: function() { this.destroy() }}]).$holder));
+                            [{
+                                text: "Yes",
+                                func: function() {
+                                $("#select").prop("disabled", false).unbind().click(); }
+                            },
+                            {
+                                text: "No",
+                                func: function() { this.destroy() }
+                            }]).$holder));
             event.preventDefault();
         }
     });
