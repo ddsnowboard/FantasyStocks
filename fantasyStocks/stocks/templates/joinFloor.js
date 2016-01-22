@@ -9,7 +9,6 @@ $(document).ready(function() {
         templates: {
             suggestion: function(floorObj)
             {
-                console.log(floorObj);
                 return "<div class=\"suggestion\">" + floorObj["name"] + "</div>";
             }, 
             pending: ". . .", 

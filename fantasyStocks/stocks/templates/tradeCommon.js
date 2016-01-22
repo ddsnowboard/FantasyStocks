@@ -18,7 +18,6 @@ function getUserURL(username, floor)
 }
 function getFloorPlayersURL(floor){
     var FLOOR_REPLACEMENT = "124512352354";
-    console.log("{% url "floorPlayers" pkFloor=124512352354 %}".replace(FLOOR_REPLACEMENT, floor));
     return "{% url "floorPlayers" pkFloor=124512352354 %}".replace(FLOOR_REPLACEMENT, floor);
 }
 
