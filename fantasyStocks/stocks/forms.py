@@ -16,7 +16,7 @@ class StockWidget(forms.widgets.TextInput):
     This widget allows the user to select any stock, whether or not 
     it's in the database. It gets the list of stocks from the big JSON
     list "stocks.json" in the static folder. This *must* be used with a StockChoiceField
-    unless you've done the sufficient work somewhere else. 
+    unless you've done sufficient work to make things otherwise. 
     """
     HTML_CLASS = "stockBox"
     def __init__(self, prefetchPlayerPk=None, attrs=None):
@@ -75,9 +75,11 @@ class StockChoiceField(forms.Field):
             if s:
                 s = s[0]
             else:
+                # If a stock doesn't exist in the database already, create it silently. 
                 s = Stock(symbol=i)
                 try:
                     s.update()
+                # Unless it's not real...
                 except StockAPIError:
                     raise ValidationError
                 s.save()
@@ -102,11 +104,14 @@ class UserField(forms.Field):
 class LoginForm(forms.Form):
     username = forms.CharField(label="Username", max_length=25)
     password = forms.CharField(label="Password", max_length=50, widget=forms.PasswordInput)
+    # This is set by the view to the `next` parameter encoded in the URL, which is put there automatically by Django. 
     nextPage = forms.CharField(label="next page", max_length=30, widget=forms.HiddenInput(), initial=reverse_lazy("dashboard"))
     def is_valid(self):
         if not super().is_valid():
             return False
         if User.objects.filter(username=self.cleaned_data["username"]):
+        # You can read in the spec that it was important to me that the page told you whether the issue was with
+        # your password or your whole login. http://www.joelonsoftware.com/uibook/chapters/fog0000000057.html
             if authenticate(username=self.cleaned_data["username"], password=self.cleaned_data["password"]):
                 return True
             else:
@@ -124,6 +129,7 @@ class RegistrationForm(forms.Form):
     email = forms.EmailField(label="Email", max_length=100)
     password1 = forms.CharField(label="Password", max_length=50, widget=forms.PasswordInput)
     password2 = forms.CharField(label="Confirm", max_length=50, widget=forms.PasswordInput)
+    # See above
     nextPage = forms.CharField(label="next page", max_length=30, widget=forms.HiddenInput(), initial=reverse_lazy("dashboard"))
     def is_valid(self):
         if not super(RegistrationForm, self).is_valid():
@@ -196,6 +202,7 @@ class TradeForm(forms.Form):
         if not super().is_valid():
             return False
         error = False
+        # Check for programming errors.
         if not pkFloor:
             raise RuntimeError("""You need to give a floor to 
                 TradeForm.is_valid() or else it won't know what to look for.""")
@@ -218,6 +225,7 @@ class TradeForm(forms.Form):
         except Player.DoesNotExist:
             self.add_error(None, ValidationError("""The user player does not exist""", code="invaliduser"))
             error = True
+        # Check for user error. 
         if user_player == other_player:
             self.add_error("other_user", ValidationError("You can't send a trade to yourself", code="selftrade"))
             error = True
@@ -292,6 +300,8 @@ class TradeForm(forms.Form):
         # There is usually such good design in django. 
         # I don't know where it went here. O well. 
         # At least I know that the scripts will be in the order I want. 
+        # (I was talking about the hacky way I have to do media inheritance, for 
+        # any future readers) 
         js = (reverse("tradeCommonJavaScript"), reverse("tradeFormJavaScript"), )
         return self.get_widget_media() + forms.Media(js=js)
     media = property(_media)
