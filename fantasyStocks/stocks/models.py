@@ -69,7 +69,7 @@ class Stock(models.Model):
             self.refresh_from_db()
             score = self.get_score()
             # Apply points to owners
-            for i in [p for p in Player.objects.all() if self in p.stocks.all()]:
+            for i in Player.objects.filter(stocks__pk=self.pk):
                 i.points += score
                 i.save()
     def force_update(self):
