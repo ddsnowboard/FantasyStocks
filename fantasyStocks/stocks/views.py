@@ -28,7 +28,7 @@ def dashboard(request):
                 "user": request.user, 
                 "players": players,
                 "floors": [i.floor for i in Player.objects.filter(user=request.user)], 
-                "scripts" : scripts,
+                "scripts": scripts,
             })
 
 def index(request):
@@ -120,8 +120,8 @@ def join(request, pkFloor):
     There's nothing on here for the user to actually see. 
     """
     floor = Floor.objects.get(pk=pkFloor)
-    if not Player.objects.filter(user=request.user, floor=floor):
     # Make sure that we don't add the same person to a floor more than once.
+    if not Player.objects.filter(user=request.user, floor=floor).exists():
         player = Player.objects.create(user=request.user, floor=floor)
         player.save()
     return redirect(reverse("dashboard"), permanent=False)
@@ -197,11 +197,12 @@ def editAccount(request):
 
 @login_required
 def editFloor(request, pkFloor=None):
-    scripts = STANDARD_SCRIPTS + [static("common.js"), reverse("editFloorJS",kwargs={"pkFloor":pkFloor})]
+    scripts = STANDARD_SCRIPTS + [static("common.js"), reverse("editFloorJS",kwargs={"pkFloor": pkFloor})]
     if not pkFloor:
-        raise RuntimeError("You didn't pass in a floor")
-    floor = Floor.objects.get(pk=pkFloor)
-    if not floor:
+        raise RuntimeError("You didn't pass in a floor.")
+    try:
+        floor = Floor.objects.get(pk=pkFloor)
+    except Floor.DoesNotExist:
         raise RuntimeError("{} is not an available floor!".format(pkFloor))
     if request.POST:
         form = forms.EditFloorForm(request.POST)
@@ -310,16 +311,11 @@ def stockLookup(request, query=None, key=None, user=None, pkFloor=None):
     else:
         return redirect(static("stocks.json"), permanent=True)
 
-def renderStockWidgetJavascript(request, identifier=None, player=0):
-    """
-    player is the primary key of the player in a database, not a Player object,
-    since it has to come from a URL. 
-    """
+def renderStockWidgetJavascript(request, identifier=None, pkPlayer=None):
     if not identifier:
         raise RuntimeError("You didn't pass in a valid identifier. God only knows how that happened.")
-    if not player:
+    if not pkPlayer:
         return render(request, "stockWidget.js", {"class_name" : forms.StockWidget().HTML_CLASS, "id": identifier})
-    player = int(player)
     return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
 def tradeFormJavaScript(request):
     return render(request, "trade.js")

@@ -33,12 +33,12 @@ class StockWidget(forms.widgets.TextInput):
             self.prefetchPlayerPk = None
     def _media(self):
         js = ["//code.jquery.com/jquery-1.11.3.min.js",
-        "typeahead.bundle.js", "common.js",]
+        "typeahead.bundle.js", "common.js"]
         # See above comment
         if not self.prefetchPlayerPk:
             js.append(reverse("stockWidgetJavascript", kwargs={"identifier" : self.attrs['id']}))
         else:
-            js.append(reverse("stockWidgetJavascript", kwargs={"identifier" : self.attrs['id'], "player" : self.prefetchPlayerPk}))
+            js.append(reverse("stockWidgetJavascript", kwargs={"identifier" : self.attrs['id'], "pkPlayer" : self.prefetchPlayerPk}))
         return forms.Media(js=js)
     media = property(_media)
     def render(self, name, value, attrs=None):
@@ -91,7 +91,7 @@ class UserField(forms.Field):
     This returns a `User` object, not just a string. 
     """
     widget = UserChoiceWidget
-    def __init__(self, floor=None, other=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     def to_python(self, value):
         try:
@@ -109,9 +109,9 @@ class LoginForm(forms.Form):
     def is_valid(self):
         if not super().is_valid():
             return False
-        if User.objects.filter(username=self.cleaned_data["username"]):
         # You can read in the spec that it was important to me that the page told you whether the issue was with
         # your password or your whole login. http://www.joelonsoftware.com/uibook/chapters/fog0000000057.html
+        if User.objects.filter(username=self.cleaned_data["username"]).exists():
             if authenticate(username=self.cleaned_data["username"], password=self.cleaned_data["password"]):
                 return True
             else:
@@ -134,7 +134,7 @@ class RegistrationForm(forms.Form):
     def is_valid(self):
         if not super(RegistrationForm, self).is_valid():
             return False
-        if User.objects.filter(email=self.cleaned_data["email"]).exists() or User.objects.filter(username=self.cleaned_data["username"]):
+        if User.objects.filter(email=self.cleaned_data["email"]).exists() or User.objects.filter(username=self.cleaned_data["username"]).exists():
             self._errors["already_exists"] = "That email or username is already taken"
             return False
         if self.cleaned_data["password1"] != self.cleaned_data["password2"]:
@@ -154,19 +154,11 @@ class FloorForm(forms.Form):
     privacy = forms.BooleanField(label="Private?:", help_text="<em>If the floor is private, it won't show up on the join floor page,<br /> and you'll have to send a link to allow people to join it.</em>", required=False) 
     number_of_stocks = forms.IntegerField(label="Maximum Number of Stocks (per player)", min_value=1, max_value=1000)
     stocks = StockChoiceField(label="Stocks")
-    permissiveness = forms.ChoiceField(label="Permissiveness", choices=Floor.PERMISSIVENESS_CHOICES, help_text="<em>\"Open\" means that  anyone can add any stock at any time. <br />\"Permissive\" means that anyone can request any stock to be added, but it must be allowed by the owner of the floor (you). <br />\"Closed\" means that no new stocks can be added. Note that you can change this setting later.</em>")
-    def __init__(self, *args, user=None, floor=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        if user and floor:
-            stocks = StockChoiceField(label="Stocks")
-        elif not user and not floor:
-            pass
-        else:
-            raise RuntimeError("You have to either pass in a user and a floor, or neither.")
+    permissiveness = forms.ChoiceField(label="Permissiveness", choices=Floor.PERMISSIVENESS_CHOICES, help_text="<em>\"Open\" means that anyone can add any stock at any time. <br />\"Permissive\" means that anyone can request any stock to be added, but it must be allowed by the owner of the floor (you). <br />\"Closed\" means that no new stocks can be added. Note that you can change this setting later.</em>")
     def is_valid(self):
-        if not super(FloorForm, self).is_valid():
+        if not super().is_valid():
             return False
-        if Floor.objects.filter(name=self.cleaned_data["name"]):
+        if Floor.objects.filter(name=self.cleaned_data["name"]).exists():
             self.add_error("name", "That name is already taken")
             return False
         return True
@@ -180,12 +172,13 @@ class FloorForm(forms.Form):
             floor.stocks.add(i)
         floor.save()
         return floor
+
 class JoinFloorForm(forms.Form):
     floor_name = forms.CharField(label="", max_length=35)
     def is_valid(self):
         if not super().is_valid():
             return False
-        if not Floor.objects.filter(name=self.cleaned_data["floor_name"]):
+        if not Floor.objects.filter(name=self.cleaned_data["floor_name"]).exists():
             self.add_error("floor_name", "There is no floor by that name") 
             return False
         return True
@@ -238,7 +231,7 @@ class TradeForm(forms.Form):
                 error = True
         other_stocks = self.fields["other_stocks"].to_python(self.data["other_stocks"])
         for s in other_stocks:
-            if not s in other_player.stocks.all()[:]:
+            if not s in other_player.stocks.all():
                 if other_player.isFloor() and floor.permissiveness == "permissive":
                     suggestion = StockSuggestion(stock=s, requesting_player=user_player, floor=floor)
                     suggestion.save()
