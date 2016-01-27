@@ -9,20 +9,18 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
-from django.utils.html import escape
 from urllib import request as py_request
 import json
-import sys
-import csv
 
 FLOOR_USER = User.objects.get(groups__name__exact="Floor")
+# IMPORTANT: Keep jQuery at the beginning or else it won't load first and bad stuff will happen.
 STANDARD_SCRIPTS = ["//code.jquery.com/jquery-1.11.3.min.js"]
 
 @login_required
 def dashboard(request):
-    # IMPORTANT: Keep jQuery at the beginning or else it won't load first and bad stuff will happen.
     scripts =  STANDARD_SCRIPTS + [static("common.js"), static("floorTabs.js"), reverse("dashboardJavaScript")]
     players = Player.objects.filter(user=request.user)
+    # If this user isn't a member of any floors...
     if not players:
         return redirect(reverse("joinFloor"), permanent=False)
     return render(request, "dashboard.html", 
@@ -30,15 +28,15 @@ def dashboard(request):
                 "user": request.user, 
                 "players": players,
                 "floors": [i.floor for i in Player.objects.filter(user=request.user)], 
-                "scripts" : scripts,
+                "scripts": scripts,
             })
 
 def index(request):
-    # If you're already logged in...
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse("dashboard"))
-    # If we got here through a submission...
     if request.method == "POST":
+        # Don't tell anyone I did this. Basically, the RegistrationForm has something called "password1" in it because you have to confirm your
+        # password. I use this to find out whether the RegistrationForm or the LoginForm has been submitted.
         if "password1" in request.POST:
             form = forms.RegistrationForm(request.POST)
             if form.is_valid():
@@ -60,11 +58,10 @@ def index(request):
             else:
                 return render(request, "index.html", {"loginForm" : form,  "registrationForm" : forms.RegistrationForm()})
         return HttpResponseRedirect(form.cleaned_data["nextPage"])
-    # If there is no POST from a prior submission...
     else:
         regForm = forms.RegistrationForm()
         logForm = forms.LoginForm()
-        # If we were redirected here from login_required...
+        # If we were redirected here because of a `login_required`...
         if "next" in request.GET:
             for i in (regForm, logForm):
                 i.fields["nextPage"].initial = request.GET["next"]
@@ -118,8 +115,13 @@ def join_floor(request):
 
 @login_required
 def join(request, pkFloor):
+    """
+    This is the page that actually tells the server to add the player to the floor in the database. 
+    There's nothing on here for the user to actually see. 
+    """
     floor = Floor.objects.get(pk=pkFloor)
-    if not Player.objects.filter(user=request.user, floor=floor):
+    # Make sure that we don't add the same person to a floor more than once.
+    if not Player.objects.filter(user=request.user, floor=floor).exists():
         player = Player.objects.create(user=request.user, floor=floor)
         player.save()
     return redirect(reverse("dashboard"), permanent=False)
@@ -143,6 +145,7 @@ def trade(request, pkPlayer=None, pkStock=None, pkFloor=None, pkCountering=None)
             outputDict["form"] = form
     elif not (pkPlayer or pkStock or pkFloor):
         raise RuntimeError("You need to at least pass in a floor")
+    # If you came here from clicking to trade with a player...
     elif pkPlayer and pkFloor and not pkStock:
         otherPlayer = Player.objects.get(pk=pkPlayer)
         init_dict = {}
@@ -151,6 +154,7 @@ def trade(request, pkPlayer=None, pkStock=None, pkFloor=None, pkCountering=None)
         else:
             init_dict["other_user"] = otherPlayer.user.username
         outputDict["form"] = forms.TradeForm(initial=init_dict)
+    # If you came here from clicking to trade a stock...
     elif pkStock and pkFloor and not pkPlayer:
         floor = Floor.objects.get(pk=pkFloor)
         stocks = [Stock.objects.get(pk=pkStock)]
@@ -193,16 +197,18 @@ def editAccount(request):
 
 @login_required
 def editFloor(request, pkFloor=None):
-    scripts = STANDARD_SCRIPTS + [static("common.js"), reverse("editFloorJS",kwargs={"pkFloor":pkFloor})]
+    scripts = STANDARD_SCRIPTS + [static("common.js"), reverse("editFloorJS",kwargs={"pkFloor": pkFloor})]
     if not pkFloor:
-        raise RuntimeError("You didn't pass in a floor")
-    floor = Floor.objects.get(pk=pkFloor)
-    if not floor:
+        raise RuntimeError("You didn't pass in a floor.")
+    try:
+        floor = Floor.objects.get(pk=pkFloor)
+    except Floor.DoesNotExist:
         raise RuntimeError("{} is not an available floor!".format(pkFloor))
     if request.POST:
         form = forms.EditFloorForm(request.POST)
         if form.is_valid():
             form.apply(floor)
+            # Remove all the removed stocks from the floor's players
             for player in Player.objects.filter(floor=floor):
                 for s in player.stocks.all():
                     if not s in floor.stocks.all():
@@ -258,7 +264,7 @@ def acceptTrade(request, pkTrade):
     return redirect(reverse("dashboard"), permanent=False)
 
 @login_required
-# pkFloor is here for the sake of the JavaScript on the page. 
+# pkFloor is here for the sake of the JavaScript on the page. I don't use it in any Python code.
 def counterTrade(request, pkTrade, pkFloor):
     trade = Trade.objects.get(pk=pkTrade)
     form = forms.TradeForm(initial=trade.toFormDict())
@@ -293,8 +299,10 @@ def stockLookup(request, query=None, key=None, user=None, pkFloor=None):
         STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
         return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
     elif key:
+        # If given a primary key, this function returns a JSON list of all the stocks that that player owns.
         return HttpResponse(json.dumps([s.format_for_json() for s in Player.objects.get(pk=key).stocks.all()]), content_type="text/json")
     elif user and pkFloor:
+        # If given a username and a floor, this returns all the stocks for the player of that user on that floor.
         floor = Floor.objects.get(pk=pkFloor)
         player = Player.objects.get(user__username=user, floor=floor)
         if player.isFloor() and not floor.permissiveness == "closed":
@@ -303,18 +311,11 @@ def stockLookup(request, query=None, key=None, user=None, pkFloor=None):
     else:
         return redirect(static("stocks.json"), permanent=True)
 
-def renderStockWidgetJavascript(request, identifier=None, player=0):
-    """
-    player is the primary key of the player in a database, not a Player object,
-    since it has to come from a URL. 
-    """
+def renderStockWidgetJavascript(request, identifier=None, pkPlayer=None):
     if not identifier:
         raise RuntimeError("You didn't pass in a valid identifier. God only knows how that happened.")
-    if not player:
+    if not pkPlayer:
         return render(request, "stockWidget.js", {"class_name" : forms.StockWidget().HTML_CLASS, "id": identifier})
-    player = int(player)
-    # The id is coming from here. Make it give the right id (eg, "id_other_stock_picker"). I'm not sure how. Ask the form? 
-    # Pass it in the URL?
     return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
 def tradeFormJavaScript(request):
     return render(request, "trade.js")

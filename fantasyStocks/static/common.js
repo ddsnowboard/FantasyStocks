@@ -1,5 +1,10 @@
 "use strict"
 
+/* 
+ * I had repeated this code all over the place, so I decided to 
+ * Not Repeat Myself and put it here. I also wanted to localize some of 
+ * the below documented complexity. 
+ */
 function jsonBloodhound(url){
     var b = new Bloodhound({
         queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -28,6 +33,11 @@ function jsonBloodhound(url){
             }, 
         }
     });
+    /*
+     * This ugly bit is here so that I can let have something for the 
+     * typeahead to show when it is active but empty. Apparently, they didn't
+     * think of this when they were writing Bloodhound. Oh well. 
+     */
     return function(q, sync)
     {
         if(q === "")
@@ -43,8 +53,10 @@ function jsonBloodhound(url){
 
 function ConfirmationBox(text, buttons)
 {
-    // Buttons is an array of objects of the form {text: "button text", func: function() { console.log("Do stuff"); }}
-    // Note that the functions are run with the actual ConfirmationBox as the context for using `this`, not the HTML or jQuery button. 
+    /* Buttons is an array of objects of the form {text: "button text", func: function() { console.log("Do stuff"); }}
+     * Note that the functions are run with the actual ConfirmationBox as the context (ie, when you use `this`, you'll get the ConfirmationBox object). 
+     * Bit of fanciness I did there. 
+     */
     this.destroy = function() 
     {
         this.$holder.remove();
@@ -56,6 +68,7 @@ function ConfirmationBox(text, buttons)
     this.text = text;
     this.$holder = $("<div class=\"confirmationBox\"></div>");
     this.$holder.html(text + "<br />");
+    // Make everything else on the page hard to see so the user might not click on it. 
     $("body > *:not(.confirmationBox)").css("opacity", .1);
     $(":submit").prop("disabled", true);
     for(var i = 0; i < buttons.length; i++)
