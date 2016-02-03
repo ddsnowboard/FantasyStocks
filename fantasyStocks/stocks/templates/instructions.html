@@ -1,12 +1,13 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 {% block title %} How it works {% endblock %}
 {% block content %}
 <p>When you first log in, you'll have the opportunity to either join or make a floor. You can search for the floor you want to join in the search box if the floor is public, or the floor's owner can send you a link to it if it's not. If you want to make your own floor, click "create one."</p>
-<!-- IMAGE --> 
+<img class="instructions" src="{% static "pickFloor.png" %}" />
 <p>Once you're on your floor, you can trade to get stocks. Click on a stock's symbol to trade for it.</p>
-<!-- IMAGE --> 
+<img class="instructions" src="{% static "pickStock.png" %}" />
 <p>When you're happy with your trade, click "Submit." Note that some floors have a limit to how many stocks you can have, which will be shown in the top right corner.</p>
-<!-- IMAGE --> 
-<p>When you click "Confirm," your recipient will get a notification that they have a trade. They can either accept the trade, deny it, or counter it. If the recipient of your trade was the floor itself, it will automatically accept it unless you don't have enough space left.</p>
-<!-- IMAGE --> 
+<img class="instructions" src="{% static "trade.png" %}" />
+<p>When you click "Submit," your recipient will get a notification that they have a trade. They can either accept the trade, deny it, or counter it. If the recipient of your trade was the floor itself, it will automatically accept it unless you don't have enough space left.</p>
+<img class="instructions" src="{% static "receivedTrade.png" %}" />
 {% endblock %}

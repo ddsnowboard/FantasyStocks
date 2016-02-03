@@ -341,3 +341,7 @@ img.loadingWheel {
     background-color: lightgreen !important;
     color: black !important;
 }
+
+img.instructions {
+    width: 500px;
+}
