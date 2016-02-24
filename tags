@@ -1,0 +1,487 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+$username	./fantasyStocks/stocks/templates/tradeCommon.js	/^var $username;$/;"	v
+ALLOWED_HOSTS	./fantasyStocks/fantasyStocks/settings.py	/^ALLOWED_HOSTS = ['*']$/;"	v
+BASE_DIR	./fantasyStocks/fantasyStocks/settings.py	/^BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))$/;"	v
+CLASS_NAME	./fantasyStocks/stocks/templates/stockWidget.js	/^var CLASS_NAME = "{{ class_name }}";$/;"	v
+CLOSED	./fantasyStocks/stocks/models.py	/^    CLOSED = "closed"$/;"	v	class:Floor
+ChangePasswordForm	./fantasyStocks/stocks/forms.py	/^class ChangePasswordForm(forms.Form):$/;"	c
+ConfirmationBox	./fantasyStocks/static/common.js	/^function ConfirmationBox(text, buttons)$/;"	c
+DATABASES	./fantasyStocks/fantasyStocks/settings.py	/^DATABASES = {$/;"	v
+DEBUG	./fantasyStocks/fantasyStocks/settings.py	/^DEBUG = True$/;"	v
+EditFloorForm	./fantasyStocks/stocks/forms.py	/^class EditFloorForm(forms.Form):$/;"	c
+FIXTURE_DIRS	./fantasyStocks/fantasyStocks/settings.py	/^FIXTURE_DIRS = [os.path.join(BASE_DIR, "\/stocks\/fixtures\/")]$/;"	v
+FLOOR_USER	./fantasyStocks/stocks/views.py	/^FLOOR_USER = User.objects.get(groups__name__exact="Floor")$/;"	v
+Floor	./fantasyStocks/stocks/models.py	/^class Floor(models.Model):$/;"	c
+FloorAdmin	./fantasyStocks/stocks/admin.py	/^class FloorAdmin(admin.ModelAdmin):$/;"	c
+FloorForm	./fantasyStocks/stocks/forms.py	/^class FloorForm(forms.Form):$/;"	c
+HTML_CLASS	./fantasyStocks/stocks/forms.py	/^    HTML_CLASS = "stockBox"$/;"	v	class:StockWidget
+ID	./fantasyStocks/stocks/templates/playerField.js	/^var ID = "{{ id }}";$/;"	v
+INSTALLED_APPS	./fantasyStocks/fantasyStocks/settings.py	/^INSTALLED_APPS = ($/;"	v
+JoinFloorForm	./fantasyStocks/stocks/forms.py	/^class JoinFloorForm(forms.Form):$/;"	c
+LANGUAGE_CODE	./fantasyStocks/fantasyStocks/settings.py	/^LANGUAGE_CODE = 'en-us'$/;"	v
+LOGIN_URL	./fantasyStocks/fantasyStocks/settings.py	/^LOGIN_URL = reverse_lazy("home")$/;"	v
+LoginForm	./fantasyStocks/stocks/forms.py	/^class LoginForm(forms.Form):$/;"	c
+MEDIA_ROOT	./fantasyStocks/fantasyStocks/settings.py	/^MEDIA_ROOT = BASE_DIR + "\/res\/"$/;"	v
+MEDIA_URL	./fantasyStocks/fantasyStocks/settings.py	/^MEDIA_URL = "\/images\/"$/;"	v
+MIDDLEWARE_CLASSES	./fantasyStocks/fantasyStocks/settings.py	/^MIDDLEWARE_CLASSES = ($/;"	v
+Migration	./fantasyStocks/stocks/migrations/0001_initial.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0002_auto_20151112_1657.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0004_auto_20151129_1625.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0005_auto_20151129_1634.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0006_auto_20151129_1700.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0008_auto_20151204_1042.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0009_auto_20151208_1826.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0010_auto_20151209_1312.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0011_auto_20151212_1019.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0012_auto_20151215_1914.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0013_auto_20151215_2202.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0014_auto_20151215_2202.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0016_auto_20151229_1837.py	/^class Migration(migrations.Migration):$/;"	c
+Migration	./fantasyStocks/stocks/migrations/0017_auto_20160103_1624.py	/^class Migration(migrations.Migration):$/;"	c
+OPEN	./fantasyStocks/stocks/models.py	/^    OPEN = "open"$/;"	v	class:Floor
+OTHER_NAMEBOX_ID	./fantasyStocks/stocks/templates/tradeCommon.js	/^var OTHER_NAMEBOX_ID = "playerChoiceWidget";$/;"	v
+OTHER_USER_STOCKS_NAME	./fantasyStocks/stocks/templates/tradeCommon.js	/^var OTHER_USER_STOCKS_NAME = "other_stocks";$/;"	v
+PERMISSIVE	./fantasyStocks/stocks/models.py	/^    PERMISSIVE = "permissive"$/;"	v	class:Floor
+PERMISSIVENESS_CHOICES	./fantasyStocks/stocks/models.py	/^    PERMISSIVENESS_CHOICES = ($/;"	v	class:Floor
+PLAYER_URL	./fantasyStocks/stocks/templates/playerField.js	/^var PLAYER_URL = "{% url 'users' %}"; $/;"	v
+POSSIBLE_ERRORS	./fantasyStocks/stocks/forms.py	/^    POSSIBLE_ERRORS = ("dontmatch", "already_exists")$/;"	v	class:RegistrationForm
+Player	./fantasyStocks/stocks/models.py	/^class Player(models.Model):$/;"	c
+PlayerAdmin	./fantasyStocks/stocks/admin.py	/^class PlayerAdmin(admin.ModelAdmin):$/;"	c
+PlayerPicker	./fantasyStocks/stocks/templates/playerField.js	/^function PlayerPicker(inputElement){$/;"	c
+PlayerTestCase	./fantasyStocks/stocks/tests.py	/^class PlayerTestCase(StaticLiveServerTestCase):$/;"	c
+ROOT_URLCONF	./fantasyStocks/fantasyStocks/settings.py	/^ROOT_URLCONF = 'fantasyStocks.urls'$/;"	v
+ReceivedTradeForm	./fantasyStocks/stocks/forms.py	/^class ReceivedTradeForm(TradeForm):$/;"	c
+RegistrationForm	./fantasyStocks/stocks/forms.py	/^class RegistrationForm(forms.Form):$/;"	c
+RemoteStockData	./fantasyStocks/stocks/models.py	/^class RemoteStockData:$/;"	c
+SECRET_KEY	./fantasyStocks/fantasyStocks/settings.py	/^SECRET_KEY = '*imh(^2l3_!uoxr$z#((vovmj4xmqp*@p2&phrlqt7xyau*aqw'$/;"	v
+SECURE_PROXY_SSL_HEADER	./fantasyStocks/fantasyStocks/settings.py	/^SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')$/;"	v
+STANDARD_SCRIPTS	./fantasyStocks/stocks/views.py	/^STANDARD_SCRIPTS = ["\/\/code.jquery.com\/jquery-1.11.3.min.js"]$/;"	v
+STATICFILES_DIRS	./fantasyStocks/fantasyStocks/settings.py	/^STATICFILES_DIRS = ($/;"	v
+STATIC_ROOT	./fantasyStocks/fantasyStocks/settings.py	/^STATIC_ROOT = 'staticfiles'$/;"	v
+STATIC_URL	./fantasyStocks/fantasyStocks/settings.py	/^STATIC_URL = '\/static\/'$/;"	v
+Stock	./fantasyStocks/stocks/models.py	/^class Stock(models.Model):$/;"	c
+StockAPIError	./fantasyStocks/stocks/models.py	/^class StockAPIError(Exception):$/;"	c
+StockAdmin	./fantasyStocks/stocks/admin.py	/^class StockAdmin(admin.ModelAdmin):$/;"	c
+StockChoiceField	./fantasyStocks/stocks/forms.py	/^class StockChoiceField(forms.Field):$/;"	c
+StockSuggestion	./fantasyStocks/stocks/models.py	/^class StockSuggestion(models.Model):$/;"	c
+StockSuggestionAdmin	./fantasyStocks/stocks/admin.py	/^class StockSuggestionAdmin(admin.ModelAdmin):$/;"	c
+StockWidget	./fantasyStocks/stocks/forms.py	/^class StockWidget(forms.widgets.TextInput):$/;"	c
+StockWidget	./fantasyStocks/stocks/templates/stockWidget.js	/^var StockWidget = function(inputElement)$/;"	c
+SuggestionTestCase	./fantasyStocks/stocks/tests.py	/^class SuggestionTestCase(StaticLiveServerTestCase):$/;"	c
+TEMPLATES	./fantasyStocks/fantasyStocks/settings.py	/^TEMPLATES = [$/;"	v
+TIME_ZONE	./fantasyStocks/fantasyStocks/settings.py	/^TIME_ZONE = 'America\/Chicago'$/;"	v
+Trade	./fantasyStocks/stocks/models.py	/^class Trade(models.Model):$/;"	c
+TradeAdmin	./fantasyStocks/stocks/admin.py	/^class TradeAdmin(admin.ModelAdmin):$/;"	c
+TradeError	./fantasyStocks/stocks/models.py	/^class TradeError(Exception):$/;"	c
+TradeForm	./fantasyStocks/stocks/forms.py	/^class TradeForm(forms.Form):$/;"	c
+TradeTestCase	./fantasyStocks/stocks/tests.py	/^class TradeTestCase(StaticLiveServerTestCase):$/;"	c
+USER_NAMEBOX_ID	./fantasyStocks/stocks/templates/tradeCommon.js	/^var USER_NAMEBOX_ID = "username";$/;"	v
+USER_STOCKS_NAME	./fantasyStocks/stocks/templates/tradeCommon.js	/^var USER_STOCKS_NAME = "user_stocks";$/;"	v
+USE_I18N	./fantasyStocks/fantasyStocks/settings.py	/^USE_I18N = True$/;"	v
+USE_L10N	./fantasyStocks/fantasyStocks/settings.py	/^USE_L10N = True$/;"	v
+USE_TZ	./fantasyStocks/fantasyStocks/settings.py	/^USE_TZ = True$/;"	v
+UserChoiceWidget	./fantasyStocks/stocks/forms.py	/^class UserChoiceWidget(forms.widgets.TextInput):$/;"	c
+UserEditingForm	./fantasyStocks/stocks/forms.py	/^class UserEditingForm(forms.Form):$/;"	c
+UserField	./fantasyStocks/stocks/forms.py	/^class UserField(forms.Field):$/;"	c
+UserTestCase	./fantasyStocks/stocks/tests.py	/^class UserTestCase(StaticLiveServerTestCase):$/;"	c
+WIDGET_ID	./fantasyStocks/stocks/forms.py	/^    WIDGET_ID = "playerChoiceWidget"$/;"	v	class:UserChoiceWidget
+WSGI_APPLICATION	./fantasyStocks/fantasyStocks/settings.py	/^WSGI_APPLICATION = 'fantasyStocks.wsgi.application'$/;"	v
+__init__	./fantasyStocks/stocks/forms.py	/^    def __init__(self, *args, **kwargs):$/;"	m	class:StockChoiceField
+__init__	./fantasyStocks/stocks/forms.py	/^    def __init__(self, *args, **kwargs):$/;"	m	class:UserField
+__init__	./fantasyStocks/stocks/forms.py	/^    def __init__(self, attrs=None):$/;"	m	class:UserChoiceWidget
+__init__	./fantasyStocks/stocks/forms.py	/^    def __init__(self, prefetchPlayerPk=None, attrs=None):$/;"	m	class:StockWidget
+__init__	./fantasyStocks/stocks/models.py	/^    def __init__(self, symbol, name, price, change):$/;"	m	class:RemoteStockData
+__str__	./fantasyStocks/stocks/models.py	/^    def __str__(self):$/;"	m	class:Floor	file:
+__str__	./fantasyStocks/stocks/models.py	/^    def __str__(self):$/;"	m	class:Player	file:
+__str__	./fantasyStocks/stocks/models.py	/^    def __str__(self):$/;"	m	class:RemoteStockData	file:
+__str__	./fantasyStocks/stocks/models.py	/^    def __str__(self):$/;"	m	class:Stock	file:
+__str__	./fantasyStocks/stocks/models.py	/^    def __str__(self):$/;"	m	class:StockSuggestion	file:
+__str__	./fantasyStocks/stocks/models.py	/^    def __str__(self):$/;"	m	class:Trade	file:
+_media	./fantasyStocks/stocks/forms.py	/^    def _media(self):$/;"	m	class:ReceivedTradeForm
+_media	./fantasyStocks/stocks/forms.py	/^    def _media(self):$/;"	m	class:StockWidget
+_media	./fantasyStocks/stocks/forms.py	/^    def _media(self):$/;"	m	class:TradeForm
+_media	./fantasyStocks/stocks/forms.py	/^    def _media(self):$/;"	m	class:UserChoiceWidget
+_render_board	./fantasyStocks/stocks/models.py	/^    def _render_board(self, player=None, leaderboard=False, stockboard=False, links=False):$/;"	m	class:Floor
+accept	./fantasyStocks/stocks/admin.py	/^def accept(modeladmin, request, queryset):$/;"	f
+accept	./fantasyStocks/stocks/models.py	/^    def accept(self):$/;"	m	class:StockSuggestion
+accept	./fantasyStocks/stocks/models.py	/^    def accept(self):$/;"	m	class:Trade
+acceptSuggestion	./fantasyStocks/stocks/views.py	/^def acceptSuggestion(request, pkSuggestion=None, delete=None):$/;"	f
+acceptTrade	./fantasyStocks/stocks/views.py	/^def acceptTrade(request, pkTrade):$/;"	f
+actions	./fantasyStocks/stocks/admin.py	/^    actions = [accept]$/;"	v	class:StockSuggestionAdmin
+actions	./fantasyStocks/stocks/admin.py	/^    actions = [accept]$/;"	v	class:TradeAdmin
+actions	./fantasyStocks/stocks/admin.py	/^    actions = [resetToFloor]$/;"	v	class:FloorAdmin
+actions	./fantasyStocks/stocks/admin.py	/^    actions = [update, force_update, rollback_time]$/;"	v	class:StockAdmin
+actions	./fantasyStocks/stocks/admin.py	/^    actions = [zero_score]$/;"	v	class:PlayerAdmin
+application	./fantasyStocks/fantasyStocks/wsgi.py	/^application = Cling(get_wsgi_application())$/;"	v
+apply	./fantasyStocks/stocks/forms.py	/^    def apply(self, floor):$/;"	m	class:EditFloorForm
+apply	./fantasyStocks/stocks/models.py	/^    def apply(self, stockObj = None):$/;"	m	class:RemoteStockData
+calculateOwners	./fantasyStocks/stocks/templates/stockBoard.js	/^function calculateOwners(){$/;"	f
+change	./fantasyStocks/stocks/models.py	/^    change = models.DecimalField(max_digits=6, decimal_places=2, default=0)$/;"	v	class:Stock
+changePassword	./fantasyStocks/stocks/views.py	/^def changePassword(request):$/;"	f
+clear	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.clear = function()$/;"	m	class:StockWidget
+company_name	./fantasyStocks/stocks/models.py	/^    company_name = models.CharField(max_length=50, default="", blank=True)$/;"	v	class:Stock
+counterTrade	./fantasyStocks/stocks/views.py	/^def counterTrade(request, pkTrade, pkFloor):$/;"	f
+create_floor	./fantasyStocks/stocks/views.py	/^def create_floor(request):$/;"	f
+dashboard	./fantasyStocks/stocks/views.py	/^def dashboard(request):$/;"	f
+dashboardJavaScript	./fantasyStocks/stocks/views.py	/^def dashboardJavaScript(request):$/;"	f
+date	./fantasyStocks/stocks/models.py	/^    date = models.DateTimeField(auto_now_add=True)$/;"	v	class:StockSuggestion
+date	./fantasyStocks/stocks/models.py	/^    date = models.DateTimeField(default=timezone.now)$/;"	v	class:Trade
+deleteFloor	./fantasyStocks/stocks/views.py	/^def deleteFloor(request, pkFloor=None):$/;"	f
+deletePlayer	./fantasyStocks/stocks/views.py	/^def deletePlayer(request, pkPlayer=None):$/;"	f
+dependencies	./fantasyStocks/stocks/migrations/0001_initial.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0002_auto_20151112_1657.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0004_auto_20151129_1625.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0005_auto_20151129_1634.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0006_auto_20151129_1700.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0008_auto_20151204_1042.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0009_auto_20151208_1826.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0010_auto_20151209_1312.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0011_auto_20151212_1019.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0012_auto_20151215_1914.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0013_auto_20151215_2202.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0014_auto_20151215_2202.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0016_auto_20151229_1837.py	/^    dependencies = [$/;"	v	class:Migration
+dependencies	./fantasyStocks/stocks/migrations/0017_auto_20160103_1624.py	/^    dependencies = [$/;"	v	class:Migration
+destroy	./fantasyStocks/static/common.js	/^    this.destroy = function() $/;"	m	class:ConfirmationBox
+disable	./fantasyStocks/stocks/templates/playerField.js	/^    this.disable = function() {$/;"	m	class:PlayerPicker
+disable	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.disable = function() {$/;"	m	class:StockWidget
+displayFunc	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.displayFunc = function(o){ return o.name; }$/;"	m	class:StockWidget
+editAccount	./fantasyStocks/stocks/views.py	/^def editAccount(request):$/;"	f
+editFloor	./fantasyStocks/stocks/views.py	/^def editFloor(request, pkFloor=None):$/;"	f
+editFloorJavaScript	./fantasyStocks/stocks/views.py	/^def editFloorJavaScript(request, pkFloor=None):$/;"	f
+email	./fantasyStocks/stocks/forms.py	/^    email = forms.EmailField()$/;"	v	class:UserEditingForm
+email	./fantasyStocks/stocks/forms.py	/^    email = forms.EmailField(label="Email", max_length=100)$/;"	v	class:RegistrationForm
+enable	./fantasyStocks/stocks/templates/playerField.js	/^    this.enable = function() {$/;"	m	class:PlayerPicker
+enable	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.enable = function() {$/;"	m	class:StockWidget
+field	./fantasyStocks/stocks/migrations/0001_initial.py	/^            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0001_initial.py	/^            field=models.ManyToManyField(to='stocks.Stock'),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0002_auto_20151112_1657.py	/^            field=models.CharField(default='permissive', choices=[('open', 'Open'), ('closed', 'Closed'), ('permissive', 'Permissive')], max_length=15),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0002_auto_20151112_1657.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 11, 12, 22, 37, 50, 147317, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 11, 29, 22, 3, 56, 767946, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^            field=models.ForeignKey(null=True, related_name='FloorPlayer', to='stocks.Player'),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^            field=models.ManyToManyField(blank=True, to='stocks.Stock'),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0004_auto_20151129_1625.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 11, 29, 22, 5, 30, 24205, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0004_auto_20151129_1625.py	/^            field=models.ForeignKey(to='stocks.Player', related_name='FloorPlayer'),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0005_auto_20151129_1634.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 11, 29, 22, 14, 42, 85846, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0005_auto_20151129_1634.py	/^            field=models.ForeignKey(to='stocks.Player', null=True, related_name='FloorPlayer'),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0006_auto_20151129_1700.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 11, 29, 22, 40, 0, 153653, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 11, 29, 22, 40, 12, 865966, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^            field=models.ForeignKey(to='stocks.Player', related_name='sendingPlayer'),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^            field=models.ManyToManyField(to='stocks.Stock'),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^            field=models.ManyToManyField(to='stocks.Stock', related_name='receivingPlayerStocks'),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0008_auto_20151204_1042.py	/^            field=models.DateTimeField(auto_now_add=True, default=datetime.datetime(2015, 12, 4, 10, 42, 1, 287615)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0008_auto_20151204_1042.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 12, 4, 16, 21, 42, 177846, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0009_auto_20151208_1826.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 12, 9, 0, 6, 49, 761783, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0010_auto_20151209_1312.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 12, 9, 18, 52, 46, 523559, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0010_auto_20151209_1312.py	/^            field=models.ForeignKey(to='stocks.Stock'),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0011_auto_20151212_1019.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 12, 12, 15, 59, 0, 360369, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0012_auto_20151215_1914.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 12, 16, 0, 54, 49, 954815, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0012_auto_20151215_1914.py	/^            field=models.DecimalField(default=0, max_digits=6, decimal_places=2),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0013_auto_20151215_2202.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 12, 16, 3, 42, 21, 993943, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0014_auto_20151215_2202.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 12, 16, 3, 42, 52, 925311, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^            field=models.BooleanField(default=True),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 12, 22, 21, 36, 31, 447838, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^            field=models.DateTimeField(default=django.utils.timezone.now),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^            field=models.IntegerField(default=10),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0016_auto_20151229_1837.py	/^            field=models.DateTimeField(default=datetime.datetime(2015, 12, 30, 0, 17, 19, 730522, tzinfo=utc)),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0017_auto_20160103_1624.py	/^            field=models.CharField(max_length=35, unique=True),$/;"	v	class:Migration
+field	./fantasyStocks/stocks/migrations/0017_auto_20160103_1624.py	/^            field=models.DateTimeField(default=datetime.datetime(2016, 1, 3, 22, 4, 32, 985134, tzinfo=utc)),$/;"	v	class:Migration
+fields	./fantasyStocks/stocks/admin.py	/^    fields = ("name", "owner", "public", "floorPlayer", "stocks", "permissiveness", "num_stocks")$/;"	v	class:FloorAdmin
+fields	./fantasyStocks/stocks/admin.py	/^    fields = ("recipient", "recipientStocks", "floor", "sender", "senderStocks")$/;"	v	class:TradeAdmin
+fields	./fantasyStocks/stocks/admin.py	/^    fields = ("user", "floor", "points", "stocks")$/;"	v	class:PlayerAdmin
+fields	./fantasyStocks/stocks/migrations/0001_initial.py	/^            fields=[$/;"	v	class:Migration
+fields	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^            fields=[$/;"	v	class:Migration
+fields	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^            fields=[$/;"	v	class:Migration
+fields	./fantasyStocks/stocks/migrations/0010_auto_20151209_1312.py	/^            fields=[$/;"	v	class:Migration
+first_name	./fantasyStocks/stocks/forms.py	/^    first_name = forms.CharField(max_length=30, required=False)$/;"	v	class:UserEditingForm
+fixtures	./fantasyStocks/stocks/tests.py	/^    fixtures = ["fixture.json"]$/;"	v	class:PlayerTestCase
+fixtures	./fantasyStocks/stocks/tests.py	/^    fixtures = ["fixture.json"]$/;"	v	class:SuggestionTestCase
+fixtures	./fantasyStocks/stocks/tests.py	/^    fixtures = ["fixture.json"]$/;"	v	class:TradeTestCase
+fixtures	./fantasyStocks/stocks/tests.py	/^    fixtures = ["fixture.json"]$/;"	v	class:UserTestCase
+floor	./fantasyStocks/stocks/models.py	/^    floor = models.ForeignKey("Floor")$/;"	v	class:Player
+floor	./fantasyStocks/stocks/models.py	/^    floor = models.ForeignKey(Floor)$/;"	v	class:StockSuggestion
+floor	./fantasyStocks/stocks/models.py	/^    floor = models.ForeignKey(Floor)$/;"	v	class:Trade
+floor	./fantasyStocks/stocks/templates/tradeCommon.js	/^var floor;$/;"	v
+floorJSON	./fantasyStocks/stocks/views.py	/^def floorJSON(request, pkFloor=None):$/;"	f
+floorPlayer	./fantasyStocks/stocks/models.py	/^    floorPlayer = models.ForeignKey("Player", related_name="FloorPlayer", null=True)$/;"	v	class:Floor
+floor_name	./fantasyStocks/stocks/forms.py	/^    floor_name = forms.CharField(label="", max_length=35)$/;"	v	class:JoinFloorForm
+floorsJSON	./fantasyStocks/stocks/views.py	/^def floorsJSON(request):$/;"	f
+force_update	./fantasyStocks/stocks/admin.py	/^def force_update(modeladmin, request, queryset):$/;"	f
+force_update	./fantasyStocks/stocks/models.py	/^    def force_update(self):$/;"	m	class:Stock
+format_for_json	./fantasyStocks/stocks/models.py	/^    def format_for_json(self):$/;"	m	class:Stock
+getFloor	./fantasyStocks/stocks/templates/tradeCommon.js	/^function getFloor()$/;"	f
+getFloorPlayersURL	./fantasyStocks/stocks/templates/tradeCommon.js	/^function getFloorPlayersURL(floor){$/;"	f
+getPlayersOnFloor	./fantasyStocks/stocks/views.py	/^def getPlayersOnFloor(request, pkFloor=None):$/;"	f
+getPriceCallback	./fantasyStocks/stocks/templates/stockBoard.js	/^function getPriceCallback(el, xhr)$/;"	f
+getStockBoardJavaScript	./fantasyStocks/stocks/views.py	/^def getStockBoardJavaScript(request):$/;"	f
+getStockPrice	./fantasyStocks/stocks/views.py	/^def getStockPrice(request, symbol=None):$/;"	f
+getUserURL	./fantasyStocks/stocks/templates/tradeCommon.js	/^function getUserURL(username, floor)$/;"	f
+get_both_floor_boards	./fantasyStocks/stocks/models.py	/^    def get_both_floor_boards(self):$/;"	m	class:Player
+get_both_floor_boards_clickable	./fantasyStocks/stocks/models.py	/^    def get_both_floor_boards_clickable(self):$/;"	m	class:Player
+get_change	./fantasyStocks/stocks/models.py	/^    def get_change(self):$/;"	m	class:Stock
+get_errors	./fantasyStocks/stocks/forms.py	/^    def get_errors(self):$/;"	m	class:RegistrationForm
+get_floor_leaderboard	./fantasyStocks/stocks/models.py	/^    def get_floor_leaderboard(self):$/;"	m	class:Player
+get_floor_leaderboard_clickable	./fantasyStocks/stocks/models.py	/^    def get_floor_leaderboard_clickable(self):$/;"	m	class:Player
+get_floor_stockboard	./fantasyStocks/stocks/models.py	/^    def get_floor_stockboard(self):$/;"	m	class:Player
+get_floor_stockboard_clickable	./fantasyStocks/stocks/models.py	/^    def get_floor_stockboard_clickable(self):$/;"	m	class:Player
+get_name	./fantasyStocks/stocks/models.py	/^    def get_name(self):$/;"	m	class:Player
+get_price	./fantasyStocks/stocks/models.py	/^    def get_price(self):$/;"	m	class:Stock
+get_score	./fantasyStocks/stocks/models.py	/^    def get_score(self):$/;"	m	class:Stock
+get_trade	./fantasyStocks/stocks/tests.py	/^    def get_trade(self):$/;"	m	class:TradeTestCase
+get_upload_location	./fantasyStocks/stocks/models.py	/^def get_upload_location(instance, filename):$/;"	f
+get_users_owned_floors	./fantasyStocks/stocks/models.py	/^    def get_users_owned_floors(self):$/;"	m	class:Player
+get_widget_media	./fantasyStocks/stocks/forms.py	/^    def get_widget_media(self):$/;"	m	class:TradeForm
+has_current_price	./fantasyStocks/stocks/models.py	/^    def has_current_price(self):$/;"	m	class:Stock
+image	./fantasyStocks/stocks/models.py	/^    image = models.ImageField(upload_to=get_upload_location, blank=True, default=settings.MEDIA_URL + "default")$/;"	v	class:Stock
+index	./fantasyStocks/stocks/views.py	/^def index(request):$/;"	f
+instructions	./fantasyStocks/stocks/views.py	/^def instructions(request):$/;"	f
+isFloor	./fantasyStocks/stocks/models.py	/^    def isFloor(self):$/;"	m	class:Player
+is_valid	./fantasyStocks/stocks/forms.py	/^    def is_valid(self):$/;"	m	class:FloorForm
+is_valid	./fantasyStocks/stocks/forms.py	/^    def is_valid(self):$/;"	m	class:JoinFloorForm
+is_valid	./fantasyStocks/stocks/forms.py	/^    def is_valid(self):$/;"	m	class:LoginForm
+is_valid	./fantasyStocks/stocks/forms.py	/^    def is_valid(self):$/;"	m	class:RegistrationForm
+is_valid	./fantasyStocks/stocks/forms.py	/^    def is_valid(self, pkFloor=None, user=None, pkCountering=None):$/;"	m	class:TradeForm
+join	./fantasyStocks/stocks/views.py	/^def join(request, pkFloor):$/;"	f
+joinFloorJavaScript	./fantasyStocks/stocks/views.py	/^def joinFloorJavaScript(request):$/;"	f
+join_floor	./fantasyStocks/stocks/views.py	/^def join_floor(request):$/;"	f
+last_name	./fantasyStocks/stocks/forms.py	/^    last_name = forms.CharField(max_length=30, required=False)$/;"	v	class:UserEditingForm
+last_price	./fantasyStocks/stocks/models.py	/^    last_price = models.DecimalField(max_digits=6, decimal_places=2, default=0)$/;"	v	class:Stock
+last_updated	./fantasyStocks/stocks/models.py	/^    last_updated = models.DateTimeField(default=timezone.now() - timedelta(minutes=20))$/;"	v	class:Stock
+leaders	./fantasyStocks/stocks/models.py	/^    def leaders(self):$/;"	m	class:Floor
+list_display	./fantasyStocks/stocks/admin.py	/^    list_display = ("__str__", "last_updated")$/;"	v	class:StockAdmin
+list_display	./fantasyStocks/stocks/admin.py	/^    list_display = ("__str__", "points", "pk")$/;"	v	class:PlayerAdmin
+loadPrices	./fantasyStocks/stocks/templates/stockBoard.js	/^function loadPrices(){$/;"	f
+logout	./fantasyStocks/stocks/views.py	/^def logout(request):$/;"	f
+media	./fantasyStocks/stocks/forms.py	/^    media = property(_media)$/;"	v	class:ReceivedTradeForm
+media	./fantasyStocks/stocks/forms.py	/^    media = property(_media)$/;"	v	class:StockWidget
+media	./fantasyStocks/stocks/forms.py	/^    media = property(_media)$/;"	v	class:TradeForm
+media	./fantasyStocks/stocks/forms.py	/^    media = property(_media)$/;"	v	class:UserChoiceWidget
+model_name	./fantasyStocks/stocks/migrations/0001_initial.py	/^            model_name='floor',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0001_initial.py	/^            model_name='player',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0002_auto_20151112_1657.py	/^            model_name='floor',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0002_auto_20151112_1657.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^            model_name='floor',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^            model_name='player',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0004_auto_20151129_1625.py	/^            model_name='floor',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0004_auto_20151129_1625.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0005_auto_20151129_1634.py	/^            model_name='floor',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0005_auto_20151129_1634.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0006_auto_20151129_1700.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^            model_name='trade',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0008_auto_20151204_1042.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0008_auto_20151204_1042.py	/^            model_name='trade',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0009_auto_20151208_1826.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0010_auto_20151209_1312.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0010_auto_20151209_1312.py	/^            model_name='stocksuggestion',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0011_auto_20151212_1019.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0012_auto_20151215_1914.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0013_auto_20151215_2202.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0014_auto_20151215_2202.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^            model_name='floor',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^            model_name='trade',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0016_auto_20151229_1837.py	/^            model_name='stock',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0017_auto_20160103_1624.py	/^            model_name='floor',$/;"	v	class:Migration
+model_name	./fantasyStocks/stocks/migrations/0017_auto_20160103_1624.py	/^            model_name='stock',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/forms.py	/^    name = forms.CharField(label="Name", max_length=35)$/;"	v	class:FloorForm
+name	./fantasyStocks/stocks/forms.py	/^    name = forms.CharField(max_length=30, required=True)$/;"	v	class:EditFloorForm
+name	./fantasyStocks/stocks/migrations/0001_initial.py	/^            name='Floor',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0001_initial.py	/^            name='Player',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0001_initial.py	/^            name='Stock',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0001_initial.py	/^            name='stocks',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0001_initial.py	/^            name='user',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0002_auto_20151112_1657.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0002_auto_20151112_1657.py	/^            name='permissiveness',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^            name='Trade',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^            name='floorPlayer',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^            name='stocks',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0004_auto_20151129_1625.py	/^            name='floorPlayer',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0004_auto_20151129_1625.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0005_auto_20151129_1634.py	/^            name='floorPlayer',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0005_auto_20151129_1634.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0006_auto_20151129_1700.py	/^            name='Trade',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0006_auto_20151129_1700.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^            name='Trade',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^            name='recipientStocks',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^            name='sender',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^            name='senderStocks',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0008_auto_20151204_1042.py	/^            name='date',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0008_auto_20151204_1042.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0009_auto_20151208_1826.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0010_auto_20151209_1312.py	/^            name='StockSuggestion',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0010_auto_20151209_1312.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0010_auto_20151209_1312.py	/^            name='stock',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0011_auto_20151212_1019.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0012_auto_20151215_1914.py	/^            name='last_price',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0012_auto_20151215_1914.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0013_auto_20151215_2202.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0014_auto_20151215_2202.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^            name='date',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^            name='num_stocks',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^            name='public',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0016_auto_20151229_1837.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0017_auto_20160103_1624.py	/^            name='last_updated',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/migrations/0017_auto_20160103_1624.py	/^            name='name',$/;"	v	class:Migration
+name	./fantasyStocks/stocks/models.py	/^    name = models.CharField(max_length=35, unique=True)$/;"	v	class:Floor
+name	./fantasyStocks/stocks/templates/tradeCommon.js	/^var name;$/;"	v
+new_password	./fantasyStocks/stocks/forms.py	/^    new_password = forms.CharField(widget=forms.widgets.PasswordInput())$/;"	v	class:ChangePasswordForm
+new_password_2	./fantasyStocks/stocks/forms.py	/^    new_password_2 = forms.CharField(widget=forms.widgets.PasswordInput(), label="Confirm new password")$/;"	v	class:ChangePasswordForm
+nextPage	./fantasyStocks/stocks/forms.py	/^    nextPage = forms.CharField(label="next page", max_length=30, widget=forms.HiddenInput(), initial=reverse_lazy("dashboard"))$/;"	v	class:LoginForm
+nextPage	./fantasyStocks/stocks/forms.py	/^    nextPage = forms.CharField(label="next page", max_length=30, widget=forms.HiddenInput(), initial=reverse_lazy("dashboard"))$/;"	v	class:RegistrationForm
+numMessages	./fantasyStocks/stocks/models.py	/^    def numMessages(self):$/;"	m	class:Player
+num_stocks	./fantasyStocks/stocks/models.py	/^    num_stocks = models.IntegerField(default=10)$/;"	v	class:Floor
+number_of_stocks	./fantasyStocks/stocks/forms.py	/^    number_of_stocks = forms.IntegerField(label="Maximum Number of Stocks (per player)", min_value=1, max_value=1000)$/;"	v	class:EditFloorForm
+number_of_stocks	./fantasyStocks/stocks/forms.py	/^    number_of_stocks = forms.IntegerField(label="Maximum Number of Stocks (per player)", min_value=1, max_value=1000)$/;"	v	class:FloorForm
+old_password	./fantasyStocks/stocks/forms.py	/^    old_password = forms.CharField(widget=forms.widgets.PasswordInput())$/;"	v	class:ChangePasswordForm
+onChange	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.onChange = function(func){$/;"	m	class:StockWidget
+onSelect	./fantasyStocks/stocks/templates/playerField.js	/^    this.onSelect = function(func)$/;"	m	class:PlayerPicker
+onSelect	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.onSelect = function(func)$/;"	m	class:StockWidget
+onTabClick	./fantasyStocks/static/floorTabs.js	/^var onTabClick = function(func){$/;"	f
+operations	./fantasyStocks/stocks/migrations/0001_initial.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0002_auto_20151112_1657.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0003_auto_20151129_1623.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0004_auto_20151129_1625.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0005_auto_20151129_1634.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0006_auto_20151129_1700.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0007_auto_20151129_1700.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0008_auto_20151204_1042.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0009_auto_20151208_1826.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0010_auto_20151209_1312.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0011_auto_20151212_1019.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0012_auto_20151215_1914.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0013_auto_20151215_2202.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0014_auto_20151215_2202.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0015_auto_20151222_1556.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0016_auto_20151229_1837.py	/^    operations = [$/;"	v	class:Migration
+operations	./fantasyStocks/stocks/migrations/0017_auto_20160103_1624.py	/^    operations = [$/;"	v	class:Migration
+otherStockbox	./fantasyStocks/stocks/templates/tradeCommon.js	/^var otherStockbox;$/;"	v
+otherUsername	./fantasyStocks/stocks/templates/tradeCommon.js	/^var otherUsername;$/;"	v
+other_stocks	./fantasyStocks/stocks/forms.py	/^    other_stocks = StockChoiceField(label="Other player's stocks", required=False)$/;"	v	class:TradeForm
+other_user	./fantasyStocks/stocks/forms.py	/^    other_user = UserField(label="Other Player")$/;"	v	class:TradeForm
+owner	./fantasyStocks/stocks/models.py	/^    owner = models.ForeignKey(User, null=True)$/;"	v	class:Floor
+owners	./fantasyStocks/stocks/templates/stockBoard.js	/^var owners = {};$/;"	v
+password	./fantasyStocks/stocks/forms.py	/^    password = forms.CharField(label="Password", max_length=50, widget=forms.PasswordInput)$/;"	v	class:LoginForm
+password1	./fantasyStocks/stocks/forms.py	/^    password1 = forms.CharField(label="Password", max_length=50, widget=forms.PasswordInput)$/;"	v	class:RegistrationForm
+password2	./fantasyStocks/stocks/forms.py	/^    password2 = forms.CharField(label="Confirm", max_length=50, widget=forms.PasswordInput)$/;"	v	class:RegistrationForm
+permissiveness	./fantasyStocks/stocks/forms.py	/^    permissiveness = forms.ChoiceField(choices=Floor.PERMISSIVENESS_CHOICES)$/;"	v	class:EditFloorForm
+permissiveness	./fantasyStocks/stocks/forms.py	/^    permissiveness = forms.ChoiceField(label="Permissiveness", choices=Floor.PERMISSIVENESS_CHOICES, help_text="<em>\\"Open\\" means that anyone can add any stock at any time. <br \/>\\"Permissive\\" means that anyone can request any stock to be added, but it must be allowed by the owner of the floor (you). <br \/>\\"Closed\\" means that no new stocks can be added. Note that you can change this setting later.<\/em>")$/;"	v	class:FloorForm
+permissiveness	./fantasyStocks/stocks/models.py	/^    permissiveness = models.CharField(max_length=15, choices=PERMISSIVENESS_CHOICES, default=PERMISSIVE)$/;"	v	class:Floor
+pk	./fantasyStocks/static/floorTabs.js	/^var pk;$/;"	v
+playerFieldJavascript	./fantasyStocks/stocks/views.py	/^def playerFieldJavascript(request, identifier):$/;"	f
+playerJson	./fantasyStocks/stocks/views.py	/^def playerJson(request, pkPlayer=None):$/;"	f
+playerPickers	./fantasyStocks/stocks/templates/playerField.js	/^var playerPickers = [];$/;"	v
+points	./fantasyStocks/stocks/models.py	/^    points = models.IntegerField(default=0)$/;"	v	class:Player
+preserve_default	./fantasyStocks/stocks/migrations/0008_auto_20151204_1042.py	/^            preserve_default=False,$/;"	v	class:Migration
+price	./fantasyStocks/stocks/models.py	/^    price = models.DecimalField(max_digits=6, decimal_places=2, default=0)$/;"	v	class:Stock
+primary_key	./fantasyStocks/stocks/forms.py	/^    primary_key = forms.IntegerField(widget=forms.HiddenInput, required=True)$/;"	v	class:UserEditingForm
+privacy	./fantasyStocks/stocks/forms.py	/^    privacy = forms.BooleanField(label="Private?:", help_text="<em>If the floor is private, it won't show up on the join floor page,<br \/> and you'll have to send a link to allow people to join it.<\/em>", required=False) $/;"	v	class:FloorForm
+privacy	./fantasyStocks/stocks/forms.py	/^    privacy = forms.BooleanField(label="Private?:", required=False) $/;"	v	class:EditFloorForm
+public	./fantasyStocks/stocks/models.py	/^    public = models.BooleanField(default=True)$/;"	v	class:Floor
+pushStock	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.pushStock = function(stock, addToArray)$/;"	m	class:StockWidget
+rebind	./fantasyStocks/stocks/templates/dashboard.js	/^function rebind()$/;"	f
+received	./fantasyStocks/stocks/templates/dashboard.js	/^var received;$/;"	v
+receivedRequests	./fantasyStocks/stocks/models.py	/^    def receivedRequests(self):$/;"	m	class:Player
+receivedTrade	./fantasyStocks/stocks/views.py	/^def receivedTrade(request, pkTrade):$/;"	f
+receivedTradeJavaScript	./fantasyStocks/stocks/views.py	/^def receivedTradeJavaScript(request):$/;"	f
+receivedTrades	./fantasyStocks/stocks/models.py	/^    def receivedTrades(self):$/;"	m	class:Player
+recipient	./fantasyStocks/stocks/models.py	/^    recipient = models.ForeignKey(Player)$/;"	v	class:Trade
+recipientStocks	./fantasyStocks/stocks/models.py	/^    recipientStocks = models.ManyToManyField(Stock, related_name="receivingPlayerStocks")$/;"	v	class:Trade
+rejectTrade	./fantasyStocks/stocks/views.py	/^def rejectTrade(request, pkTrade):$/;"	f
+remote_load_price	./fantasyStocks/stocks/models.py	/^    def remote_load_price(symbol):$/;"	m	class:Stock
+remove	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.remove = function(symbol)$/;"	m	class:StockWidget
+render	./fantasyStocks/stocks/forms.py	/^    def render(self, name, value, attrs=None):$/;"	m	class:StockWidget
+renderStockWidgetJavascript	./fantasyStocks/stocks/views.py	/^def renderStockWidgetJavascript(request, identifier=None, pkPlayer=None):$/;"	f
+render_both_boards	./fantasyStocks/stocks/models.py	/^    def render_both_boards(self, player, links=False):$/;"	m	class:Floor
+render_leaderboard	./fantasyStocks/stocks/models.py	/^    def render_leaderboard(self, player, links=False):$/;"	m	class:Floor
+render_stockboard	./fantasyStocks/stocks/models.py	/^    def render_stockboard(self, player, links=False):$/;"	m	class:Floor
+request.onreadystatechange	./fantasyStocks/stocks/templates/stockWidget.js	/^        var that = this;$/;"	f
+requesting_player	./fantasyStocks/stocks/models.py	/^    requesting_player = models.ForeignKey(Player)$/;"	v	class:StockSuggestion
+requests	./fantasyStocks/stocks/templates/dashboard.js	/^var requests;$/;"	v
+resetToFloor	./fantasyStocks/stocks/admin.py	/^def resetToFloor(modeladmin, request, queryset):$/;"	f
+rollback_time	./fantasyStocks/stocks/admin.py	/^def rollback_time(modeladmin, request, queryset):$/;"	f
+runOnChange	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.runOnChange = function() {$/;"	m	class:StockWidget
+runOnSelect	./fantasyStocks/stocks/templates/playerField.js	/^    this.runOnSelect = function(event, suggestion)$/;"	m	class:PlayerPicker
+runOnSelect	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.runOnSelect = function(event, suggestion)$/;"	m	class:StockWidget
+runTabFunctions	./fantasyStocks/static/floorTabs.js	/^var runTabFunctions = function(domObject) {$/;"	f
+save	./fantasyStocks/stocks/forms.py	/^    def save(self):$/;"	m	class:FloorForm
+save	./fantasyStocks/stocks/forms.py	/^    def save(self):$/;"	m	class:UserEditingForm
+seesSuggestions	./fantasyStocks/stocks/models.py	/^    def seesSuggestions(self):$/;"	m	class:Player
+sender	./fantasyStocks/stocks/models.py	/^    sender = models.ForeignKey(Player, related_name="sendingPlayer")$/;"	v	class:Trade
+senderStocks	./fantasyStocks/stocks/models.py	/^    senderStocks = models.ManyToManyField(Stock)$/;"	v	class:Trade
+sent	./fantasyStocks/stocks/templates/dashboard.js	/^var sent;$/;"	v
+sentTrades	./fantasyStocks/stocks/models.py	/^    def sentTrades(self):$/;"	m	class:Player
+setBox	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.setBox = function(arr)$/;"	m	class:StockWidget
+setOtherStockbox	./fantasyStocks/stocks/templates/tradeCommon.js	/^function setOtherStockbox(username, floor)$/;"	f
+setPrice	./fantasyStocks/stocks/templates/stockBoard.js	/^function setPrice(el, price)$/;"	f
+setStockbox	./fantasyStocks/stocks/templates/tradeCommon.js	/^function setStockbox(sb, username, floor)$/;"	f
+setTradeBox	./fantasyStocks/static/floorTabs.js	/^function setTradeBox($box, text)$/;"	f
+setTypeahead	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.setTypeahead = function()$/;"	m	class:StockWidget
+setURL	./fantasyStocks/stocks/templates/playerField.js	/^    this.setURL = function(url){$/;"	m	class:PlayerPicker
+setURL	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.setURL = function(url) $/;"	m	class:StockWidget
+setUp	./fantasyStocks/stocks/tests.py	/^    def setUp(self):$/;"	m	class:SuggestionTestCase
+setUserStockbox	./fantasyStocks/stocks/templates/tradeCommon.js	/^function setUserStockbox(username, floor)$/;"	f
+size	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.size = function(){$/;"	m	class:StockWidget
+stock	./fantasyStocks/stocks/models.py	/^    stock = models.ForeignKey(Stock)$/;"	v	class:StockSuggestion
+stockLookup	./fantasyStocks/stocks/views.py	/^def stockLookup(request, query=None, key=None, user=None, pkFloor=None):$/;"	f
+stockWidgets	./fantasyStocks/stocks/templates/stockWidget.js	/^var stockWidgets = [];$/;"	v
+stocks	./fantasyStocks/stocks/forms.py	/^    stocks = StockChoiceField(label="Stocks")$/;"	v	class:EditFloorForm
+stocks	./fantasyStocks/stocks/forms.py	/^    stocks = StockChoiceField(label="Stocks")$/;"	v	class:FloorForm
+stocks	./fantasyStocks/stocks/models.py	/^    stocks = models.ManyToManyField(Stock)$/;"	v	class:Floor
+stocks	./fantasyStocks/stocks/models.py	/^    stocks = models.ManyToManyField(Stock, blank=True)$/;"	v	class:Player
+suggestionFunc	./fantasyStocks/stocks/templates/stockWidget.js	/^    this.suggestionFunc = function(obj)$/;"	m	class:StockWidget
+symbol	./fantasyStocks/stocks/models.py	/^    symbol = models.CharField(max_length=4)$/;"	v	class:Stock
+tabFunctions	./fantasyStocks/static/floorTabs.js	/^var tabFunctions = [];$/;"	v
+test_add_stock	./fantasyStocks/stocks/tests.py	/^    def test_add_stock(self):$/;"	m	class:TradeTestCase
+test_capped_suggestion	./fantasyStocks/stocks/tests.py	/^    def test_capped_suggestion(self):$/;"	m	class:SuggestionTestCase
+test_delete_stock	./fantasyStocks/stocks/tests.py	/^    def test_delete_stock(self):$/;"	m	class:TradeTestCase
+test_join_empty_floor	./fantasyStocks/stocks/tests.py	/^    def test_join_empty_floor(self):$/;"	m	class:PlayerTestCase
+test_login_page	./fantasyStocks/stocks/tests.py	/^    def test_login_page(self):$/;"	m	class:UserTestCase
+test_private_floor	./fantasyStocks/stocks/tests.py	/^    def test_private_floor(self):$/;"	m	class:TradeTestCase
+test_scoring	./fantasyStocks/stocks/tests.py	/^    def test_scoring(self):$/;"	m	class:PlayerTestCase
+test_self_trade	./fantasyStocks/stocks/tests.py	/^    def test_self_trade(self):$/;"	m	class:TradeTestCase
+test_stock_cap_simple	./fantasyStocks/stocks/tests.py	/^    def test_stock_cap_simple(self):$/;"	m	class:TradeTestCase
+test_suggestions	./fantasyStocks/stocks/tests.py	/^    def test_suggestions(self):$/;"	m	class:SuggestionTestCase
+test_trade_counter	./fantasyStocks/stocks/tests.py	/^    def test_trade_counter(self):$/;"	m	class:TradeTestCase
+test_trade_simple	./fantasyStocks/stocks/tests.py	/^    def test_trade_simple(self):$/;"	m	class:TradeTestCase
+toFormDict	./fantasyStocks/stocks/models.py	/^    def toFormDict(self):$/;"	m	class:Trade
+to_json	./fantasyStocks/stocks/models.py	/^    def to_json(self):$/;"	m	class:Floor
+to_json	./fantasyStocks/stocks/models.py	/^    def to_json(self):$/;"	m	class:Player
+to_python	./fantasyStocks/stocks/forms.py	/^    def to_python(self, value):$/;"	m	class:StockChoiceField
+to_python	./fantasyStocks/stocks/forms.py	/^    def to_python(self, value):$/;"	m	class:UserField
+to_trade	./fantasyStocks/stocks/forms.py	/^    def to_trade(self, pkFloor=None, user=None):$/;"	m	class:TradeForm
+trade	./fantasyStocks/stocks/views.py	/^def trade(request, pkPlayer=None, pkStock=None, pkFloor=None, pkCountering=None):$/;"	f
+tradeCommonJavaScript	./fantasyStocks/stocks/views.py	/^def tradeCommonJavaScript(request):$/;"	f
+tradeFormJavaScript	./fantasyStocks/stocks/views.py	/^def tradeFormJavaScript(request):$/;"	f
+tradeInbox	./fantasyStocks/stocks/templates/dashboard.js	/^var tradeInbox;$/;"	v
+update	./fantasyStocks/stocks/admin.py	/^def update(modeladmin, request, queryset):$/;"	f
+update	./fantasyStocks/stocks/models.py	/^    def update(self):$/;"	m	class:Stock
+urlpatterns	./fantasyStocks/fantasyStocks/urls.py	/^urlpatterns = static(settings.STATIC_URL) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + [$/;"	v
+urlpatterns	./fantasyStocks/stocks/stockUrls.py	/^urlpatterns = [$/;"	v
+user	./fantasyStocks/stocks/models.py	/^    user = models.ForeignKey(User)$/;"	v	class:Player
+userList	./fantasyStocks/stocks/views.py	/^def userList(request):$/;"	f
+userPage	./fantasyStocks/stocks/views.py	/^def userPage(request, pkUser):$/;"	f
+userStockbox	./fantasyStocks/stocks/templates/tradeCommon.js	/^var userStockbox;$/;"	v
+user_stocks	./fantasyStocks/stocks/forms.py	/^    user_stocks = StockChoiceField(label="Your Stocks", required=False)$/;"	v	class:TradeForm
+username	./fantasyStocks/stocks/forms.py	/^    username = forms.CharField(label="Username", max_length=25)$/;"	v	class:LoginForm
+username	./fantasyStocks/stocks/forms.py	/^    username = forms.CharField(label="Username", max_length=25)$/;"	v	class:RegistrationForm
+username	./fantasyStocks/stocks/forms.py	/^    username = forms.CharField(max_length=30, required=True)$/;"	v	class:UserEditingForm
+verify	./fantasyStocks/stocks/models.py	/^    def verify(self):$/;"	m	class:Trade
+widget	./fantasyStocks/stocks/forms.py	/^    widget = StockWidget$/;"	v	class:StockChoiceField
+widget	./fantasyStocks/stocks/forms.py	/^    widget = UserChoiceWidget$/;"	v	class:UserField
+zero_score	./fantasyStocks/stocks/admin.py	/^def zero_score(modeladmin, request, queryset):$/;"	f
