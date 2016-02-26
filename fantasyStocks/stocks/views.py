@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from stocks import forms
 from stocks.models import Player, Floor, Stock, Trade, StockSuggestion, TradeError
+from stocks.admin import checkForBug
+
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, hashers
 from django.contrib.auth.views import logout_then_login
@@ -18,6 +20,7 @@ STANDARD_SCRIPTS = ["//code.jquery.com/jquery-1.11.3.min.js"]
 
 @login_required
 def dashboard(request):
+    checkForBug()
     scripts =  STANDARD_SCRIPTS + [static("common.js"), static("floorTabs.js"), reverse("dashboardJavaScript")]
     players = Player.objects.filter(user=request.user)
     # If this user isn't a member of any floors...
@@ -32,6 +35,7 @@ def dashboard(request):
             })
 
 def index(request):
+    checkForBug()
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse("dashboard"))
     if request.method == "POST":
@@ -174,6 +178,7 @@ def trade(request, pkPlayer=None, pkStock=None, pkFloor=None, pkCountering=None)
         raise RuntimeError("You passed in the wrong arguments")
     outputDict["floor"] = Floor.objects.get(pk=pkFloor)
     outputDict["userPlayer"] = Player.objects.get(user=request.user, floor=outputDict["floor"])
+    checkForBug()
     return render(request, "trade.html", outputDict)
 
 @login_required
@@ -260,7 +265,9 @@ def rejectTrade(request, pkTrade):
 
 @login_required
 def acceptTrade(request, pkTrade):
-    Trade.objects.get(pk=pkTrade).accept()
+    trade = Trade.objects.get(pk=pkTrade)
+    trade.accept()
+    checkForBug(obj=trade)
     return redirect(reverse("dashboard"), permanent=False)
 
 @login_required
@@ -274,6 +281,7 @@ def counterTrade(request, pkTrade, pkFloor):
             "countering": trade, 
             "floor": trade.floor, 
             "userPlayer": trade.recipient}
+    checkForBug(obj=trade)
     return render(request, "trade.html", outputDict)
 
 @login_required

@@ -77,5 +77,5 @@ def checkForBug(email=True, obj=None):
         for i in problems:
             print(i)
         if email and problems:
-            send_mail("Error on FantasyStocks!", "\n".join(problems), "errors@fantasystocks.com", ["ddsnowboard@gmail.com"], fail_silently=True)
+            send_mail("Error on FantasyStocks!", "\n".join(problems) + (str(obj) if obj else ""), "errors@fantasystocks.com", ["ddsnowboard@gmail.com"], fail_silently=True)
     Thread(target=threadFunc, args=(email, obj)).start()
