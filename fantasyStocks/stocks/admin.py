@@ -1,7 +1,9 @@
+from threading import Thread
 from datetime import timedelta
+from django.core.mail import send_mail
 from django.contrib import admin
 import stocks
-from stocks.models import Player, Floor
+from stocks.models import Player, Floor, Stock
 import sys
 
 # Stock admin functions
@@ -62,3 +64,18 @@ class TradeAdmin(admin.ModelAdmin):
 @admin.register(stocks.models.StockSuggestion)
 class StockSuggestionAdmin(admin.ModelAdmin):
     actions = [accept]
+
+def checkForBug(email=True, obj=None):
+    def threadFunc(email, obj):
+        problems = []
+        for s in Stock.objects.all():
+            for f in Floor.objects.all():
+                players = Player.objects.filter(floor=f, stocks__id=s.pk)
+                if len(players) > 1:
+                    problems.append("Stock {stock} has more than one owner on {floor}: {owners}".format(stock=s, floor=f, owners=", ".join(str(p) for p in players)))
+        
+        for i in problems:
+            print(i)
+        if email and problems:
+            send_mail("Error on FantasyStocks!", "\n".join(problems), "errors@fantasystocks.com", ["ddsnowboard@gmail.com"], fail_silently=True)
+    Thread(target=threadFunc, args=(email, obj)).start()

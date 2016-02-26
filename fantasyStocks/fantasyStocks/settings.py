@@ -114,3 +114,6 @@ MEDIA_ROOT = BASE_DIR + "/res/"
 MEDIA_URL = "/images/"
 
 FIXTURE_DIRS = [os.path.join(BASE_DIR, "/stocks/fixtures/")]
+
+EMAIL_HOST = "aspmx.l.google.com"
+EMAIL_PORT = 25
