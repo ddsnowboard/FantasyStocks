@@ -8,7 +8,7 @@ vim :
 templates : 
 	vim fantasyStocks/stocks/templates/* fantasyStocks/static/*
 test : 
-	python3 ./fantasyStocks/manage.py test ./fantasyStocks/ 
+	python3 ./fantasyStocks/manage.py test ./fantasyStocks/ --parallel 4
 run : 
 	python3 ./fantasyStocks/manage.py runserver
 tags : 
