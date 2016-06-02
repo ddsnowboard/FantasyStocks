@@ -66,16 +66,13 @@ class StockSuggestionAdmin(admin.ModelAdmin):
     actions = [accept]
 
 def checkForBug(email=True, obj=None):
-    def threadFunc(email, obj):
-        problems = []
-        for s in Stock.objects.all():
-            for f in Floor.objects.all():
-                players = Player.objects.filter(floor=f, stocks__id=s.pk)
-                if len(players) > 1:
-                    problems.append("Stock {stock} has more than one owner on {floor}: {owners}".format(stock=s, floor=f, owners=", ".join(str(p) for p in players)))
-        
-        for i in problems:
-            print(i)
-        if email and problems:
-            send_mail("Error on FantasyStocks!", "\n".join(problems) + (str(obj) if obj else ""), "errors@fantasystocks.com", ["ddsnowboard@gmail.com"], fail_silently=True)
-    Thread(target=threadFunc, args=(email, obj)).start()
+    problems = []
+    for s in Stock.objects.all():
+        for f in Floor.objects.all():
+            players = Player.objects.filter(floor=f, stocks__id=s.pk)
+            if len(players) > 1:
+                problems.append("Stock {stock} has more than one owner on {floor}: {owners}".format(stock=s, floor=f, owners=", ".join(str(p) for p in players)))
+    for i in problems:
+        print(i)
+    if email and problems:
+        send_mail("Error on FantasyStocks!", "\n".join(problems) + (str(obj) if obj else ""), "errors@fantasystocks.com", ["ddsnowboard@gmail.com"], fail_silently=True)

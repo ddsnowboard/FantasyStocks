@@ -20,7 +20,6 @@ STANDARD_SCRIPTS = ["//code.jquery.com/jquery-1.11.3.min.js"]
 
 @login_required
 def dashboard(request):
-    checkForBug()
     scripts =  STANDARD_SCRIPTS + [static("common.js"), static("floorTabs.js"), reverse("dashboardJavaScript")]
     players = Player.objects.filter(user=request.user)
     # If this user isn't a member of any floors...
@@ -35,7 +34,6 @@ def dashboard(request):
             })
 
 def index(request):
-    checkForBug()
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse("dashboard"))
     if request.method == "POST":
