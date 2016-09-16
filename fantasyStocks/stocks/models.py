@@ -87,14 +87,20 @@ class Stock(models.Model):
         return (self.price * ((self.price - self.last_price) / self.last_price)) * 100
     def format_for_json(self):
         return {"symbol": self.symbol, "name": self.company_name}
+
     @staticmethod
     def remote_load_price(symbol):
         """
         Given a symbol as a string, returns a RemoteStockData object with the given symbol's 
         name, price, and last change. 
         """
-        URL = "http://finance.yahoo.com/webservice/v1/symbols/{}/quote?format=json&view=detail"
+        # This is the URL we will probably use. It returns CSV, but we'll just process it and 
+        # it'll come out just like it used to. That was a good decision. Also, I might be able to 
+        # do all the stocks at once now, which would be a lot faster. We'll see. 
+        # Also, here's docs: http://www.jarloo.com/yahoo_finance/
+        URL = "http://finance.yahoo.com/d/quotes.csv?s={}&f=IDONTKNOWWHATTOPUTHERE"
         try:
+            # All this won't work. It needs to be changed
             jsonObj = json.loads(request.urlopen(URL.format(symbol)).read().decode("UTF-8"))['list']['resources'][0]['resource']['fields']
         except IndexError:
             raise RuntimeError("The stock with symbol {} can't be found!".format(symbol))
