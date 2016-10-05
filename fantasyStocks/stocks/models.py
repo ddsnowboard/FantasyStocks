@@ -4,7 +4,7 @@ from django.template import Template, Context
 from urllib import request
 from urllib.parse import urlencode
 from django.utils import timezone
-import json
+import csv
 from django.contrib.auth.models import User, Group
 from datetime import timedelta
 from django.conf import settings
@@ -98,13 +98,19 @@ class Stock(models.Model):
         # it'll come out just like it used to. That was a good decision. Also, I might be able to 
         # do all the stocks at once now, which would be a lot faster. We'll see. 
         # Also, here's docs: http://www.jarloo.com/yahoo_finance/
-        URL = "http://finance.yahoo.com/d/quotes.csv?s={}&f=IDONTKNOWWHATTOPUTHERE"
-        try:
-            # All this won't work. It needs to be changed
-            jsonObj = json.loads(request.urlopen(URL.format(symbol)).read().decode("UTF-8"))['list']['resources'][0]['resource']['fields']
-        except IndexError:
+
+        #  This dict holds all the things we're getting from the API. The keys are the names, and the values
+        # are the representations of those things for the API. See the docs (linked above)
+        INFO = {"price": "a", "name": "n", "symbol": "s", "change": "c1"}
+        URL = "http://finance.yahoo.com/d/quotes.csv?s={symbol}&f={info}"
+        # All this won't work. It needs to be changed
+        url = URL.format(**{"symbol": symbol, "info": "".join(INFO.values())})
+        response = request.urlopen(url).read().decode("UTF-8")
+        if "N/A" in response:
             raise RuntimeError("The stock with symbol {} can't be found!".format(symbol))
-        return RemoteStockData(jsonObj["symbol"], jsonObj["name"], jsonObj["price"], jsonObj["change"])
+        # I know dicts aren't ordered, but for an unchanging dict, dict.keys() is guaranteed to match up to dict.values()
+        data = {i:j for (i, j) in zip(INFO.keys(), list(csv.reader(response.split("\n")))[0])}
+        return RemoteStockData(data["symbol"], data["name"], data["price"], data["change"])
 
 class Floor(models.Model):
     OPEN = "open"
