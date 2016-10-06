@@ -4,7 +4,7 @@ from django.template import Template, Context
 from urllib import request
 from urllib.parse import urlencode
 from django.utils import timezone
-import json
+import csv
 from django.contrib.auth.models import User, Group
 from datetime import timedelta
 from django.conf import settings
@@ -87,18 +87,34 @@ class Stock(models.Model):
         return (self.price * ((self.price - self.last_price) / self.last_price)) * 100
     def format_for_json(self):
         return {"symbol": self.symbol, "name": self.company_name}
+
     @staticmethod
     def remote_load_price(symbol):
         """
         Given a symbol as a string, returns a RemoteStockData object with the given symbol's 
         name, price, and last change. 
         """
-        URL = "http://finance.yahoo.com/webservice/v1/symbols/{}/quote?format=json&view=detail"
-        try:
-            jsonObj = json.loads(request.urlopen(URL.format(symbol)).read().decode("UTF-8"))['list']['resources'][0]['resource']['fields']
-        except IndexError:
-            raise RuntimeError("The stock with symbol {} can't be found!".format(symbol))
-        return RemoteStockData(jsonObj["symbol"], jsonObj["name"], jsonObj["price"], jsonObj["change"])
+        # This is the URL we will probably use. It returns CSV, but we'll just process it and 
+        # it'll come out just like it used to. That was a good decision. Also, I might be able to 
+        # do all the stocks at once now, which would be a lot faster. We'll see. 
+        # Also, here's docs: http://www.jarloo.com/yahoo_finance/
+
+        # This dict holds all the things we're getting from the API. The keys are the names, and the values
+        # are the representations of those things for the API. See the docs (linked above)
+        INFO = {"price": "a", "name": "n", "symbol": "s", "change": "c1", "open": "o", "close": "p"}
+        URL = "http://finance.yahoo.com/d/quotes.csv?s={symbol}&f={info}"
+        # All this won't work. It needs to be changed
+        url = URL.format(**{"symbol": symbol, "info": "".join(INFO.values())})
+        response = request.urlopen(url).read().decode("UTF-8")
+        # I know dicts aren't ordered, but for an unchanging dict, dict.keys() is guaranteed to match up to dict.values()
+        data = {i:j for (i, j) in zip(INFO.keys(), list(csv.reader(response.split("\n")))[0])}
+        for i in [data["price"], data["close"], data["open"]]:
+            try:
+                price = float(i)
+            except ValueError:
+                continue
+            break
+        return RemoteStockData(data["symbol"], data["name"], price, data["change"])
 
 class Floor(models.Model):
     OPEN = "open"
