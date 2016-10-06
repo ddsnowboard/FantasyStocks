@@ -15,3 +15,7 @@ run :
 	python3 ./fantasyStocks/manage.py runserver
 tags : 
 	zsh -c "ctags -R ./fantasystocks/**/*.c(N) ./fantasystocks/**/*.py(N) ./fantasystocks/**/*.html(N) ./fantasystocks/**/*.js(N) ./fantasystocks/**/*.java(N)"
+cloneDB :
+	sqlite3 fantasyStocks/db.sqlite3 < dump.db
+freezeDB :
+	echo ".dump" | sqlite3 fantasystocks/db.sqlite3 > dump.db

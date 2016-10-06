@@ -58,3 +58,5 @@ target/
 
 # virtual environment
 venv/*
+
+*.sqlite3
