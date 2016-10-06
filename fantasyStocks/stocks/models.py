@@ -2,6 +2,7 @@ from django.db import models
 from django.http import HttpResponse
 from django.template import Template, Context
 from urllib import request
+from urllib.error import HTTPError
 from urllib.parse import urlencode
 from django.utils import timezone
 import csv
@@ -104,7 +105,11 @@ class Stock(models.Model):
         INFO = {"price": "a", "name": "n", "symbol": "s", "change": "c1", "open": "o", "close": "p"}
         URL = "http://finance.yahoo.com/d/quotes.csv?s={symbol}&f={info}"
         # All this won't work. It needs to be changed
-        url = URL.format(**{"symbol": symbol, "info": "".join(INFO.values())})
+        try:
+            url = URL.format(**{"symbol": symbol, "info": "".join(INFO.values())})
+        except HTTPError:
+            print("Got an HTTPError")
+            return Stock.remote_load_price(symbol)
         response = request.urlopen(url).read().decode("UTF-8")
         # I know dicts aren't ordered, but for an unchanging dict, dict.keys() is guaranteed to match up to dict.values()
         data = {i:j for (i, j) in zip(INFO.keys(), list(csv.reader(response.split("\n")))[0])}
