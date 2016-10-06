@@ -58,3 +58,7 @@ target/
 
 # virtual environment
 venv/*
+
+# undiffable files
+*.sqlite3
+tags

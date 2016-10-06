@@ -7,11 +7,18 @@ vim :
 	vim $(FILES)
 templates : 
 	vim fantasyStocks/stocks/templates/* fantasyStocks/static/*
-test : 
+test : fantasyStocks/db.sqlite3
 	python3 ./fantasyStocks/manage.py test ./fantasyStocks/ --parallel 4
-singleTest : 
+singleTest : fantasyStocks/db.sqlite3
 	python3 ./fantasyStocks/manage.py test ./fantasyStocks/
-run : 
+run : fantasyStocks/db.sqlite3
 	python3 ./fantasyStocks/manage.py runserver
 tags : 
 	zsh -c "ctags -R ./fantasystocks/**/*.c(N) ./fantasystocks/**/*.py(N) ./fantasystocks/**/*.html(N) ./fantasystocks/**/*.js(N) ./fantasystocks/**/*.java(N)"
+cloneDB :
+	sqlite3 fantasyStocks/db.sqlite3 < db.dump
+freezeDB :
+	echo ".dump" | sqlite3 fantasyStocks/db.sqlite3 > db.dump
+
+fantasyStocks/db.sqlite3 : 
+	$(MAKE) cloneDB
