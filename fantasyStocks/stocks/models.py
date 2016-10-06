@@ -99,18 +99,22 @@ class Stock(models.Model):
         # do all the stocks at once now, which would be a lot faster. We'll see. 
         # Also, here's docs: http://www.jarloo.com/yahoo_finance/
 
-        #  This dict holds all the things we're getting from the API. The keys are the names, and the values
+        # This dict holds all the things we're getting from the API. The keys are the names, and the values
         # are the representations of those things for the API. See the docs (linked above)
-        INFO = {"price": "a", "name": "n", "symbol": "s", "change": "c1"}
+        INFO = {"price": "a", "name": "n", "symbol": "s", "change": "c1", "open": "o", "close": "p"}
         URL = "http://finance.yahoo.com/d/quotes.csv?s={symbol}&f={info}"
         # All this won't work. It needs to be changed
         url = URL.format(**{"symbol": symbol, "info": "".join(INFO.values())})
         response = request.urlopen(url).read().decode("UTF-8")
-        if "N/A" in response:
-            raise RuntimeError("The stock with symbol {} can't be found!".format(symbol))
         # I know dicts aren't ordered, but for an unchanging dict, dict.keys() is guaranteed to match up to dict.values()
         data = {i:j for (i, j) in zip(INFO.keys(), list(csv.reader(response.split("\n")))[0])}
-        return RemoteStockData(data["symbol"], data["name"], data["price"], data["change"])
+        for i in [data["price"], data["close"], data["open"]]:
+            try:
+                price = float(i)
+            except ValueError:
+                continue
+            break
+        return RemoteStockData(data["symbol"], data["name"], price, data["change"])
 
 class Floor(models.Model):
     OPEN = "open"
