@@ -205,7 +205,7 @@ a.noUnderline {
 }
 
 .tt-cursor {
-    background-color: lightgrey !important;
+    background-color: #c6c4ce !important;
 }
 
 .stockBox {
@@ -351,4 +351,8 @@ img.loadingWheel {
 
 img.instructions {
     width: 500px;
+}
+
+.slyLink {
+    color: inherit;
 }
