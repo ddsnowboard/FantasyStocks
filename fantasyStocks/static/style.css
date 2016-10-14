@@ -109,8 +109,6 @@
 }
 
 .red { 
-    /* Since this is shown on a black background, it should probably be a little less jarring. I don't know 
-     * how to do that though. I'll do some searching. */ 
     color: #d7263d;
 }
 
@@ -199,9 +197,6 @@ a.noUnderline {
     margin-bottom: 10px;
 }
 
-/* I haven't the slightest idea how this works */
-#rightSideTrade {
-    display: table-caption;
 }
 
 #rightSideTrade .holder {
