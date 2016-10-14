@@ -199,6 +199,16 @@ a.noUnderline {
     margin-bottom: 10px;
 }
 
+/* I haven't the slightest idea how this works */
+#rightSideTrade {
+    display: table-caption;
+}
+
+#rightSideTrade .holder {
+    float: right;
+    display: block;
+}
+
 .tt-cursor {
     background-color: lightgrey !important;
 }
