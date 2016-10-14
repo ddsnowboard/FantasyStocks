@@ -212,7 +212,7 @@ a.noUnderline {
     padding-top: 5px;
     padding-bottom: 5px;
     border: 1px solid black;
-    background-color: #9FBCDA;
+    background-color: #d9e6a1;
     width: 100%;
     margin-bottom: 5px;
     cursor: default;
@@ -233,14 +233,11 @@ a.noUnderline {
     width: 100%;
 }
 
-.trade td {
+.tradeInbox {
+    width: 100%;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
     border-collapse: collapse; 
-}
-
-.tradeInbox {
-    width: 100%;
 }
 
 .tradeTab {
