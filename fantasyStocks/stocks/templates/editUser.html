@@ -1,4 +1,7 @@
 {% extends "loggedIn.html" %}
+{% block title %}
+Edit User
+{% endblock %}
 {% block content %}
 <form action="" method="POST">
     {% csrf_token %}
@@ -9,10 +12,13 @@
             <td></td>
             <td>
                 Click <a href="{% url "myChangePassword" %}">here</a> to change your password.
+        <tr>
+            <td></td>
+            <td>
+                <input type="submit" />
             </td>
         </tr>
     </table>
-    <input type="submit" />
 </form>
 <br />
 {% with floors=players.0.get_users_owned_floors %}
@@ -31,7 +37,7 @@
         <td><a href="{% url "editFloor" pkFloor=floor.pk %}">{{ floor.name }}</a></td>
         <td>{{ floor.leaders.count }}</td>
         <td>{{ floor.permissiveness|capfirst }}</td>
-{% endfor %}
+        {% endfor %}
     </tr>
 </table>
 {% endif %}

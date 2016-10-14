@@ -192,16 +192,16 @@ a.noUnderline {
 
 .holder {
     min-height: 150px;
-    width: 200px;
     border: 3px inset grey;
     margin-bottom: 10px;
 }
 
+.tradeSideContainer {
+    width: 45%;
 }
 
-#rightSideTrade .holder {
-    float: right;
-    display: block;
+#count {
+    text-align: right;
 }
 
 .tt-cursor {

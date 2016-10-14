@@ -6,7 +6,12 @@
     {% csrf_token %}
     <table>
         {{ form.as_table }}
+        <tr>
+            <td></td>
+            <td>
+                <input id="select" type="submit">
+            </td>
+        </tr>
     </table>
-    <input id="select" type="submit">
 </form>
 {% endblock %}

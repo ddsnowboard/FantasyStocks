@@ -1,4 +1,7 @@
 {% extends "loggedIn.html" %}
+{% block title %}
+Edit Floor
+{% endblock %}
 {% block head %}{{ form.media }}{% endblock %}
 {% block content %}
 {% if not floor.public %}

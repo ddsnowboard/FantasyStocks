@@ -7,12 +7,12 @@
 {% block script %} var userNumberOfStocks = {{ userPlayer.stocks.all|length }};{% endblock %}
 {% block content %}
 <div class="tradeHolder">
-    <div style="position: absolute; right: 0; top: 0" id="count">
+    <div id="count">
         <span id="currStocks"></span> of <span id="maxStocks">{{ floor.num_stocks }}</span> stocks remaining
     </div>
     <form action="{% if received %}{% url "trade" pkFloor=trade.floor.pk %}{% elif countering %}{% url "trade" pkFloor=countering.floor.pk pkCountering=countering.pk %}{% endif %}" method="POST">
         {% csrf_token %}
-        <table align="center">
+        <table align="center" style="width: 30%; margin-top: 10px;">
             <tr>
                 <td colspan="2">
                     {{ form.non_field_errors }}
@@ -29,7 +29,7 @@
                 </td>
             </tr>
             <tr>
-                <td>
+                <td class="tradeSideContainer">
                     {{ form.user_stocks.errors }}
                     {{ form.user_stocks }}
                 </td>
@@ -37,7 +37,7 @@
                     <img src="{% static "arrow.png" %}" width="15px"/><br />
                     <img src="{% static "arrow.png" %}" width="15px" class="flipped"/>
                 </td>
-                <td id="rightSideTrade">
+                <td class="tradeSideContainer">
                     {{ form.other_stocks.errors }}
                     {{ form.other_stocks }}
                 </td>
