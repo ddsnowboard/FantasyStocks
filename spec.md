@@ -1,6 +1,6 @@
-#Fantasy Stocks Spec
-######Will Koster
-=========
+# Fantasy Stocks Spec
+###### By Will Koster
+
 Any good spec has to have scenarios for who will use the product, otherwise they might have a CueCat, so here they are. 
 
 Scenarios
@@ -14,7 +14,7 @@ Nongoals:
 + There will be no money system. There will be points, but you can't trade them for anything. It's just a number. Some might say "No one will play if you can't trade in your points for anything!" They have not played any mobile games recently.
 + There will not be any mobile apps in this specific repository. Maybe I'll get to an android verison one of these days, but not an iOS version because I don't have a Mac to program on.
 
-###Overview
+### Overview
 + Base Page
   + Homepage (index.html)
   + Login page
@@ -26,13 +26,13 @@ Nongoals:
     + Join Floor Page
 + Epilogue: The Game
 
-###Base Page
+### Base Page
 
 The page whence every other page will descend, both in a design and technical sense, is the "Base Page." At this point, all it defines is the navigation bar. The navigation bar will be grey, with "Fantasy Stocks" on the left side, and a button on the right side, with a black border on its left. The button will be changable by the pages that inherit it, but it will default to saying "How it works" and linking to a page that explains how the site works.
 
 >For an image, see any of the mockups in this spec.  
 
-###Homepage
+### Homepage
 
 The homepage will be dominated by a login box, with a username box and a password box, and a submit button below them. Beside the submit button, somewhere in that box, there will be a "Forgot password" link. Beside those will be a box that is used to register, with a username box, a password box, and another password box for confirmation.
 The theory behind this page is that it is really, really simple. The easier it is to sign up, the idea goes, the more people will do it. 
@@ -43,7 +43,7 @@ Here is a mockup of the design.
 
 Both enter buttons only act on their respective boxes. If you fill in one box, then the other, whichever button you click will only send information from its box. If you put in the wrong username or password, it will kick you back to the login page with an angry red message and the username pre-populated with whatever you put in if and only if that username already exists. If it doesn't exist, it will say that no username exists and give you a set of empty boxes. 
 
-###Dashboard
+### Dashboard
 
 The dashboard will have a few main parts. On the left side, there will be vertically stacked tabs that show the names of all the floors that you are on. If you click on one, it will select and the rest of the page will change to show the things happening on that floor.
 
@@ -56,7 +56,7 @@ Below that, there will be a trade inbox. It will also change with the changes of
 NB: This image is no longer accurate. It does not include the recent changes regarding the showing of multiple floors, and the removal of the chat box for the sake of simplicity, nor does it include the trades inbox at the bottom.
 ![Image of dashboard design](specResources/dashboardDesign.png "Dashboard")
 
-###Trade Page
+### Trade Page
 
 Design Mockup:
 
@@ -83,13 +83,13 @@ The items in the list of stocks will have rounded corners, the company logo on t
 
 In between the banks of boxes there will be some sort of nice arrow image, probably two greenish arrows, one going each way. Finally, there will be a "Send" button in the traditional style below and with its right side lined up with the right side of the right bank of boxes.
 
-###Received Trade Page
+### Received Trade Page
 
 >Technical Note: Make sure you include the parameters for this page when you are writing the template for it. You should probably just have one base template for every page, and this and the Trade Page will be the same template, with the difference being made up in the data that I pass to it.
 
 This will be aesthetically nearly identical to the Trade Page except the "Send" button will be replaced with an "Accept" button, and next to that will be a "Counter-Offer" button, which will take you to a trade page pre-populated with the stocks that were in the trade before, along with the proper names, for you to edit and then send back. If you type in a company name into any of the boxes, it will add to the list just like it would on the trade page.
 
-###Other User Page
+### Other User Page
 
 ![Image of Other User Page](specResources/otherPlayer.png "Other Player")
 
@@ -98,15 +98,15 @@ In the top left corner there will be the avatar of the user. Next to that there 
 Below that there will be a table. On the left hand side there will be a list of all the floors that the person is a member of. You can click on one and it will select and next to it it will list the stocks they have on that floor next to their price and how they have been doing. The clicking will be handled in JavaScript. When you click, there will be a visual change in the background, similar to the above image. I can't get this to look good in paint.net, but the right hand table should have lines delineating the rows and in between the name and the numbers, in the middle. If you click on a stock, you will go to the Trade Page, and the stock, your name, and their name will be pre-populated. Below all the stocks will be a "Propose a trade" button, which you can also click to go to a trade page with their name and your name pre-populated.
 >Make sure that there is some sort of feedback that says that clicking on the stock will take you somewhere else. It could get really annoying really quick if there's not. 
 
-###Create Floor Page
+### Create Floor Page
 
 The page will be little more than a list of options you can set. There will be the name, whether the floor is private, how many stocks each player gets, what stocks start on the floor, and what permissiveness the floor should have. The "Stocks" field will be a vertical list with real-time suggestions just like the trade page, but here all stocks will be available to choose. If a stock is chosen that isn't in the database yet, when the floor is created, the server will add it and start tracking it, completely unbeknownst to the user. I am using just a big JSON string that has every stock on every big exchange in the United States for searching. It's really fast, I promise. The "Permissiveness" field will be a dropdown menu with three options: "Closed", "Open", and "Permissive". "Closed" is where you can't add new stocks at all. "Permissive" is where the owner of the floor can allow or deny the entrance of new stocks. "Open" is where the whole stock market is available. If there aren't many stocks and the permissiveness is set to "Closed" or "Permissive", it will warn you, but you will be able to override its warning.  At the bottom there will be a submit button. After you click submit and everything is in order, it will take you to your dashboard.
 
-###Join Floor Page
+### Join Floor Page
 
 The Join Floor page will be pretty simple: in the middle, there will be a real-time search box, with dropdown suggestions similar to the ones in other parts of the site, that will let you have your pick of public floors. There will also be a link near the top to create your own floor. 
 
-###Epilogue: The Game
+### Epilogue: The Game
 
 When you first sign up, you get the option to either make a new Floor or join an existing one. If you make a new one, you pick the name and whether it is public or private. You also pick how many stocks everyone gets. 
 >About how many stocks should everyone get? I guess I could just leave it up to the owner, but I should probably include some guidance. Maybe beta testing will tell me some things. 
