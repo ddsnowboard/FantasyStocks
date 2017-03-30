@@ -9,7 +9,6 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from stocks.models import Floor, Stock, StockAPIError, StockSuggestion
 from django.core.exceptions import ValidationError
 from stocks.models import Floor, Player, Trade
-import sys
 
 class StockWidget(forms.widgets.TextInput):
     """
@@ -23,7 +22,6 @@ class StockWidget(forms.widgets.TextInput):
         newAttrs = attrs.copy() if attrs else {}
         newAttrs['class'] = self.HTML_CLASS
         super(StockWidget, self).__init__(newAttrs)
-        # If there is no attrs object, we can assume we need every stock and keep things simple
         if self.attrs.get('id', None):
             self.attrs = attrs
             self.attrs["class"] = StockWidget.HTML_CLASS
@@ -34,7 +32,6 @@ class StockWidget(forms.widgets.TextInput):
     def _media(self):
         js = ["//code.jquery.com/jquery-1.11.3.min.js",
         "typeahead.bundle.js", "common.js"]
-        # See above comment
         if not self.prefetchPlayerPk:
             js.append(reverse("stockWidgetJavascript", kwargs={"identifier" : self.attrs['id']}))
         else:
@@ -82,6 +79,7 @@ class StockChoiceField(forms.Field):
                 # Unless it's not real...
                 except StockAPIError:
                     raise ValidationError
+
                 s.save()
             out.append(s)
         return out
