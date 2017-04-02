@@ -1,4 +1,3 @@
-import json
 from random import choice
 from django.test import TestCase, Client
 from django import test
@@ -59,7 +58,7 @@ class TradeTestCase(StaticLiveServerTestCase):
         trade.accept()
         trade.save()
         self.assertEqual(list(recipient.stocks.all()), senderStocks)
-        self.assertEqual(list(sender.stocks.all()), recipientStocks)
+        self.assertEqual(set(sender.stocks.all()), set(recipientStocks))
     def test_stock_cap_simple(self):
         SMALL_NUMBER = 2
         floor = Floor.objects.all()[0]
@@ -81,12 +80,11 @@ class TradeTestCase(StaticLiveServerTestCase):
         user = User.objects.create_user("privateFloorUser", "privateer@mailmail.mail", "thePasswordIs")
         client.force_login(user)
         response = client.get(reverse("floorsJson"))
-        # This has to be number 2 because there are three templates: base (0), loggedIn (1), and joinFloor (2). 
-        self.assertListEqual([Floor.objects.get(name=i["name"]) for i in json.loads(response.content.decode("UTF-8"))], [])
+        self.assertTrue(floor.name not in response.content.decode("UTF-8"))
         floor.public = True
         floor.save()
         response = client.get(reverse("floorsJson"))
-        self.assertListEqual([Floor.objects.get(name=i["name"]) for i in json.loads(response.content.decode("UTF-8"))], [floor])
+        self.assertTrue(floor.name in response.content.decode("UTF-8"))
     def test_trade_counter(self):
         trade = self.get_trade()
         old_recipientStocks = list(trade.recipientStocks.all())
@@ -101,7 +99,7 @@ class TradeTestCase(StaticLiveServerTestCase):
         self.assertRedirects(response, reverse("dashboard"))
         self.assertQuerysetEqual(Trade.objects.filter(pk=trade.pk), [])
         newTrade = Trade.objects.all()[0]
-        self.assertEqual(list(newTrade.senderStocks.all()), old_recipientStocks)
+        self.assertEqual(set(newTrade.senderStocks.all()), set(old_recipientStocks))
         self.assertEqual(list(newTrade.recipientStocks.all()), old_senderStocks)
     def test_add_stock(self):
         floor = Floor.objects.all()[0]
@@ -148,16 +146,20 @@ class PlayerTestCase(StaticLiveServerTestCase):
         response = client.get(reverse("joinFloor"))
         self.assertTrue(response.context[-1]["floors_exist"])
     def test_scoring(self):
-        start = time.clock()
         floor = Floor.objects.all()[0]
         DEFAULT_PRICE = 5
+        start = time.clock()
+        for p in Player.objects.all():
+            p.points = 0
+            p.save()
         for s in floor.stocks.all():
             s.price = DEFAULT_PRICE
             s.update()
         for p in Player.objects.filter(floor=floor):
             if not p.isFloor():
-                self.assertAlmostEqual(p.points, reduce(lambda x, y: x + y, [s.get_score() for s in p.stocks.all()]), delta=1)
+                self.assertAlmostEqual(p.points, reduce(lambda x, y: x + y, [s.get_score() for s in p.stocks.all()]), delta=10)
         print("Finished! Took {} seconds!".format(time.clock() - start))
+
 class SuggestionTestCase(StaticLiveServerTestCase):
     fixtures = ["fixture.json"]
     def setUp(self):
@@ -177,6 +179,7 @@ class SuggestionTestCase(StaticLiveServerTestCase):
             self.trade = self.form.to_trade(pkFloor=self.floor.pk, user=self.user)
         else:
             raise RuntimeError("There was an error in validation. {}".format(form.errors))
+
     def test_suggestions(self):
         # If this fails, the trade isn't getting automatically accepted by the floor. 
         self.assertQuerysetEqual(Trade.objects.all(), [])
@@ -191,6 +194,7 @@ class SuggestionTestCase(StaticLiveServerTestCase):
         SMALL_NUMBER = 2
         self.floor.num_stocks = SMALL_NUMBER
         self.floor.save()
+        self.player.stocks = [self.player.stocks.all()[0]]
         suggestion = StockSuggestion.objects.all()[0]
         for i in Player.objects.all():
             if i != self.player and not i.isFloor():
@@ -198,6 +202,7 @@ class SuggestionTestCase(StaticLiveServerTestCase):
                 break
             else:
                 continue
+        otherPlayer.stocks = [otherPlayer.stocks.all()[0]]
         newTrade = Trade.objects.create(recipient=otherPlayer, floor=self.floor, sender=self.player)
         newStock = otherPlayer.stocks.all()[0]
         newTrade.recipientStocks.add(newStock)
@@ -215,7 +220,11 @@ class SuggestionTestCase(StaticLiveServerTestCase):
 class UserTestCase(StaticLiveServerTestCase):
     fixtures = ["fixture.json"]
     def test_login_page(self):
-        user = User.objects.all().exclude(username="Floor")[0]
+        USERNAME = "thisIsAUsername"
+        PASSWORD = "thisISAPassword"
+        user = User.objects.create_user(USERNAME, "test@test.net", PASSWORD)
+        player = Player(user=user, floor=Floor.objects.all()[0])
+        player.save()
         client = Client()
         origResponse = client.get(reverse("dashboard"), follow=True)
         self.assertTemplateUsed(origResponse, "index.html")
@@ -229,8 +238,9 @@ class UserTestCase(StaticLiveServerTestCase):
         self.assertFormError(response, "loginForm", None, "That is the wrong password") 
 
         response = client.get(reverse("dashboard"), follow=True)
-        # See the code I used to create the fixture for how I'm getting the password
-        response = client.post(origResponse.redirect_chain[-1][0], {"username": user.username, "password": "thePasswordIs{}".format(user.username.split("_")[1]), "nextPage": reverse("dashboard")}, follow=True)
+
+        response = client.post(origResponse.redirect_chain[-1][0],
+                               {"username": USERNAME, "password": PASSWORD, "nextPage": reverse("dashboard")}, follow=True)
         self.assertEqual(response.redirect_chain[-1][0], reverse("dashboard")) 
 
 
