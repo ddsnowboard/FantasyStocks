@@ -1,9 +1,11 @@
+from json import dumps
 from threading import Thread
 from datetime import timedelta
 from django.core.mail import send_mail
 from django.contrib import admin
 import stocks
-from stocks.models import Player, Floor, Stock
+from stocks.models import Player, Floor, Stock, StockAPIError
+from django.http import HttpResponse
 import sys
 
 # Stock admin functions
@@ -35,6 +37,15 @@ def resetToFloor(modeladmin, request, queryset):
         i.floorPlayer.save()
 resetToFloor.short_description = "Move all stocks to floor"
 
+def check_exists(modeladmin, request, queryset):
+    bad_stocks = []
+    for i in queryset:
+        try:
+            i.force_update()
+        except StockAPIError:
+            bad_stocks.append(i)
+    return HttpResponse(dumps([str(i) for i in bad_stocks]), content_type="application/json")
+
 def zero_score(modeladmin, request, queryset):
     for p in queryset:
         p.points = 0
@@ -42,7 +53,7 @@ def zero_score(modeladmin, request, queryset):
 
 @admin.register(stocks.models.Stock)
 class StockAdmin(admin.ModelAdmin):
-    actions = [update, force_update, rollback_time]
+    actions = [update, force_update, rollback_time, check_exists]
     list_display = ("__str__", "last_updated")
 
 @admin.register(stocks.models.Player)
