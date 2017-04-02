@@ -104,14 +104,15 @@ class Stock(models.Model):
         # are the representations of those things for the API. See the docs (linked above)
         INFO = {"price": "a", "name": "n", "symbol": "s", "change": "c1", "open": "o", "close": "p"}
         URL = "http://finance.yahoo.com/d/quotes.csv?s={symbol}&f={info}"
-        # All this won't work. It needs to be changed
         url = URL.format(**{"symbol": symbol, "info": "".join(INFO.values())})
         try:
             response = request.urlopen(url).read().decode("UTF-8")
         except HTTPError:
             print("Got an HTTPError")
             return Stock.remote_load_price(symbol)
+
         # I know dicts aren't ordered, but for an unchanging dict, dict.keys() is guaranteed to match up to dict.values()
+        # Fun fact
         data = {i:j for (i, j) in zip(INFO.keys(), list(csv.reader(response.split("\n")))[0])}
         for i in [data["price"], data["close"], data["open"]]:
             try:
@@ -134,10 +135,13 @@ class Floor(models.Model):
     stocks = models.ManyToManyField(Stock)
     permissiveness = models.CharField(max_length=15, choices=PERMISSIVENESS_CHOICES, default=PERMISSIVE)
     owner = models.ForeignKey(User, null=True)
-    # The model for this ForeignKey is a string because it doesn't know what it is yet because it's down there. 
+
+    # By passsing the model for this as a string, we can make it be dynamically set and 
+    # thus get around the fact that we haven't actually defined that class yet (it's below)
     floorPlayer = models.ForeignKey("Player", related_name="FloorPlayer", null=True)
     public = models.BooleanField(default=True)
     num_stocks = models.IntegerField(default=10)
+
     def __str__(self):
         return self.name
     def leaders(self):
