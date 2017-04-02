@@ -46,6 +46,8 @@ class RemoteStockData:
             stockObj.symbol = stockObj.symbol.upper()
     def __str__(self):
         return "{} at {}".format(self.symbol, self.price)
+    def __repr__(self):
+        return str(self)
 
 class Stock(models.Model):
     company_name = models.CharField(max_length=50, default="", blank=True)
@@ -61,7 +63,8 @@ class Stock(models.Model):
         return not timezone.now() - self.last_updated > timedelta(minutes=15)
     def update(self):
         if not self.has_current_price():
-            Stock.remote_load_price(self.symbol).apply(self)
+            price = Stock.remote_load_price(self.symbol)
+            price.apply(self)
             self.last_updated = timezone.now()
             self.save()
             # The database normalizes the input to two decimal places and makes 
@@ -114,12 +117,15 @@ class Stock(models.Model):
         # I know dicts aren't ordered, but for an unchanging dict, dict.keys() is guaranteed to match up to dict.values()
         # Fun fact
         data = {i:j for (i, j) in zip(INFO.keys(), list(csv.reader(response.split("\n")))[0])}
-        for i in [data["price"], data["close"], data["open"]]:
+        possible_prices = [data["price"], data["close"], data["open"]]
+        for i in possible_prices:
             try:
                 price = float(i)
             except ValueError:
                 continue
             break
+        else:
+            raise StockAPIError("The stock {} has no price! Data is {}".format(symbol, str(data)))
         return RemoteStockData(data["symbol"], data["name"], price, data["change"])
 
 class Floor(models.Model):
