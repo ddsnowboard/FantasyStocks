@@ -52,6 +52,8 @@ class RemoteStockData:
 class Stock(models.Model):
     company_name = models.CharField(max_length=50, default="", blank=True)
     symbol = models.CharField(max_length=4)
+    # This 20 minute delta is there so that the update() method will actually get a new price the first time 
+    # it's called.
     last_updated = models.DateTimeField(default=timezone.now() - timedelta(minutes=20))
     image = models.ImageField(upload_to=get_upload_location, blank=True, default=settings.MEDIA_URL + "default")
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
