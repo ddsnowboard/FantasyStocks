@@ -206,3 +206,19 @@ Otherwise, it will return an error of the form:
 ```
 {"error": "That (username|password) doesn't exist"}
 ```
+
+### Android App Compatibility
+
+For the Android app, there is also an endpoint to register a Firebase Cloud Messaging registration token with a `User`.
+
+#### `POST /android/register/`
+
+This endpoint only demands the session id (in the GET querystring) and the `registrationToken`, in the POST data payload. If successful, it returns a message of the form:
+
+```
+{"success": "Your registration id was successfully registered with [username]"}
+```
+
+#### `POST android/deregister`
+
+This endpoint takes the same data as the `/register/` endpoint, but it removes the relation between the `registrationToken` and the `User`.
