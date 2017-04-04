@@ -200,7 +200,7 @@ def editAccount(request):
 
 @login_required
 def editFloor(request, pkFloor=None):
-    scripts = STANDARD_SCRIPTS + [static("common.js"), reverse("editFloorJS",kwargs={"pkFloor": pkFloor})]
+    scripts = STANDARD_SCRIPTS + [static("common.js"), reverse("editFloorJS", kwargs={"pkFloor": pkFloor})]
     if not pkFloor:
         raise RuntimeError("You didn't pass in a floor.")
     try:
