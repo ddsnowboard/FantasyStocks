@@ -11,15 +11,15 @@ So if you want to view the `Player` with key 111, you would use this:
 fantasystocks.herokuapp.com/api/v1/player/view/111
 ```
 
-Each action will return a similar payload across models, with the obvious exception of the actual data of the model, which will have a schema depending on which model is being queried and is detailed below.
+Some models have other models as fields. If those fields were sent as full representations, there would be infinite loops. To counteract this, full model representations will only be sent one level deep. For example, if the server sends a `Player` model to a client, the `floor` field will be an actual JSON object representing a `Floor`, with the `Floor`'s name, its `numStocks`, et cetera, but the array of `Player`s in that `Floor` will instead be an array of `id`s of `Player`s, not actual `Player` objects. Otherwise, since each `Player` has a reference to its `Floor`, and each `Floor` in turn has a list of `Player`s, this would cause an infinite recursion.
 
-Additionally, this API will handle authentication through the `auth` endpoints. This mechanism will be detaled further below, but put simply, the caller receives a temporary session key, which they pass to the endpoints as a GET parameter. This will be meaningless for some calls, optional for others, and for still others mandatory. POST requests, as a rule, demand a session key. GET requests usually will not, but sometimes the server will be able to supply more information if a session key is passed. Passing an unncessary session key will never cause an error, however.
+Authentication will be handled through the `auth` endpoints. This mechanism will be detaled further below, but put simply, the caller receives a temporary session key, which it passes to the endpoints as a GET parameter. This will be meaningless for some calls, optional for others, and for still others mandatory. POST requests, as a rule, demand a session id. GET requests usually will not, but sometimes the server will be able to supply more information if a session id is passed. Passing an unncessary session id will never cause an error, however, even if the session id is expired.
 
 ### Data Schemas
 
-As stated above, the API responses will be similar across models with the exception, obviously, of the actual model information. That part of each response will depend on the model in question and will be described here. 
+These schemas detail how each model will be serialized into JSON.
 
-*NB: The descriptions given here will be in a YAML-like format, but the actual responses coming across the wire will be in JSON.*
+*NB: The descriptions given here will be in a YAML-like format for easy reading, but the actual responses coming across the wire will be in JSON.*
 
 #### User
 
@@ -28,7 +28,7 @@ Note that this differs from a `Player` model in that one `User` maps to one actu
 ```
 - id (integer)
 - username (string)
-- playerIds (array of integers)
+- players (array of Players)
 ```
 
 #### Player
@@ -39,12 +39,12 @@ Also, `sentTrades` and `receivedTrades` only include `Trade`s that are still ali
 ```
 - id (integer)
 - userId (User)
-- floorId (integer)
-- stockIds (array of integers)
+- floor (Floor)
+- stocks (array of Stocks)
 - points (integer)
 - isFloor (boolean)
-- sentTradeIds (array of integers)
-- receivedTradeIds (array of integers)
+- sentTrades (array of Trades)
+- receivedTrades (array of Trades)
 - isFloorOwner (boolean)
 ```
 
@@ -57,7 +57,7 @@ Also, `sentTrades` and `receivedTrades` only include `Trade`s that are still ali
 - lastUpdated (ISO 8601 datetime string)
 - price (real)
 - change (real)
-- stockSuggestionIds (array of integers)
+- StockSuggestions (array of StockSuggestions)
 ```
 
 #### Floor
@@ -67,35 +67,37 @@ Note that `numStocks` is the maximum number of stocks that a `Player` on the flo
 ```
 - id (integer)
 - name (string)
-- stockIds (array of integers)
+- stocks (array of Stocks)
 - permissiveness (enum: either "Permissive", "Open", or "Closed", as a string)
 - owner (User)
-- floorPlayerId (integer)
+- floorPlayer (Player)
 - public (boolean)
 - numStocks (integer)
 ```
 
 #### Trade 
+
 Note that `recipientStocks` and `senderStocks` are the stocks that those players would give away in the trade
 
 ```
 - id (integer)
-- recipientPlayerId (integer)
-- recipientStockIds (array of integers)
-- senderPlayerId (integer)
-- senderStockIds (array of integers)
-- floorId (integer)
+- recipientPlayer (Player)
+- recipientStocks (array of Stocks)
+- senderPlayer (integer)
+- senderStocks (array of Stocks)
+- floor (Floor)
 - date (ISO 8601 datetime string)
 ```
 
 #### StockSuggestion
+
 This is the model that indicates to the owner of a `Floor` that someone wants a certain stock added to a floor. This can only happen when a certain floor has a permissiveness of "permissive;" if the floor is "open", stocks will be automatically added whenever a player wants them to, and if it is "closed", they can never be added by anyone.
 
 ```
 - id (integer)
-- stockId (integer)
-- requestingPlayerId (integer)
-- floorId (integer)
+- stock (Stock)
+- requestingPlayer (Player)
+- floor (Floor)
 - date (ISO 8601 datetime string)
 ```
 
