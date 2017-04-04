@@ -1,10 +1,14 @@
 .PHONY: vim templates test run tags
 FILES = fantasyStocks/fantasyStocks/settings.py fantasyStocks/fantasyStocks/urls.py fantasyStocks/stocks/admin.py fantasyStocks/stocks/models.py fantasyStocks/stocks/tests.py fantasyStocks/stocks/views.py fantasyStocks/stocks/stockUrls.py fantasyStocks/stocks/forms.py
+API_FILES = fantasyStocks/stocksApi/admin.py fantasyStocks/stocksApi/apps.py fantasyStocks/stocksApi/models.py fantasyStocks/stocksApi/tests.py fantasyStocks/stocksApi/urls.py fantasyStocks/stocksApi/views.py
 
 all: 
 	vim fantasyStocks/stocks/templates/* fantasyStocks/static/* $(FILES)
 vim : 
 	vim $(FILES)
+
+api:
+	vim $(API_FILES)
 templates : 
 	vim fantasyStocks/stocks/templates/* fantasyStocks/static/*
 test : fantasyStocks/db.sqlite3
