@@ -177,3 +177,30 @@ Accepts the given `stockSuggestion`. This needs a session id that belongs to the
 ```
 {"success": "The stockSuggestion was successfully accepted"}
 ```
+
+### Auth
+
+The auth system will work based on logins and session ids. Session ids will be tied to a `User` object and will expire after a time. Except when the session id is meaningless, passing an expired session token will cause an error of the form:
+
+```
+{"authError": "The session id you passed is either expired or never existed"}
+```
+
+Receiving this error means that you should get another session key.
+
+#### `POST /auth/getKey/`
+
+No id is passed to this endpoint; rather, a `username` and a `password` should be passed in the POST body. If they match a `User` in the database, the server will send a response of the form:
+
+```
+{
+    "sessionId": "1234567890",
+    "user": {// This is a user object}
+}
+```
+
+Otherwise, it will return an error of the form:
+
+```
+{"error": "That (username|password) doesn't exist"}
+```
