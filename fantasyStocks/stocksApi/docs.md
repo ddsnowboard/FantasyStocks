@@ -38,7 +38,7 @@ Also, `sentTrades` and `receivedTrades` only include `Trade`s that are still ali
 
 ```
 - id (integer)
-- userId (User)
+- user (User)
 - floor (Floor)
 - stocks (array of Stocks)
 - points (integer)
@@ -115,31 +115,31 @@ Note that, while some objects are available to anyone, there are some that are p
 
 #### `POST /create/`
 
-This creates an instance of the given model. Note that no `id` needs to be passed to this. You do need to pass the session key of a user that is allowed to create the desired model in the query string, and the POST data should be the JSON representation of the model just as if it were returned from the API, with the exception of `id` and some other fields, depending on the model. 
+This creates an instance of the given model. Note that no `id` needs to be passed to this. You do need to pass the session key of a user that is allowed to create the desired model in the query string, and the POST data should be the JSON representation of the model just as if it were returned from the API, with the exception of `id` and some other fields, depending on the model. Any fields that would contain models in `/view/` responses must hold `id`s or arrays of `id`s to appropirate models in `/create/` calls.
 
  - `User`s
-    - `playerIds` must not be passed
+    - `players` must not be passed
     - `email` can be passed optionally, will default to empty 
     - `password` must be passed
   - `Player`s
-    - `stockIds` can be passed optionally, will default to empty
+    - `stocks` can be passed optionally, will default to empty
     - `points` cannot be passed
     - `isFloor` cannot be passed
-    - `sentTradeIds` cannot be passed
-    - `receivedTradeIds` cannot be passed
+    - `sentTrades` cannot be passed
+    - `receivedTrades` cannot be passed
     - `isFloorOwner` cannot be passed
  - `Stock`s
     - `lastUpdated` cannot be passed
     - `price` cannot be passed
     - `change` cannot be passed
-    - `stockSuggestionIds` cannot be passed
+    - `stockSuggestions` cannot be passed
  - `Floor`s
-    - `stockIds` can be passed optionally, defaults to empty
+    - `stocks` can be passed optionally, defaults to empty
     - `owner` must be passed as an integer, the id of the owner
-    - `floorPlayerId` cannot be passed
+    - `floorPlayer` cannot be passed
  - `Trade`s
-    - `recipientStockIds` must be passed, but it can be empty
-    - `senderStockIds` must be passed, but it can be empty
+    - `recipientStocks` must be passed, but it can be empty
+    - `senderStocks` must be passed, but it can be empty
     - `date` is optional (and frankly discouraged), defaults to the current time
  - `StockSuggestion`s
     - `date` is optional (and frankly discouraged), defaults to the current time
