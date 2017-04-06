@@ -2,8 +2,10 @@
 
 This API will allow access to the main models of FantasyStocks: `User`s, `Player`s, `Stock`s, `Floor`s, `Trade`s, and `StockSuggestion`s. They will all allow a set of common actions, and some will have special actions that apply to only that model. To prevent excessive redundancy, this documentation will include just one instance of each common action. For both common and special actions, the URL will be built up as follows:
 ```
-/model_name/action/id
+/model_name/action/[id]
 ```
+
+Not passing an `id` just does the action to all the instances of that model.
 
 So if you want to view the `Player` with key 111, you would use this:
 
