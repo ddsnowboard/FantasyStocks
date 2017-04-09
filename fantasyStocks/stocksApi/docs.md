@@ -117,7 +117,7 @@ Note that, while some objects are available to anyone, there are some that are p
 
 #### `POST /create/`
 
-This creates an instance of the given model. Note that no `id` needs to be passed to this. You do need to pass the session key of a user that is allowed to create the desired model in the query string, and the POST data should be the JSON representation of the model just as if it were returned from the API, with the exception of `id` and some other fields, depending on the model. Any fields that would contain models in `/view/` responses must hold `id`s or arrays of `id`s to appropirate models in `/create/` calls.
+This creates an instance of the given model. Note that no `id` needs to be passed to this. You do need to pass the session key of a user that is allowed to create the desired model in the GET query string, and the POST data should be the JSON representation of the model just as if it were returned from the API, with the exception of `id` and some other fields, depending on the model. Any fields that would contain models in `/view/` responses must hold `id`s or arrays of `id`s to appropirate models in `/create/` calls.
 
  - `User`s
     - `players` must not be passed
