@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.http import JsonResponse
 from stocks.models import *
 from stocksApi.models import SessionId
 
-# Create your views here.
+def getDNEError():
+    return JsonResponse({"error": "That object could not be found"})
 
 def getAuthError():
     return JsonResponse({"error": "Your session id is old or never existed. You should get a new one"})
@@ -15,6 +17,14 @@ def getPermError():
 def getParamError():
     return JsonResponse({"error": "You gave the wrong parameters"})
 
+def getUser(request):
+    sessionId = request.GET.get("sessionId", None)
+    if not sessionId:
+        return None
+    try:
+        user = SessionId.objects.get(id_string=sessionId).associated_user
+    except ObjectDoesNotExist:
+        return None
 
 
 def getObject(klass, pk):
@@ -25,12 +35,12 @@ def getObject(klass, pk):
             return [o.toJSON() for o in klass.objects.all()]
     else:
         try:
-            obj = klass.get(pk=pk)
+            obj = klass.objects.get(pk=pk)
             if klass == User:
                 return userJSON(obj)
             else:
                 return obj.toJSON()
-        except ObjectDoeNotExist:
+        except ObjectDoesNotExist:
             return {"error": "That object could not be found"}
 
 
@@ -78,10 +88,40 @@ def viewStock(request, pkStock = None):
     return JsonResponse(getObject(Stock, pkUser), safe=False)
 
 def viewTrade(request, pkTrade = None):
-    return JsonResponse(getObject(Trade, pkTrade), safe=False)
+    user = getUser(request)
+    if not user:
+        return getPermError()
+    if not pkTrade:
+        trades = [o.toJson() for o in Trade.objects.filter(Q(sender=user) | Q(recipient=user))]
+        return JsonResponse(trades)
+
+    if not user:
+        return getPermError()
+    try:
+        oTrade = Trade.objects.get(id=pkTrade)
+    except ObjectDoeNotExist:
+        return getDNEError()
+    if tradeInvolvesUser(oTrade, user):
+        return JsonResponse(getObject(Trade, pkTrade), safe=False)
+    else:
+        return getPermError()
 
 def viewStockSuggestion(request, pkSuggestion = None):
-    return JsonResponse(getObject(StockSuggestion, pkSuggestion), safe=False)
+    user = getUser(request)
+    if not user:
+        return getPermError()
+    if not pkSuggestion:
+        suggestions = StockSuggestion.objects.filter(floor__owner=user)
+        return JsonResponse(suggestions)
+
+    try:
+        suggestion = StockSuggestion.objects.get(id=pkSuggestion)
+    except ObjectDoeNotExist:
+        return getDNEError()
+    if user == suggestion.floor.owner:
+        return JsonResponse(getObject(StockSuggestion, pkSuggestion), safe=False)
+    else:
+        return getPermError()
 
 def viewFloor(request, pkFloor = None):
     return JsonResponse(getObject(Floor, pkFloor), safe=False)
