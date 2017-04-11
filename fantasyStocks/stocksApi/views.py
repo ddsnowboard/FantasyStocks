@@ -5,17 +5,24 @@ from django.http import JsonResponse
 from stocks.models import *
 from stocksApi.models import SessionId
 
+def getError(message):
+    return JsonResponse({"error": message})
+
+
 def getDNEError():
-    return JsonResponse({"error": "That object could not be found"})
+    return getError("That object could not be found")
 
 def getAuthError():
-    return JsonResponse({"error": "Your session id is old or never existed. You should get a new one"})
+    return getError("Your session id is old or never existed. You should get a new one")
 
 def getPermError():
-    return JsonResponse({"error": "You don't have permission to see that"})
+    return getError("You don't have permission to see that")
 
-def getParamError():
-    return JsonResponse({"error": "You gave the wrong parameters"})
+def getParamError(lacking = None):
+    retval = getError("You gave the wrong parameters." + 
+                      ("{} is/are missing".format(lacking)) if lacking else "")
+    return JsonResponse({"error": "You gave the wrong parameters", "wrongParams": lacking})
+
 
 def getUser(request):
     sessionId = request.GET.get("sessionId", None)
