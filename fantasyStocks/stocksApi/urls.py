@@ -13,7 +13,6 @@ urlpatterns = [
     
     url("stock/view/([0-9]+)", views.viewStock, name="viewStock"),
     url("stock/view/", views.viewStock, name="viewAllStocks"),
-    # url("stock/create/", views.createStock, name="createStock"), 
     
     url("trade/view/([0-9]+)", views.viewTrade, name="viewTrade"),
     url("trade/view/", views.viewTrade, name="viewAllTrades"),
