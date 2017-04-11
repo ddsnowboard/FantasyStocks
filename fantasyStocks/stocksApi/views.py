@@ -159,7 +159,7 @@ def createPlayer(request):
         return getPermError()
     else:
         sessionId = SessionId.objects.get(get["sessionId"])
-        if not sessionId.associated_user.pk = post["user"]:
+        if not sessionId.associated_user.pk == post["user"]:
             return getPermError()
         playerData["user"] = User.objects.get(pk=post["user"])
 
