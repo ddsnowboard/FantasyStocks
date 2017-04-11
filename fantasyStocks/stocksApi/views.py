@@ -1,3 +1,4 @@
+import dateutil.parser
 from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -179,6 +180,39 @@ def createPlayer(request):
     newPlayer.save()
     newPlayer.refresh_from_db()
     return JsonResponse(newPlayer.toJSON())
+
+def createTrade(request):
+    tradeData = {}
+    get = request.GET
+    post = request.POST
+    if not get.get("sessionId", None):
+        return getAuthError()
+    else:
+        try:
+            user = SessionId.objects.get(get["sessionId"]).associated_user
+        except ObjectDoeNotExist:
+            return getAuthError()
+    try:
+        tradeData["sender"] = Player.objects.get(post["senderPlayer"])
+        tradeData["recipient"] = Player.objects.get(post["recipientPlayer"])
+        if post.get("date", None):
+            tradeData["date"] = dateutil.parser.parse(post["date"])
+    except KeyError:
+        return getParamError("senderPlayer or recipientPlayer")
+    except ObjectDoeNotExist:
+        return getError("One of those players does not exist")
+
+    # I need to redo how stocks are added, I think. The docs are too loosy-goosy. 
+    # I need to make it clear what an empty list means, and make sure that 
+    # both lists aren't empty.
+    ***************
+    if type(post.get("senderStocks", "this is an impossible value")) != type([]):
+        return getParamError("senderStocks")
+    if type(post.get("recipientStocks", "this is an impossible value")) != type([]):
+        return getParamError("recipientStocks")
+
+    newTrade = Trade(**tradeData)
+
 
 
 def getToken(request):

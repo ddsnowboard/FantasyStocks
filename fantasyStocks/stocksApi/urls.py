@@ -16,7 +16,7 @@ urlpatterns = [
     
     url("trade/view/([0-9]+)", views.viewTrade, name="viewTrade"),
     url("trade/view/", views.viewTrade, name="viewAllTrades"),
-    # url("trade/create/", views.createTrade, name="createTrade"), 
+    url("trade/create/", views.createTrade, name="createTrade"), 
     
     url("stockSuggestion/view/([0-9]+)", views.viewStockSuggestion, name="viewStockSuggestion"),
     url("stockSuggestion/view/", views.viewStockSuggestion, name="viewAllStockSuggestions"),
