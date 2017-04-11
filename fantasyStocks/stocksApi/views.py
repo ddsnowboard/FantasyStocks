@@ -133,6 +133,54 @@ def viewStockSuggestion(request, pkSuggestion = None):
 def viewFloor(request, pkFloor = None):
     return JsonResponse(getObject(Floor, pkFloor), safe=False)
 
+def createUser(request):
+    data = request.POST
+    userDict = {}
+    if data.get("players", None):
+        return getParamError("players")
+    if data.get("email", None):
+        userDict["email"] = data["email"]
+    if data.get("password", None):
+        userDict["password"] = data["password"]
+    else:
+        return getParamError("password")
+
+    return JsonResponse(userJSON(User.objects.create_user(**userDict)))
+
+def createPlayer(request):
+    post = request.POST
+    get = request.GET
+    playerData = {}
+    for badData in ["points", "isFloor", "sentTrades", "receivedTrades", "isFloorOwner"]:
+        if post.get(badData, None):
+            return getParamError(badData)
+
+    if not get.get("sessionId", None):
+        return getPermError()
+    else:
+        sessionId = SessionId.objects.get(get["sessionId"])
+        if not sessionId.associated_user.pk = post["user"]:
+            return getPermError()
+        playerData["user"] = User.objects.get(pk=post["user"])
+
+    if post.get("floor", None):
+        playerData["floor"] = Floor.object.get(pk=post["floor"])
+    else:
+        return getParamError("floor")
+    if Player.objects.filter(**playerData).exists():
+        return getError("That player already exists")
+
+    newPlayer = Player(**playerData)
+    if post.get("stocks", None):
+        stockIds = post.get["stocks"]
+        for id in stockIds:
+            newPlayer.stocks.add(Stock.objects.get(pk=id))
+
+    newPlayer.save()
+    newPlayer.refresh_from_db()
+    return JsonResponse(newPlayer.toJSON())
+
+
 def getToken(request):
     if not (request.POST.get('username', None) and request.POST.get('password', None)):
         return getParamError()

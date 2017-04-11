@@ -5,11 +5,11 @@ from . import views
 urlpatterns = [
     url("user/view/([0-9]+)/", views.viewUser, name="viewUser"),
     url("user/view/", views.viewUser, name="viewAllUsers"),
-    # url("user/create/", views.createUser, name="createUser"), 
+    url("user/create/", views.createUser, name="createUser"), 
     
     url("player/view/([0-9]+)", views.viewPlayer, name="viewPlayer"),
     url("player/view/", views.viewPlayer, name="viewAllPlayers"),
-    # url("player/create/", views.createPlayer, name="createPlayer"), 
+    url("player/create/", views.createPlayer, name="createPlayer"), 
     
     url("stock/view/([0-9]+)", views.viewStock, name="viewStock"),
     url("stock/view/", views.viewStock, name="viewAllStocks"),
