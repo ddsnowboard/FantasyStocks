@@ -234,21 +234,18 @@ def createTrade(request):
 
 def createStockSuggestion(request):
     post = request.POST
-    suggestionData = {}
     get = request.GET
+    suggestionData = {}
+
     if not get.get("sessionId", None):
         return getAuthError()
     user = SessionId.objects.get(id_string=get["sessionId"]).associated_user 
+
     if not post.get("stock", None):
         return getParamError("stock")
     else:
         suggestionData["stock"] = Stock.objects.get(pk=post["stock"])
     
-    if not post.get("requestingPlayer", None):
-        return getParamError("requestingPlayer")
-    else:
-        suggestionData["requesting_player"] = Player.objects.get(pk=post["requestingPlayer"])
-
     if not post.get("requestingPlayer", None):
         return getParamError("requestingPlayer")
     else:
@@ -263,10 +260,56 @@ def createStockSuggestion(request):
         return getError("That floor doesn't match the player")
     if not suggestionData["floor"].permissiveness == Floor.PERMISSIVE:
         return getError("That floor doesn't support StockSuggestions")
-    *********************
-    # Finish this up (put in database, do other checks, etc
+    if not suggestionData["requesting_player"].user == user:
+        return getError("That player does not match the sessionId you gave.")
 
+    newSuggestion = StockSuggestions(**suggestionData)
+    newSuggestion.save()
+    newSuggestion.refresh_from_db()
+    return JsonResponse(newSuggestion.toJSON())
 
+def createFloor(request):
+    post = request.POST
+    get = request.GET
+    floorData = {}
+
+    if not post.get("name", None):
+        return getParamError("name")
+    else:
+        floorData["name"] = post["name"]
+
+    if type(post.get("stocks", [])) != type([]):
+        return getParamError("stocks")
+    else:
+        floorData["stocks"] = [Stock.objects.get(pk=i) for i in post.get("stocks", [])]
+
+    if not post.get("permissiveness", "") in ["Permissive", "Open", "Closed"]:
+        return getParamError("permissiveness")
+    else:
+        floorData["permissiveness"] = post["permissiveness"]
+
+    if not post.get("owner", None):
+        return getParamError("owner")
+    else:
+        floorData["owner"] = User.objects.get(post["owner"])
+
+    try:
+        floorData["public"] = post["public"]
+        if type(floorData["public"]) != type(False):
+            return getParamError("public")
+    except KeyError:
+        return getParamError("public")
+
+    if not post.get("numStocks", None):
+        return getParamError("numStocks")
+    else:
+        floorData["num_stocks"] = post["numStocks"]
+
+    newFloor = Floor(**floorData)
+    newFloor.save()
+    newFloor.refresh_from_db()
+
+    return JsonResponse(newFloor.toJSON())
 
 def getToken(request):
     if not (request.POST.get('username', None) and request.POST.get('password', None)):
