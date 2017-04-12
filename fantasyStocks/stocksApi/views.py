@@ -229,7 +229,7 @@ def createTrade(request):
         return getError(str(e))
 
     newTrade.refresh_from_db()
-    return newTrade.toJSON()
+    return JsonResponse(newTrade.toJSON())
 
 
 def createStockSuggestion(request):
