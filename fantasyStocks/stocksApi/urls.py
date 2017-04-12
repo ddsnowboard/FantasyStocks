@@ -27,4 +27,7 @@ urlpatterns = [
     url("floor/create/", views.createFloor, name="createFloor"), 
 
     url("auth/getKey", views.getToken, name="getKey"),
+
+    url("android/register/", views.registerToken, name="registerToken"), 
+    url("android/deregister/", views.deregisterToken, name="deregisterToken"), 
 ]

@@ -119,3 +119,5 @@ FIXTURE_DIRS = [os.path.join(BASE_DIR, "/stocks/fixtures/")]
 
 EMAIL_HOST = "aspmx.l.google.com"
 EMAIL_PORT = 25
+
+FCM_TOKEN = os.environ["FCM_TOKEN"]

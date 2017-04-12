@@ -1,3 +1,5 @@
+from urllib import request, parse
+from django.conf import settings
 from django.db import models
 from random import choice 
 from datetime import datetime, timedelta, timezone
@@ -22,3 +24,25 @@ class SessionId(models.Model):
     
     def is_expired(self):
         return datetime.now(timezone.utc) > self.exp_date
+
+class AndroidToken(models.Model):
+    URL = "https://fcm.googleapis.com/fcm/send"
+    TOKEN = settings.FCM_TOKEN
+    FIREBASE_ID_KEY_LENGTH = 200
+    user = models.ForeignKey(User, null=False)
+    token = models.CharField(max_length=FIREBASE_ID_KEY_LENGTH, null=False)
+
+    @staticmethod
+    def pingUser(user, title, message):
+        tokens = AndroidToken.object.filter(user=user)
+        for t in tokens:
+            t.ping(title, message)
+
+    def ping(self, title, message):
+        SUCCESS == 200
+        headers = {"Authorization": "key=" + key, "Content-Type": "application/json"}
+        data = dumps({"to": self.token, "notification": {"title": title, "message": message}})
+        rq = request.Request(URL, data=data.encode("UTF-8"), headers=headers)
+        response = request.urlopen(rq)
+        if not response.status == 200:
+            raise RuntimeError(response.read())

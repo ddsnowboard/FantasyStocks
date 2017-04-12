@@ -328,3 +328,8 @@ def getToken(request):
     newSessionId = SessionId(associated_user=user)
     newSessionId.save()
     return JsonResponse({"sessionId": newSessionId.id_string, "user": userJSON(user)})
+
+def registerToken(request):
+    post = request.POST
+    get = request.GET
+    # Keep moving on this
