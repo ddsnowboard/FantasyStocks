@@ -219,6 +219,6 @@ This endpoint only demands the session id (in the GET querystring) and the `regi
 {"success": "Your registration id was successfully registered with [username]"}
 ```
 
-#### `POST android/deregister`
+#### `POST /android/deregister/`
 
 This endpoint takes the same data as the `/register/` endpoint, but it removes the relation between the `registrationToken` and the `User`.
