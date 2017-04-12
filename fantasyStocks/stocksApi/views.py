@@ -202,16 +202,34 @@ def createTrade(request):
     except ObjectDoeNotExist:
         return getError("One of those players does not exist")
 
-    # I need to redo how stocks are added, I think. The docs are too loosy-goosy. 
-    # I need to make it clear what an empty list means, and make sure that 
-    # both lists aren't empty.
-    ***************
     if type(post.get("senderStocks", "this is an impossible value")) != type([]):
         return getParamError("senderStocks")
+    else:
+        senderStocks = [Stock.objects.get(pk=i) for i in post["senderStocks"]]
+
     if type(post.get("recipientStocks", "this is an impossible value")) != type([]):
         return getParamError("recipientStocks")
+    else:
+        recipientStocks = [Stock.objects.get(pk=i) for i in post["recipientStocks"]]
+
+    if not (senderStocks or recipientStocks):
+        return getParamError("recipientStocks or senderStocks")
 
     newTrade = Trade(**tradeData)
+    for i in senderStocks:
+        newTrade.senderStocks.objects.add(i)
+
+    for i in recipientStocks:
+        newTrade.recipientStocks.objects.add(i)
+
+    newTrade.save()
+    try:
+        newTrade.verify()
+    except (TradeError, RuntimeError) as e:
+        return getError(str(e))
+
+    newTrade.refresh_from_db()
+    return newTrade.toJSON()
 
 
 
