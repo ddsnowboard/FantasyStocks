@@ -139,7 +139,8 @@ Also, `Stock`s can only be created by the system, so a client cannot call `/stoc
  - `Trade`s
     - `recipientStocks` must be passed, but it can be empty
     - `senderStocks` must be passed, but it can be empty
-    - `date` is optional (and frankly discouraged), defaults to the current time
+    - One of `senderStocks` or `recipientStocks` must have something in it.
+    - `date` cannot be passed
  - `StockSuggestion`s
     - `date` is optional (and frankly discouraged), defaults to the current time
 
