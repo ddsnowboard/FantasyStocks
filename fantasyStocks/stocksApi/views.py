@@ -232,6 +232,41 @@ def createTrade(request):
     return newTrade.toJSON()
 
 
+def createStockSuggestion(request):
+    post = request.POST
+    suggestionData = {}
+    get = request.GET
+    if not get.get("sessionId", None):
+        return getAuthError()
+    user = SessionId.objects.get(id_string=get["sessionId"]).associated_user 
+    if not post.get("stock", None):
+        return getParamError("stock")
+    else:
+        suggestionData["stock"] = Stock.objects.get(pk=post["stock"])
+    
+    if not post.get("requestingPlayer", None):
+        return getParamError("requestingPlayer")
+    else:
+        suggestionData["requesting_player"] = Player.objects.get(pk=post["requestingPlayer"])
+
+    if not post.get("requestingPlayer", None):
+        return getParamError("requestingPlayer")
+    else:
+        suggestionData["requesting_player"] = Player.objects.get(pk=post["requestingPlayer"])
+
+    if not post.get("floor", None):
+        return getParamError("floor")
+    else:
+        suggestionData["floor"] = Floor.objects.get(pk=post["floor"])
+
+    if not suggestionData["requesting_player"].floor == suggestionData["floor"]:
+        return getError("That floor doesn't match the player")
+    if not suggestionData["floor"].permissiveness == Floor.PERMISSIVE:
+        return getError("That floor doesn't support StockSuggestions")
+    *********************
+    # Finish this up (put in database, do other checks, etc
+
+
 
 def getToken(request):
     if not (request.POST.get('username', None) and request.POST.get('password', None)):

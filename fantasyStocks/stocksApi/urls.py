@@ -20,7 +20,7 @@ urlpatterns = [
     
     url("stockSuggestion/view/([0-9]+)", views.viewStockSuggestion, name="viewStockSuggestion"),
     url("stockSuggestion/view/", views.viewStockSuggestion, name="viewAllStockSuggestions"),
-    # url("stockSuggestion/create/", views.createStockSuggestion, name="createStockSuggestion"), 
+    url("stockSuggestion/create/", views.createStockSuggestion, name="createStockSuggestion"), 
     
     url("floor/view/([0-9]+)", views.viewFloor, name="viewFloor"),
     url("floor/view/", views.viewFloor, name="viewAllFloors"),
