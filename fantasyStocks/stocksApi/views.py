@@ -332,4 +332,33 @@ def getToken(request):
 def registerToken(request):
     post = request.POST
     get = request.GET
-    # Keep moving on this
+    if not get.get("sessionId", None):
+        return getPermError()
+    else:
+        user = SessionId.objects.get(get["sessionId"]).associated_user
+
+    if not post.get("registrationToken", None):
+        return getParamError("registrationToken")
+    else:
+        token = AndroidToken(user=user, token=post["registrationToken"])
+        token.save()
+        return JsonResponse({"success": "Your registration id was successfully registered with {}".format(user.username)})
+
+def deregisterToken(response):
+    post = request.POST
+    get = request.GET
+    if not get.get("sessionId", None):
+        return getPermError()
+    else:
+        user = SessionId.objects.get(get["sessionId"]).associated_user
+
+    if not post.get("registrationToken", None):
+        return getParamError("registrationToken")
+    else:
+        token = AndroidToken.objects.get(token=post["registrationToken"])
+        if not token.user == user:
+            return getError("That token and your reigstration id don't match")
+        else:
+            token.delete()
+        return JsonResponse({"success": "Your registration id was successfully deleted from {}".format(user.username)})
+
