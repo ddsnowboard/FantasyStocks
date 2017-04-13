@@ -29,6 +29,37 @@ class ViewingTests(TestCase):
 
     def test_view_simple(self):
         c = Client()
-        user = User.objects.all()[0]
-        c.get(reverse("viewUser", args=(user.pk, )))
+        user = User.objects.first()
+        response = c.get(reverse("viewUser", args=(user.pk, )))
         # Make sure that this returns the one user we asked for
+        jsonObj = loads(response.content.decode("UTF-8"))
+        self.assertEquals(jsonObj, userJSON(user))
+
+    def test_bad_view(self):
+        c = Client()
+        badPk = User.objects.all().order_by("pk").last().pk + 1
+        response = c.get(reverse("viewUser", args=(badPk, )))
+        jsonObj = loads(response.content.decode("UTF-8"))
+        if not "error" in jsonObj:
+            self.fail()
+
+    def test_all_players_blocks_trades(self):
+        c = Client()
+        response = c.get(reverse("viewAllPlayers"))
+        jsonObj = loads(response.content.decode("UTF-8"))
+        for i in jsonObj:
+            self.assertFalse(i["sentTrades"])
+            self.assertFalse(i["receivedTrades"])
+
+        player = Player.objects.all().first()
+        session = SessionId.objects.filter(associated_user=player.user).first()
+        response = c.get(reverse("viewPlayer")+"?sessionId=" + session.id_string)
+        jsonObj = loads(response.content.decode("UTF-8"))
+        for i in jsonObj:
+            if i["id"] != player.id:
+                self.assertFalse(i["sentTrades"])
+                self.assertFalse(i["receivedTrades"])
+            else:
+                self.assertTrue(i["sentTrades"])
+                self.assertTrue(i["receivedTrades"])
+

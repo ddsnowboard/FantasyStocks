@@ -30,7 +30,12 @@ def getUser(request):
     if not sessionId:
         return None
     try:
-        user = SessionId.objects.get(id_string=sessionId).associated_user
+        id = SessionId.objects.get(id_string=sessionId)
+        if not id.is_expired():
+            return id.associated_user
+        else:
+            id.delete()
+            return None
     except ObjectDoesNotExist:
         return None
 
@@ -64,15 +69,7 @@ def viewUser(request, pkUser = None):
 def viewPlayer(request, pkPlayer = None):
     # A user shouldn't be privy to other users' trades.
     retval = getObject(Player, pkUser)
-    user = None
-    if not request.GET.get("sessionId", None):
-        sessionId = SessionId.objects.filter(id_string=request.GET["sessionId"]).order_by("-exp_date")
-        if sessionId:
-            sessionId = sessionId[0]
-            if not sessionId.is_expired():
-                user = sessionId.associated_user
-            else:
-                sessionId.delete()
+    user = getUser(request)
 
     if type(retval) == type([]):
         for p in retval:
@@ -80,14 +77,14 @@ def viewPlayer(request, pkPlayer = None):
             if playerUser == user:
                 continue
             else:
-                filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
+                p["receivedTrades"] = filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
                        p["receivedTrades"])
-                filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
+                p["sentTrades"] = filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
                        p["sentTrades"])
     else:
-        filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
+        p["receivedTrades"] = filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
                 retval["receivedTrades"])
-        filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
+        p["sentTrades"] =  filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
                 retval["sentTrades"])
 
     return JsonResponse(retval, safe=False)
@@ -156,13 +153,13 @@ def createPlayer(request):
         if post.get(badData, None):
             return getParamError(badData)
 
-    if not get.get("sessionId", None):
+    user = getUser(request)
+    if not user:
         return getPermError()
     else:
-        sessionId = SessionId.objects.get(get["sessionId"])
-        if not sessionId.associated_user.pk == post["user"]:
+        if not user.pk == post["user"]:
             return getPermError()
-        playerData["user"] = User.objects.get(pk=post["user"])
+        playerData["user"] = user
 
     if post.get("floor", None):
         playerData["floor"] = Floor.object.get(pk=post["floor"])
@@ -185,13 +182,10 @@ def createTrade(request):
     tradeData = {}
     get = request.GET
     post = request.POST
-    if not get.get("sessionId", None):
-        return getAuthError()
-    else:
-        try:
-            user = SessionId.objects.get(get["sessionId"]).associated_user
-        except ObjectDoeNotExist:
-            return getAuthError()
+    user = getUser(request)
+    if not user:
+        return getPermError()
+
     try:
         tradeData["sender"] = Player.objects.get(post["senderPlayer"])
         tradeData["recipient"] = Player.objects.get(post["recipientPlayer"])
@@ -237,9 +231,9 @@ def createStockSuggestion(request):
     get = request.GET
     suggestionData = {}
 
-    if not get.get("sessionId", None):
+    user = getUser(request)
+    if not user:
         return getAuthError()
-    user = SessionId.objects.get(id_string=get["sessionId"]).associated_user 
 
     if not post.get("stock", None):
         return getParamError("stock")
@@ -316,14 +310,13 @@ def getToken(request):
         return getParamError()
     username = request.POST["username"]
     password = request.POST["password"]
-    user = User.objects.filter(username=username)
-    if not user:
+    try:
+        user = User.objects.get(username=username)
+    except ObjectDoeNotExist:
         return JsonResponse({"error": "That username doesn't exist"})
-    else:
-        user = user[0]
 
     if not user.check_password(password):
-        return JsonResponse({"error": "That password doesn't exist"})
+        return JsonResponse({"error": "That password is wrong"})
 
     newSessionId = SessionId(associated_user=user)
     newSessionId.save()
@@ -332,10 +325,9 @@ def getToken(request):
 def registerToken(request):
     post = request.POST
     get = request.GET
-    if not get.get("sessionId", None):
+    user = getUser()
+    if not user:
         return getPermError()
-    else:
-        user = SessionId.objects.get(get["sessionId"]).associated_user
 
     if not post.get("registrationToken", None):
         return getParamError("registrationToken")
@@ -344,13 +336,12 @@ def registerToken(request):
         token.save()
         return JsonResponse({"success": "Your registration id was successfully registered with {}".format(user.username)})
 
-def deregisterToken(response):
+def deregisterToken(request):
     post = request.POST
     get = request.GET
-    if not get.get("sessionId", None):
+    user = getUser(request)
+    if not user:
         return getPermError()
-    else:
-        user = SessionId.objects.get(get["sessionId"]).associated_user
 
     if not post.get("registrationToken", None):
         return getParamError("registrationToken")
