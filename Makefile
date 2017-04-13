@@ -26,3 +26,6 @@ freezeDB :
 
 fantasyStocks/db.sqlite3 : 
 	$(MAKE) cloneDB
+
+failFast : fantasyStocks/db.sqlite3
+	python3 ./fantasyStocks/manage.py test ./fantasyStocks/ --failfast
