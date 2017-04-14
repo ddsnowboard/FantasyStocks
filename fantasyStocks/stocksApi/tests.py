@@ -130,3 +130,27 @@ class ViewingTests(TestCase):
         returnedTrades = [Trade.objects.get(pk=i["id"]) for i in loads(response.content.decode("UTF-8"))]
         for i in returnedTrades:
             self.assertTrue(i.sender == playerWithTrade or i.recipient == playerWithTrade)
+
+    def test_stock_suggestions_only_shows_to_owner(self):
+        c = Client()
+        response = c.get(reverse("viewAllStockSuggestions"))
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+
+        permissiveFloor = Floor.objects.filter(permissiveness="permissive").first()
+        # Invent a new stockSuggestion because there are none in the database
+        goodSuggestion = StockSuggestion(stock=Stock.objects.filter(floor__
+        owner = permissiveFloor.owner
+        goodSessionId = SessionId(associated_user=owner)
+        goodSessionId.save()
+
+        badOwner = Floor.objects.all().exclude(permissiveness="permissive").first().owner
+        badSessionId = SessionId(associated_user=badOwner)
+        badSessionId.save()
+
+        response = c.get(reverse("viewStockSuggestion", args=(goodSuggestion.pk, )) + "?sessionId={}".format(badSessionId.id_string))
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+
+        response = c.get(reverse("viewStockSuggestion", args=(goodSuggestion.pk, )) + "?sessionId={}".format(goodSessionId.id_string))
+        self.assertEquals(loads(response.content.decode("UTF-8")), loads(JsonResponse(goodSuggestion.toJSON()).content.decode("UTF-8")))
