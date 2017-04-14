@@ -68,24 +68,24 @@ def viewUser(request, pkUser = None):
 
 def viewPlayer(request, pkPlayer = None):
     # A user shouldn't be privy to other users' trades.
-    retval = getObject(Player, pkUser)
+    retval = getObject(Player, pkPlayer)
     user = getUser(request)
 
     if type(retval) == type([]):
         for p in retval:
-            playerUser = Player.get(pk=p['id'])
+            playerUser = Player.objects.get(pk=p['id'])
             if playerUser == user:
                 continue
             else:
-                p["receivedTrades"] = filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
-                       p["receivedTrades"])
-                p["sentTrades"] = filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
-                       p["sentTrades"])
+                p["receivedTrades"] = list(filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
+                       p["receivedTrades"]))
+                p["sentTrades"] = list(filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
+                       p["sentTrades"]))
     else:
-        p["receivedTrades"] = filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
-                retval["receivedTrades"])
-        p["sentTrades"] =  filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
-                retval["sentTrades"])
+        retval["receivedTrades"] = list(filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
+                retval["receivedTrades"]))
+        retval["sentTrades"] =  list(filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
+                retval["sentTrades"]))
 
     return JsonResponse(retval, safe=False)
 
