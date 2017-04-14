@@ -97,8 +97,8 @@ def viewTrade(request, pkTrade = None):
     if not user:
         return getPermError()
     if not pkTrade:
-        trades = [o.toJson() for o in Trade.objects.filter(Q(sender=user) | Q(recipient=user))]
-        return JsonResponse(trades)
+        trades = [o.toJSON() for o in Trade.objects.filter(Q(sender__user=user) | Q(recipient__user=user))]
+        return JsonResponse(trades, safe=False)
 
     if not user:
         return getPermError()

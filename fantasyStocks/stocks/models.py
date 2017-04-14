@@ -428,11 +428,11 @@ class Trade(models.Model):
         retval = {}
         retval['id'] = self.pk
         retval['recipientPlayer'] = self.recipient.toShortJSON()
-        retval['recipientStocks'] = [s.toShortJSON() for s in self.recipientStocks]
+        retval['recipientStocks'] = [s.toShortJSON() for s in self.recipientStocks.all()]
         retval['senderPlayer'] = self.sender.toShortJSON()
-        retval['senderStocks'] = [s.toShortJSON() for s in self.senderStocks]
+        retval['senderStocks'] = [s.toShortJSON() for s in self.senderStocks.all()]
         retval['floor'] = self.floor.toShortJSON()
-        retval['date'] = date.isoformat()
+        retval['date'] = self.date.isoformat()
         return retval
 
     def toShortJSON(self):

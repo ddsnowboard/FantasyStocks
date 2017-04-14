@@ -112,3 +112,21 @@ class ViewingTests(TestCase):
 
         response = c.get(reverse("viewTrade", args=(randomTrade.pk, ))+"?sessionId={}".format(id.id_string))
         self.assertTrue("error" in response.content.decode("UTF-8"))
+
+    def test_only_shows_right_trades(self):
+        c = Client()
+        trade = getTrade()
+        trade.save()
+        otherTrade = getTrade()
+        otherPlayer = Player.objects.all().exclude(pk=trade.sender.pk).exclude(pk=trade.recipient.pk).filter(floor=trade.floor).first()
+        otherTrade.sender = otherPlayer
+        otherTrade.senderStocks.clear()
+        otherTrade.senderStocks.add(otherPlayer.stocks.all().first())
+
+        playerWithTrade = trade.sender
+        sessionId = SessionId(associated_user=playerWithTrade.user)
+        sessionId.save()
+        response = c.get(reverse("viewAllTrades") + "?sessionId={}".format(sessionId.id_string))
+        returnedTrades = [Trade.objects.get(pk=i["id"]) for i in loads(response.content.decode("UTF-8"))]
+        for i in returnedTrades:
+            self.assertTrue(i.sender == playerWithTrade or i.recipient == playerWithTrade)
