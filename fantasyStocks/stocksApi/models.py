@@ -1,3 +1,4 @@
+from json import dumps
 from urllib import request, parse
 from django.conf import settings
 from django.db import models
@@ -39,10 +40,10 @@ class AndroidToken(models.Model):
             t.ping(title, message)
 
     def ping(self, title, message):
-        SUCCESS == 200
-        headers = {"Authorization": "key=" + key, "Content-Type": "application/json"}
+        SUCCESS = 200
+        headers = {"Authorization": "key=" + AndroidToken.TOKEN, "Content-Type": "application/json"}
         data = dumps({"to": self.token, "notification": {"title": title, "message": message}})
-        rq = request.Request(URL, data=data.encode("UTF-8"), headers=headers)
+        rq = request.Request(AndroidToken.URL, data=data.encode("UTF-8"), headers=headers)
         response = request.urlopen(rq)
         if not response.status == 200:
             raise RuntimeError(response.read())
