@@ -104,7 +104,7 @@ def viewTrade(request, pkTrade = None):
         return getPermError()
     try:
         oTrade = Trade.objects.get(id=pkTrade)
-    except ObjectDoeNotExist:
+    except ObjectDoesNotExist:
         return getDNEError()
     if tradeInvolvesUser(oTrade, user):
         return JsonResponse(getObject(Trade, pkTrade), safe=False)
@@ -121,7 +121,7 @@ def viewStockSuggestion(request, pkSuggestion = None):
 
     try:
         suggestion = StockSuggestion.objects.get(id=pkSuggestion)
-    except ObjectDoeNotExist:
+    except ObjectDoesNotExist:
         return getDNEError()
     if user == suggestion.floor.owner:
         return JsonResponse(getObject(StockSuggestion, pkSuggestion), safe=False)
@@ -143,7 +143,13 @@ def createUser(request):
     else:
         return getParamError("password")
 
-    return JsonResponse(userJSON(User.objects.create_user(**userDict)))
+    if data.get("username", None):
+        userDict["username"] = data["username"]
+    else:
+        return getParamError("username")
+
+    newUser = User.objects.create_user(**userDict)
+    return JsonResponse(userJSON(newUser))
 
 def createPlayer(request):
     post = request.POST
@@ -193,7 +199,7 @@ def createTrade(request):
             tradeData["date"] = dateutil.parser.parse(post["date"])
     except KeyError:
         return getParamError("senderPlayer or recipientPlayer")
-    except ObjectDoeNotExist:
+    except ObjectDoesNotExist:
         return getError("One of those players does not exist")
 
     if type(post.get("senderStocks", "this is an impossible value")) != type([]):
@@ -312,7 +318,7 @@ def getToken(request):
     password = request.POST["password"]
     try:
         user = User.objects.get(username=username)
-    except ObjectDoeNotExist:
+    except ObjectDoesNotExist:
         return JsonResponse({"error": "That username doesn't exist"})
 
     if not user.check_password(password):

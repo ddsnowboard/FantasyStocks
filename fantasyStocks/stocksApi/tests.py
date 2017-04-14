@@ -1,4 +1,5 @@
 from django.test import TestCase, Client
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from stocksApi.models import SessionId
 from stocks.models import *
@@ -18,6 +19,10 @@ def getTrade():
         randomTrade.recipientStocks.add(player2.stocks.all().first())
 
         return randomTrade
+
+def reverseWithSession(name, sessionId, **kwargs):
+    url = reverse(name, **kwargs)
+    return url + "?sessionId={}".format(sessionId.id_string)
 
 class AuthTests(TestCase):
     fixtures = ["fixture.json"]
@@ -70,7 +75,7 @@ class ViewingTests(TestCase):
         player = Player.objects.all().first()
         session = SessionId(associated_user=player.user)
         session.save()
-        response = c.get(reverse("viewAllPlayers")+"?sessionId=" + session.id_string)
+        response = c.get(reverseWithSession("viewAllPlayers", session))
         jsonObj = loads(response.content.decode("UTF-8"))
         for i in jsonObj:
             if i["id"] != player.id:
@@ -88,7 +93,7 @@ class ViewingTests(TestCase):
         for p in Player.objects.all():
             session = SessionId(associated_user=p.user)
             session.save()
-            response = c.get(reverse("viewPlayer", args=(p.pk, ))+"?sessionId=" + session.id_string)
+            response = c.get(reverseWithSession("viewPlayer", session, args=(p.pk, )))
             self.assertEquals(loads(response.content.decode("UTF-8")), loads(JsonResponse(p.toJSON()).content.decode("UTF-8")))
 
     def test_no_user_breaks_trade(self):
@@ -110,7 +115,7 @@ class ViewingTests(TestCase):
         id = SessionId(associated_user=otherPlayer.user)
         id.save()
 
-        response = c.get(reverse("viewTrade", args=(randomTrade.pk, ))+"?sessionId={}".format(id.id_string))
+        response = c.get(reverseWithSession("viewTrade", id, args=(randomTrade.pk, )))
         self.assertTrue("error" in response.content.decode("UTF-8"))
 
     def test_only_shows_right_trades(self):
@@ -126,7 +131,7 @@ class ViewingTests(TestCase):
         playerWithTrade = trade.sender
         sessionId = SessionId(associated_user=playerWithTrade.user)
         sessionId.save()
-        response = c.get(reverse("viewAllTrades") + "?sessionId={}".format(sessionId.id_string))
+        response = c.get(reverseWithSession("viewAllTrades", sessionId))
         returnedTrades = [Trade.objects.get(pk=i["id"]) for i in loads(response.content.decode("UTF-8"))]
         for i in returnedTrades:
             self.assertTrue(i.sender == playerWithTrade or i.recipient == playerWithTrade)
@@ -136,21 +141,39 @@ class ViewingTests(TestCase):
         response = c.get(reverse("viewAllStockSuggestions"))
         self.assertTrue("error" in response.content.decode("UTF-8"))
 
-
         permissiveFloor = Floor.objects.filter(permissiveness="permissive").first()
-        # Invent a new stockSuggestion because there are none in the database
-        goodSuggestion = StockSuggestion(stock=Stock.objects.filter(floor__
         owner = permissiveFloor.owner
+        goodSuggestion = StockSuggestion(stock=next(x for x in Stock.objects.all() if x not in permissiveFloor.stocks.all()), floor=permissiveFloor, requesting_player=Player.objects.all().filter(floor=permissiveFloor).exclude(user__pk=owner.pk).first())
+        goodSuggestion.save()
         goodSessionId = SessionId(associated_user=owner)
         goodSessionId.save()
 
-        badOwner = Floor.objects.all().exclude(permissiveness="permissive").first().owner
-        badSessionId = SessionId(associated_user=badOwner)
+        badUser = User.objects.create_user(username="testTest", password="Thisisnotapassword")
+        badSessionId = SessionId(associated_user=badUser)
         badSessionId.save()
 
-        response = c.get(reverse("viewStockSuggestion", args=(goodSuggestion.pk, )) + "?sessionId={}".format(badSessionId.id_string))
+        response = c.get(reverseWithSession("viewStockSuggestion", badSessionId, args=(goodSuggestion.pk, )))
         self.assertTrue("error" in response.content.decode("UTF-8"))
 
-
-        response = c.get(reverse("viewStockSuggestion", args=(goodSuggestion.pk, )) + "?sessionId={}".format(goodSessionId.id_string))
+        response = c.get(reverseWithSession("viewStockSuggestion", goodSessionId, args=(goodSuggestion.pk, )))
         self.assertEquals(loads(response.content.decode("UTF-8")), loads(JsonResponse(goodSuggestion.toJSON()).content.decode("UTF-8")))
+
+
+class CreationTests(TestCase):
+    def test_create_user(self):
+        c = Client()
+        email = "test@test.net"
+        password = "thisisapassword"
+        username = "test"
+        data = {"email": email, "password": password}
+        response = c.post(reverse("createUser"), data)
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+        data["username"] = username
+        response = c.post(reverse("createUser"), data)
+
+        try:
+            newUser = User.objects.get(email=email)
+        except ObjectDoesNotExist:
+            self.assertTrue(False)
+
+        self.assertEquals(loads(response.content.decode("UTF-8")), loads(JsonResponse(userJSON(newUser)).content.decode("UTF-8")))
