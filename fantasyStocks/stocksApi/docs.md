@@ -135,8 +135,8 @@ Also, `Stock`s can only be created by the system, so a client cannot call `/stoc
     - `receivedTrades` cannot be passed
     - `isFloorOwner` cannot be passed
  - `Floor`s
-    - `stocks` can be passed optionally, defaults to empty
-    - `owner` must be passed as an integer, the id of the `User` who owns the `Floor`
+    - `stocks` can be passed optionally, defaults to empty if and only if the `Floor` does not have permissiveness "closed," in which case there must be at least one `Stock` on the floor.
+    - `owner` is the id of the `User` object who who owns the `Floor`
     - `floorPlayer` cannot be passed
  - `Trade`s
     - `recipientStocks` must be passed, but it can be empty

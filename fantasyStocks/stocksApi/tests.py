@@ -160,6 +160,7 @@ class ViewingTests(TestCase):
 
 
 class CreationTests(TestCase):
+    fixtures = ["fixture.json"]
     def test_create_user(self):
         c = Client()
         email = "test@test.net"
@@ -177,3 +178,185 @@ class CreationTests(TestCase):
             self.assertTrue(False)
 
         self.assertEquals(loads(response.content.decode("UTF-8")), loads(JsonResponse(userJSON(newUser)).content.decode("UTF-8")))
+
+    def test_create_player(self):
+        c = Client()
+        username = "username"
+        password = "password"
+        u = User.objects.create_user(username=username, password=password)
+        sessionId = SessionId(associated_user=u)
+        sessionId.save()
+
+        data = {}
+        floor = Floor.objects.all().first()
+        data["user"] = u.pk
+        data["floor"] = floor.pk
+        response = c.post(reverseWithSession("createPlayer", sessionId), dumps(data), content_type="application/json")
+
+        returnedPlayer = Player.objects.get(floor=floor, user=u)
+        self.assertEquals(loads(response.content.decode("UTF-8")), loads(JsonResponse(returnedPlayer.toJSON(), safe=False).content.decode("UTF-8")))
+
+    def test_bad_create_player(self):
+        c = Client()
+        username = "username"
+        password = "password"
+        u = User.objects.create_user(username=username, password=password)
+        sessionId = SessionId(associated_user=u)
+        sessionId.save()
+
+        data = {}
+        floor = Floor.objects.all().first()
+        data["user"] = u.pk
+        data["floor"] = floor.pk
+        
+        # Test no session
+        response = c.post(reverse("createPlayer"), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        # Test wrong session
+        otherUser = User.objects.create_user(username=username + "1", password=password)
+        otherSessionId = SessionId(associated_user=otherUser)
+        response = c.post(reverseWithSession("createPlayer", otherSessionId), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        # Test data that it shouldn't get
+        data["points"] = 52
+        response = c.post(reverseWithSession("createPlayer", sessionId), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+        del data["points"]
+
+        # Test creating player that already exists on floor
+        player = Player(floor=floor, user=u)
+        player.save()
+        response = c.post(reverseWithSession("createPlayer", sessionId), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+        player.delete()
+
+        # Test missing data
+        del data["user"]
+        response = c.post(reverseWithSession("createPlayer", sessionId), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+    def test_create_trade(self):
+        c = Client()
+        username = "username"
+        password = "password"
+        u = User.objects.create_user(username=username, password=password)
+        sessionId = SessionId(associated_user=u)
+        sessionId.save()
+
+        floor = Floor.objects.all().first()
+
+        player1 = Player(user=u, floor=floor)
+        player1.save()
+        stocksToReturn = list(player1.stocks.all())
+
+        player2 = Player.objects.filter(floor=floor).exclude(user=u).first()
+        stocksToSend = list(player2.stocks.all())
+
+        data = {}
+        data["senderPlayer"] = player1.pk
+        data["senderStocks"] = tuple(map(lambda x: x.pk, stocksToReturn))
+
+        data["recipientPlayer"] = player2.pk
+        data["recipientStocks"] = tuple(map(lambda x: x.pk, stocksToSend))
+
+        data["floor"] = floor.pk
+
+        response = c.post(reverseWithSession("createTrade", sessionId), dumps(data), content_type="application/json")
+        jsonObj = loads(response.content.decode("UTF-8"))
+        returnedTrade = Trade.objects.get(pk=jsonObj["id"])
+        self.assertEquals(jsonObj, loads(JsonResponse(returnedTrade.toJSON(), safe=False).content.decode("UTF-8")))
+
+    def test_bad_create_trade(self):
+        c = Client()
+        username = "username"
+        password = "password"
+        u = User.objects.create_user(username=username, password=password)
+        sessionId = SessionId(associated_user=u)
+        sessionId.save()
+
+        # Creating an ideal data dict
+        floor = Floor.objects.all().first()
+
+        player1 = Player(user=u, floor=floor)
+        player1.save()
+        stocksToReturn = list(player1.stocks.all())
+
+        player2 = Player.objects.filter(floor=floor).exclude(user=u).first()
+        stocksToSend = list(player2.stocks.all())
+
+        idealData = {}
+        idealData["senderPlayer"] = player1.pk
+        idealData["senderStocks"] = tuple(map(lambda x: x.pk, stocksToReturn))
+
+        idealData["recipientPlayer"] = player2.pk
+        idealData["recipientStocks"] = tuple(map(lambda x: x.pk, stocksToSend))
+
+        idealData["floor"] = floor.pk
+
+        # Make sure the right data works
+        response = c.post(reverseWithSession("createTrade", sessionId), dumps(idealData), content_type="application/json")
+        jsonObj = loads(response.content.decode("UTF-8"))
+        try:
+            t = Trade.objects.get(pk=jsonObj["id"])
+            t.delete()
+        except ObjectDoesNotExist:
+            self.assertTrue(False)
+
+        # No sessionId
+        response = c.post(reverse("createTrade"), dumps(idealData), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        # Wrong sessionId
+        badUser = User.objects.create_user(username=username + "2", password=password)
+        badSession = SessionId(associated_user=badUser)
+        badSession.save()
+        response = c.post(reverseWithSession("createTrade", badSession), dumps(idealData), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        # Missing data
+        questionableData = idealData.copy()
+        del questionableData["senderPlayer"]
+        response = c.post(reverseWithSession("createTrade", badSession), dumps(idealData), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        # Bad stocks
+        questionableData = idealData.copy()
+        questionableData["senderStocks"] = []
+        questionableData["recipientStocks"] = []
+        response = c.post(reverseWithSession("createTrade", badSession), dumps(idealData), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+
+        questionableData = idealData.copy()
+        questionableData["senderStocks"], questionableData["recipientStocks"] = questionableData["recipientStocks"], questionableData["senderStocks"]
+        response = c.post(reverseWithSession("createTrade", badSession), dumps(idealData), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+    def test_create_floor(self):
+        c = Client()
+        username = "username"
+        password = "password"
+        u = User.objects.create_user(username=username, password=password)
+        sessionId = SessionId(associated_user=u)
+        sessionId.save()
+
+        floorName = "Four on the Floor"
+        data = {}
+        data["name"] = floorName
+        data["permissiveness"] = "Permissive"
+        data["owner"] = u.pk
+        data["public"] = True
+        data["numStocks"] = 10
+        data["stocks"] = [s.pk for s in Stock.objects.all()[:15]]
+
+        response = c.post(reverseWithSession("ApiCreateFloor", sessionId), dumps(data), content_type="application/json")
+
+        jsonObj = loads(response.content.decode("UTF-8"))
+        newFloor = Floor.objects.get(pk=jsonObj["id"])
+        self.assertEquals(floorName, newFloor.name)
+        self.assertEquals(data["permissiveness"] , newFloor.permissiveness)
+        self.assertEquals(data["owner"] , newFloor.owner.pk)
+
+        self.assertDictEqual({i: True for i in map(lambda x: Stock.objects.get(pk=x), data["stocks"])}, {i: True for i in newFloor.stocks.all()})

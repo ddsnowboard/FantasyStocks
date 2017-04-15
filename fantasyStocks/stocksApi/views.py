@@ -164,14 +164,16 @@ def createPlayer(request):
     if not user:
         return getPermError()
     else:
-        if not user.pk == post["user"]:
+        postedPk = post.get("user", -1)
+        if not user.pk == postedPk:
             return getPermError()
         playerData["user"] = user
 
     if post.get("floor", None):
-        playerData["floor"] = Floor.object.get(pk=post["floor"])
+        playerData["floor"] = Floor.objects.get(pk=post["floor"])
     else:
         return getParamError("floor")
+
     if Player.objects.filter(**playerData).exists():
         return getError("That player already exists")
 
@@ -194,8 +196,11 @@ def createTrade(request):
         return getPermError()
 
     try:
-        tradeData["sender"] = Player.objects.get(post["senderPlayer"])
-        tradeData["recipient"] = Player.objects.get(post["recipientPlayer"])
+        tradeData["sender"] = Player.objects.get(pk=post["senderPlayer"])
+        if not tradeData["sender"].user == user:
+            return getPermError()
+        tradeData["recipient"] = Player.objects.get(pk=post["recipientPlayer"])
+        tradeData["floor"] = Floor.objects.get(pk=post["floor"])
         if post.get("date", None):
             tradeData["date"] = dateutil.parser.parse(post["date"])
     except KeyError:
@@ -217,11 +222,12 @@ def createTrade(request):
         return getParamError("recipientStocks or senderStocks")
 
     newTrade = Trade(**tradeData)
+    newTrade.save()
     for i in senderStocks:
-        newTrade.senderStocks.objects.add(i)
+        newTrade.senderStocks.add(i)
 
     for i in recipientStocks:
-        newTrade.recipientStocks.objects.add(i)
+        newTrade.recipientStocks.add(i)
 
     newTrade.save()
     try:
@@ -282,7 +288,7 @@ def createFloor(request):
     if type(post.get("stocks", [])) != type([]):
         return getParamError("stocks")
     else:
-        floorData["stocks"] = [Stock.objects.get(pk=i) for i in post.get("stocks", [])]
+        stocks = [Stock.objects.get(pk=i) for i in post.get("stocks", [])]
 
     if not post.get("permissiveness", "") in ["Permissive", "Open", "Closed"]:
         return getParamError("permissiveness")
@@ -292,7 +298,7 @@ def createFloor(request):
     if not post.get("owner", None):
         return getParamError("owner")
     else:
-        floorData["owner"] = User.objects.get(post["owner"])
+        floorData["owner"] = User.objects.get(pk=post["owner"])
 
     try:
         floorData["public"] = post["public"]
@@ -308,6 +314,8 @@ def createFloor(request):
 
     newFloor = Floor(**floorData)
     newFloor.save()
+    for s in stocks:
+        newFloor.stocks.add(s)
     newFloor.refresh_from_db()
 
     return JsonResponse(newFloor.toJSON())

@@ -24,7 +24,8 @@ urlpatterns = [
     
     url("floor/view/([0-9]+)", views.viewFloor, name="viewFloor"),
     url("floor/view/", views.viewFloor, name="viewAllFloors"),
-    url("floor/create/", views.createFloor, name="createFloor"), 
+    # "createFloor" was already taken
+    url("floor/create/", views.createFloor, name="ApiCreateFloor"), 
 
     url("auth/getKey", views.getToken, name="getKey"),
 

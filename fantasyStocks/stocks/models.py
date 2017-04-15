@@ -285,7 +285,7 @@ class Floor(models.Model):
         retval['floorPlayer'] = self.floorPlayer.toShortJSON()
         retval['public'] = self.public
         retval['numStocks'] = self.num_stocks
-        retval['stocks'] = [s.toShortJSON() for s in self.stocks]
+        retval['stocks'] = [s.toShortJSON() for s in self.stocks.all()]
         return retval
 
     def toShortJSON(self):
