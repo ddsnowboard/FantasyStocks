@@ -186,6 +186,15 @@ class Floor(models.Model):
     public = models.BooleanField(default=True)
     num_stocks = models.IntegerField(default=10)
 
+    def save(self, *args, **kwargs):
+        super(Floor, self).save(*args, **kwargs)
+        if self.floorPlayer == None:
+            floorUser = User.objects.get(groups__name__exact="Floor")
+            newFloorPlayer = Player.objects.create(user=floorUser, floor=self)
+            newFloorPlayer.save()
+            self.floorPlayer = newFloorPlayer
+            super(Floor, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.name
     def leaders(self):
