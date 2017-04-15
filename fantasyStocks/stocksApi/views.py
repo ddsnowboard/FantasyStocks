@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from stocks.models import *
 from stocksApi.models import SessionId
+from json import loads
 
 def getError(message):
     return JsonResponse({"error": message})
@@ -132,7 +133,7 @@ def viewFloor(request, pkFloor = None):
     return JsonResponse(getObject(Floor, pkFloor), safe=False)
 
 def createUser(request):
-    data = request.POST
+    data = loads(request.body.decode("UTF-8"))
     userDict = {}
     if data.get("players", None):
         return getParamError("players")
@@ -152,7 +153,7 @@ def createUser(request):
     return JsonResponse(userJSON(newUser))
 
 def createPlayer(request):
-    post = request.POST
+    post = loads(request.body.decode("UTF-8"))
     get = request.GET
     playerData = {}
     for badData in ["points", "isFloor", "sentTrades", "receivedTrades", "isFloorOwner"]:
@@ -187,7 +188,7 @@ def createPlayer(request):
 def createTrade(request):
     tradeData = {}
     get = request.GET
-    post = request.POST
+    post = loads(request.body.decode("UTF-8"))
     user = getUser(request)
     if not user:
         return getPermError()
@@ -233,7 +234,7 @@ def createTrade(request):
 
 
 def createStockSuggestion(request):
-    post = request.POST
+    post = loads(request.body.decode("UTF-8"))
     get = request.GET
     suggestionData = {}
 
@@ -269,7 +270,7 @@ def createStockSuggestion(request):
     return JsonResponse(newSuggestion.toJSON())
 
 def createFloor(request):
-    post = request.POST
+    post = loads(request.body.decode("UTF-8"))
     get = request.GET
     floorData = {}
 
@@ -312,10 +313,11 @@ def createFloor(request):
     return JsonResponse(newFloor.toJSON())
 
 def getToken(request):
-    if not (request.POST.get('username', None) and request.POST.get('password', None)):
+    post = loads(request.body.decode("UTF-8"))
+    if not (post.get('username', None) and post.get('password', None)):
         return getParamError()
-    username = request.POST["username"]
-    password = request.POST["password"]
+    username = post["username"]
+    password = post["password"]
     try:
         user = User.objects.get(username=username)
     except ObjectDoesNotExist:
@@ -329,7 +331,7 @@ def getToken(request):
     return JsonResponse({"sessionId": newSessionId.id_string, "user": userJSON(user)})
 
 def registerToken(request):
-    post = request.POST
+    post = loads(request.body.decode("UTF-8"))
     get = request.GET
     user = getUser()
     if not user:
@@ -343,7 +345,7 @@ def registerToken(request):
         return JsonResponse({"success": "Your registration id was successfully registered with {}".format(user.username)})
 
 def deregisterToken(request):
-    post = request.POST
+    post = loads(request.body.decode("UTF-8"))
     get = request.GET
     user = getUser(request)
     if not user:

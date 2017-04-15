@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from stocksApi.models import SessionId
 from stocks.models import *
-from json import loads
+from json import loads, dumps
 from django.core.urlresolvers import reverse
 
 USERNAME = "user123"
@@ -34,7 +34,7 @@ class AuthTests(TestCase):
     def test_get_session_id(self):
         c = Client()
         user = self.makeUser()
-        response = c.post("/api/v1/auth/getKey", {"username": USERNAME, "password": PASSWORD})
+        response = c.post("/api/v1/auth/getKey", dumps({"username": USERNAME, "password": PASSWORD}), content_type="application/json")
         jsonObj = loads(response.content.decode("utf-8"))
         self.assertEquals(jsonObj["user"]["id"], user.pk)
         ids = SessionId.objects.filter(associated_user=user).order_by("-exp_date")
@@ -166,10 +166,10 @@ class CreationTests(TestCase):
         password = "thisisapassword"
         username = "test"
         data = {"email": email, "password": password}
-        response = c.post(reverse("createUser"), data)
+        response = c.post(reverse("createUser"), dumps(data), content_type="applcation/json")
         self.assertTrue("error" in response.content.decode("UTF-8"))
         data["username"] = username
-        response = c.post(reverse("createUser"), data)
+        response = c.post(reverse("createUser"), dumps(data), content_type="application/json")
 
         try:
             newUser = User.objects.get(email=email)

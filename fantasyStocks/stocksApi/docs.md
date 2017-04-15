@@ -17,6 +17,8 @@ Some models have other models as fields. If those fields were sent as full repre
 
 Authentication will be handled through the `auth` endpoints. This mechanism will be detaled further below, but put simply, the caller receives a temporary session key, which it passes to the endpoints as a GET parameter. This will be meaningless for some calls, optional for others, and for still others mandatory. POST requests, as a rule, demand a session id. GET requests usually will not, but sometimes the server will be able to supply more information if a session id is passed. Passing an unncessary session id will never cause an error, however, even if the session id is expired.
 
+POST request data is sent as JSON (`content-type: application/json`) in the body of the POST request, not as url-encoded of form data.
+
 ### Data Schemas
 
 These schemas detail how each model will be serialized into JSON.
