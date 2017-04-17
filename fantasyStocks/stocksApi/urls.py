@@ -1,4 +1,6 @@
 from django.conf.urls import url
+from django.http import JsonResponse
+from json import dumps
 
 from . import views
 
@@ -31,4 +33,6 @@ urlpatterns = [
 
     url("android/register/", views.registerToken, name="registerToken"), 
     url("android/deregister/", views.deregisterToken, name="deregisterToken"), 
+
+    url("test/", views.tester, name="tester")
 ]

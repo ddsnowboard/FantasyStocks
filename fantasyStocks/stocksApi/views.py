@@ -1,3 +1,4 @@
+from django.views.decorators.csrf import csrf_exempt
 import dateutil.parser
 from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
@@ -369,3 +370,7 @@ def deregisterToken(request):
             token.delete()
         return JsonResponse({"success": "Your registration id was successfully deleted from {}".format(user.username)})
 
+
+@csrf_exempt
+def tester(request):
+    return JsonResponse(loads(request.body.decode("UTF-8")) if request.body else dict(request.GET), safe=False)
