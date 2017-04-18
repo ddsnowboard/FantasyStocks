@@ -27,6 +27,7 @@ def getParamError(lacking = None):
     return JsonResponse({"error": "You gave the wrong parameters", "wrongParams": lacking})
 
 
+@csrf_exempt
 def getUser(request):
     sessionId = request.GET.get("sessionId", None)
     if not sessionId:
@@ -42,6 +43,7 @@ def getUser(request):
         return None
 
 
+@csrf_exempt
 def getObject(klass, pk):
     if pk == None:
         if klass == User:
@@ -59,15 +61,18 @@ def getObject(klass, pk):
             return {"error": "That object could not be found"}
 
 
+@csrf_exempt
 def tradeInvolvesUser(oTrade, oUser):
     if oUser == None:
         return False
     return oTrade.sender.user == oUser or oTrade.recipient.user == oUser
 
 
+@csrf_exempt
 def viewUser(request, pkUser = None):
     return JsonResponse(getObject(User, pkUser), safe=False)
 
+@csrf_exempt
 def viewPlayer(request, pkPlayer = None):
     # A user shouldn't be privy to other users' trades.
     retval = getObject(Player, pkPlayer)
@@ -91,9 +96,11 @@ def viewPlayer(request, pkPlayer = None):
 
     return JsonResponse(retval, safe=False)
 
+@csrf_exempt
 def viewStock(request, pkStock = None):
     return JsonResponse(getObject(Stock, pkUser), safe=False)
 
+@csrf_exempt
 def viewTrade(request, pkTrade = None):
     user = getUser(request)
     if not user:
@@ -113,6 +120,7 @@ def viewTrade(request, pkTrade = None):
     else:
         return getPermError()
 
+@csrf_exempt
 def viewStockSuggestion(request, pkSuggestion = None):
     user = getUser(request)
     if not user:
@@ -130,9 +138,11 @@ def viewStockSuggestion(request, pkSuggestion = None):
     else:
         return getPermError()
 
+@csrf_exempt
 def viewFloor(request, pkFloor = None):
     return JsonResponse(getObject(Floor, pkFloor), safe=False)
 
+@csrf_exempt
 def createUser(request):
     data = loads(request.body.decode("UTF-8"))
     userDict = {}
@@ -153,6 +163,7 @@ def createUser(request):
     newUser = User.objects.create_user(**userDict)
     return JsonResponse(userJSON(newUser))
 
+@csrf_exempt
 def createPlayer(request):
     post = loads(request.body.decode("UTF-8"))
     get = request.GET
@@ -188,6 +199,7 @@ def createPlayer(request):
     newPlayer.refresh_from_db()
     return JsonResponse(newPlayer.toJSON())
 
+@csrf_exempt
 def createTrade(request):
     tradeData = {}
     get = request.GET
@@ -240,6 +252,7 @@ def createTrade(request):
     return JsonResponse(newTrade.toJSON())
 
 
+@csrf_exempt
 def createStockSuggestion(request):
     post = loads(request.body.decode("UTF-8"))
     get = request.GET
@@ -276,6 +289,7 @@ def createStockSuggestion(request):
     newSuggestion.refresh_from_db()
     return JsonResponse(newSuggestion.toJSON())
 
+@csrf_exempt
 def createFloor(request):
     post = loads(request.body.decode("UTF-8"))
     get = request.GET
@@ -321,6 +335,7 @@ def createFloor(request):
 
     return JsonResponse(newFloor.toJSON())
 
+@csrf_exempt
 def getToken(request):
     post = loads(request.body.decode("UTF-8"))
     if not (post.get('username', None) and post.get('password', None)):
@@ -339,6 +354,7 @@ def getToken(request):
     newSessionId.save()
     return JsonResponse({"sessionId": newSessionId.id_string, "user": userJSON(user)})
 
+@csrf_exempt
 def registerToken(request):
     post = loads(request.body.decode("UTF-8"))
     get = request.GET
@@ -353,6 +369,7 @@ def registerToken(request):
         token.save()
         return JsonResponse({"success": "Your registration id was successfully registered with {}".format(user.username)})
 
+@csrf_exempt
 def deregisterToken(request):
     post = loads(request.body.decode("UTF-8"))
     get = request.GET
