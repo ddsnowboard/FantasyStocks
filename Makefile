@@ -29,3 +29,7 @@ fantasyStocks/db.sqlite3 :
 
 failFast : fantasyStocks/db.sqlite3
 	python3 ./fantasyStocks/manage.py test ./fantasyStocks/ --failfast
+
+runFreshDb :
+	@rm fantasyStocks/db.sqlite3
+	$(MAKE) run
