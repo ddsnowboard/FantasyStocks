@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.test import TestCase, Client
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
@@ -334,6 +335,12 @@ class CreationTests(TestCase):
         response = c.post(reverseWithSession("createTrade", badSession), dumps(idealData), content_type="application/json")
         self.assertTrue("error" in response.content.decode("UTF-8"))
 
+        # Send date
+        questionableData = idealData.copy()
+        questionableData["date"] = datetime.utcnow().isoformat()
+        response = c.post(reverseWithSession("createTrade", badSession), dumps(idealData), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
     def test_create_floor(self):
         c = Client()
         username = "username"
@@ -360,3 +367,260 @@ class CreationTests(TestCase):
         self.assertEquals(data["owner"] , newFloor.owner.pk)
 
         self.assertDictEqual({i: True for i in map(lambda x: Stock.objects.get(pk=x), data["stocks"])}, {i: True for i in newFloor.stocks.all()})
+
+    def test_bad_create_floor(self):
+        c = Client()
+        username = "username"
+        password = "password"
+        u = User.objects.create_user(username=username, password=password)
+        sessionId = SessionId(associated_user=u)
+        sessionId.save()
+
+        floorName = "Four on the Floor"
+        idealData = {}
+        idealData["name"] = floorName
+        idealData["permissiveness"] = "Permissive"
+        idealData["owner"] = u.pk
+        idealData["public"] = True
+        idealData["numStocks"] = 10
+        idealData["stocks"] = [s.pk for s in Stock.objects.all()[:15]]
+
+        # Test empty stocks on closed floor
+        data = idealData.copy()
+        data["permissiveness"] = "Closed"
+        data["stocks"] = []
+        response = c.post(reverseWithSession("ApiCreateFloor", sessionId), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        # User tries to create floor as someone else
+        data = idealData.copy()
+        data["owner"] = User.objects.all().exclude(pk=u.pk).first().pk
+        response = c.post(reverseWithSession("ApiCreateFloor", sessionId), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        # Miss stuff
+        data = idealData.copy()
+        del data["numStocks"]
+        response = c.post(reverseWithSession("ApiCreateFloor", sessionId), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        # Pass a floorPlayer
+        floorPlayer = Player(user=u, floor=Floor.objects.all().first())
+        floorPlayer.save()
+        data = idealData.copy()
+        data["floorPlayer"] = floorPlayer.pk
+
+        response = c.post(reverseWithSession("ApiCreateFloor", sessionId), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+    def test_create_suggestion(self):
+        c = Client()
+        u = User.objects.create_user(username=USERNAME, password=PASSWORD)
+        sessionId = SessionId(associated_user=u)
+        sessionId.save()
+
+        randomFloor = Floor.objects.filter(permissiveness="permissive").first()
+        stockToSuggest = Stock.objects.all().exclude(pk__in=map(lambda s: s.pk, randomFloor.stocks.all())).first()
+        player = Player(floor=randomFloor, user=u)
+        player.save()
+
+        data = {}
+        data["stock"] = stockToSuggest.pk
+        data["requestingPlayer"] = player.pk
+        data["floor"] = randomFloor.pk
+        response = c.post(reverseWithSession("createStockSuggestion", sessionId), dumps(data), content_type="application/json")
+        jsonObj = loads(response.content.decode("UTF-8"))
+        newSuggestion = StockSuggestion.objects.get(pk=jsonObj["id"])
+        self.assertEquals(newSuggestion.stock, stockToSuggest)
+        self.assertEquals(newSuggestion.requesting_player, player)
+        self.assertEquals(newSuggestion.floor, randomFloor)
+
+    def test_bad_create_suggestion(self):
+        c = Client()
+        u = User.objects.create_user(username=USERNAME, password=PASSWORD)
+        sessionId = SessionId(associated_user=u)
+        sessionId.save()
+
+        randomFloor = Floor.objects.filter(permissiveness="permissive").first()
+        stockToSuggest = Stock.objects.all().exclude(pk__in=map(lambda s: s.pk, randomFloor.stocks.all())).first()
+        player = Player(floor=randomFloor, user=u)
+        player.save()
+
+        idealData = {}
+        idealData["stock"] = stockToSuggest.pk
+        idealData["requestingPlayer"] = player.pk
+        idealData["floor"] = randomFloor.pk
+
+        # Test missing data
+        data = idealData.copy()
+        del data["stock"]
+        response = c.post(reverseWithSession("createStockSuggestion", sessionId), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        # Test wrong sessionId
+        data = idealData.copy()
+        badUser = Player.objects.filter(floor=randomFloor).exclude(pk=player.pk).first().user
+        badSession = SessionId(associated_user=badUser)
+        badSession.save()
+        response = c.post(reverseWithSession("createStockSuggestion", badSession), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        # Test wrong floor
+        data = idealData.copy()
+        requestingPlayer = Player.objects.all().exclude(floor=randomFloor).first()
+        data["requestingPlayer"] = requestingPlayer.pk
+        otherSession = SessionId(associated_user=requestingPlayer.user)
+        otherSession.save()
+        response = c.post(reverseWithSession("createStockSuggestion", otherSession), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        # Test stock already on floor
+        data = idealData.copy()
+        badStock = randomFloor.stocks.all().first()
+        data["stock"] = badStock.pk
+        response = c.post(reverseWithSession("createStockSuggestion", sessionId), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        # Test not permissive floor
+        data = idealData.copy()
+        badFloor = Floor.objects.all().exclude(permissiveness="permissive").first()
+        p = Player.objects.filter(floor=badFloor).first()
+        s = Stock.objects.all().exclude(pk__in=map(lambda s: s.pk, p.floor.stocks.all())).first()
+        data["floor"] = badFloor.pk
+        data["requestingPlayer"] = p.pk
+        data["stock"] = s.pk
+        response = c.post(reverseWithSession("createStockSuggestion", badSession), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+    def test_accept_trade(self):
+        trade = getTrade()
+        sender = trade.sender
+        recipient = trade.recipient
+        originalSenderStocks = list(sender.stocks.all())
+        originalRecipientStocks = list(recipient.stocks.all())
+        trade.senderStocks = originalSenderStocks
+        trade.recipientStocks = originalRecipientStocks
+        trade.save()
+
+        sessionId = SessionId(associated_user=recipient.user)
+        sessionId.save()
+
+        c = Client()
+        response = c.post(reverseWithSession("acceptTrade", sessionId, args=(trade.pk, )))
+        self.assertTrue("success" in response.content.decode("UTF-8"))
+
+        try:
+            Trade.objects.get(pk=trade.pk)
+            self.fail()
+        except ObjectDoesNotExist:
+            pass
+
+        sender.refresh_from_db()
+        recipient.refresh_from_db()
+
+        self.assertEquals(set(sender.stocks.all()), set(originalRecipientStocks))
+        self.assertEquals(set(recipient.stocks.all()), set(originalSenderStocks))
+
+    def test_bad_accept_trade(self):
+        trade = getTrade()
+        sender = trade.sender
+        recipient = trade.recipient
+        originalSenderStocks = list(sender.stocks.all())
+        originalRecipientStocks = list(recipient.stocks.all())
+        trade.senderStocks = originalSenderStocks
+        trade.recipientStocks = originalRecipientStocks
+        trade.save()
+
+        sessionId = SessionId(associated_user=recipient.user)
+        sessionId.save()
+
+        c = Client()
+
+        # No user
+        response = c.post(reverse("acceptTrade", args=(trade.pk, )))
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        # Wrong user
+        badSessionId = SessionId(associated_user=sender.user)
+        badSessionId.save()
+        response = c.post(reverseWithSession("acceptTrade", badSessionId, args=(trade.pk, )))
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+    def test_decline_trade(self):
+        trade = getTrade()
+        sender = trade.sender
+        recipient = trade.recipient
+        originalSenderStocks = list(sender.stocks.all())
+        originalRecipientStocks = list(recipient.stocks.all())
+        trade.senderStocks = originalSenderStocks
+        trade.recipientStocks = originalRecipientStocks
+        trade.save()
+
+        sessionId = SessionId(associated_user=recipient.user)
+        sessionId.save()
+
+        c = Client()
+        response = c.post(reverseWithSession("declineTrade", sessionId, args=(trade.pk, )))
+        self.assertTrue("success" in response.content.decode("UTF-8"))
+
+        try:
+            Trade.objects.get(pk=trade.pk)
+            self.fail()
+        except ObjectDoesNotExist:
+            pass
+
+        sender.refresh_from_db()
+        recipient.refresh_from_db()
+
+        self.assertEquals(set(sender.stocks.all()), set(originalSenderStocks))
+        self.assertEquals(set(recipient.stocks.all()), set(originalRecipientStocks))
+
+    def test_accept_suggestion(self):
+        randomFloor = Floor.objects.all().first()
+        randomStock = Stock.objects.all().exclude(pk__in=map(lambda x: x.pk, randomFloor.stocks.all())).first()
+        u = User.objects.create_user(username=USERNAME, password=PASSWORD)
+        player = Player(floor=randomFloor, user=u)
+        player.save()
+        suggestion = StockSuggestion(stock=randomStock, floor=randomFloor, requesting_player=player)
+        suggestion.save()
+
+        sessionId = SessionId(associated_user=randomFloor.owner)
+        sessionId.save()
+
+        c = Client()
+        response = c.post(reverseWithSession("acceptStockSuggestion", sessionId, args=(suggestion.pk, )))
+        self.assertTrue("success" in response.content.decode("UTF-8"))
+
+        try:
+            StockSuggestion.objects.get(pk=suggestion.pk)
+            self.fail()
+        except ObjectDoesNotExist:
+            pass
+
+        randomFloor.refresh_from_db()
+        self.assertTrue(randomStock in randomFloor.stocks.all())
+
+    def test_reject_suggestion(self):
+        randomFloor = Floor.objects.all().first()
+        randomStock = Stock.objects.all().exclude(pk__in=map(lambda x: x.pk, randomFloor.stocks.all())).first()
+        u = User.objects.create_user(username=USERNAME, password=PASSWORD)
+        player = Player(floor=randomFloor, user=u)
+        player.save()
+        suggestion = StockSuggestion(stock=randomStock, floor=randomFloor, requesting_player=player)
+        suggestion.save()
+
+        sessionId = SessionId(associated_user=randomFloor.owner)
+        sessionId.save()
+
+        c = Client()
+        response = c.post(reverseWithSession("rejectStockSuggestion", sessionId, args=(suggestion.pk, )))
+        self.assertTrue("success" in response.content.decode("UTF-8"))
+
+        try:
+            StockSuggestion.objects.get(pk=suggestion.pk)
+            self.fail()
+        except ObjectDoesNotExist:
+            pass
+
+        randomFloor.refresh_from_db()
+        self.assertFalse(randomStock in randomFloor.stocks.all())

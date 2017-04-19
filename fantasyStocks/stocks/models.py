@@ -475,6 +475,14 @@ class StockSuggestion(models.Model):
                 self.requesting_player.stocks.add(self.stock)
                 self.requesting_player.save()
         self.delete()
+
+    def isValid(self):
+        if self.stock in self.floor.stocks.all():
+            return False
+        if not self.requesting_player.floor == self.floor:
+            return False
+        return True
+
     def __str__(self):
         return "{} wants {} added to {}".format(self.requesting_player.get_name(), self.stock, self.floor)
 

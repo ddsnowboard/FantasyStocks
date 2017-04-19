@@ -215,7 +215,7 @@ def createTrade(request):
         tradeData["recipient"] = Player.objects.get(pk=post["recipientPlayer"])
         tradeData["floor"] = Floor.objects.get(pk=post["floor"])
         if post.get("date", None):
-            tradeData["date"] = dateutil.parser.parse(post["date"])
+            return getError("You can't pass a date")
     except KeyError:
         return getParamError("senderPlayer or recipientPlayer")
     except ObjectDoesNotExist:
@@ -284,7 +284,9 @@ def createStockSuggestion(request):
     if not suggestionData["requesting_player"].user == user:
         return getError("That player does not match the sessionId you gave.")
 
-    newSuggestion = StockSuggestions(**suggestionData)
+    newSuggestion = StockSuggestion(**suggestionData)
+    if not newSuggestion.isValid():
+        return getError("That data is not valid")
     newSuggestion.save()
     newSuggestion.refresh_from_db()
     return JsonResponse(newSuggestion.toJSON())
@@ -293,7 +295,13 @@ def createStockSuggestion(request):
 def createFloor(request):
     post = loads(request.body.decode("UTF-8"))
     get = request.GET
+    user = getUser(request)
     floorData = {}
+
+    IMPOSSIBLE_VALUE = "impossible value"
+
+    if post.get("floorPlayer", IMPOSSIBLE_VALUE) != IMPOSSIBLE_VALUE:
+        return getError("You can't pass a floorPlayer")
 
     if not post.get("name", None):
         return getParamError("name")
@@ -310,10 +318,17 @@ def createFloor(request):
     else:
         floorData["permissiveness"] = post["permissiveness"]
 
+    if not stocks and floorData["permissiveness"] == "Closed":
+        return getError("You must have stocks by default if the floor is closed")
+
     if not post.get("owner", None):
         return getParamError("owner")
     else:
-        floorData["owner"] = User.objects.get(pk=post["owner"])
+        owner = User.objects.get(pk=post["owner"])
+        if owner == user:
+            floorData["owner"] = owner
+        else:
+            return getError("The sessionId you passed didn't match the user who owns the floor")
 
     try:
         floorData["public"] = post["public"]
@@ -345,8 +360,8 @@ def acceptTrade(request, pkTrade):
     user = getUser(request)
     if not user:
         return getAuthError()
-    if trade.recipient.user == user:
-        return getAuthError()
+    if not trade.recipient.user == user:
+        return getPermError()
 
     try:
         trade.accept()
@@ -357,19 +372,20 @@ def acceptTrade(request, pkTrade):
 @csrf_exempt
 def declineTrade(request, pkTrade):
     user = getUser(request)
+    try:
+        trade = Trade.objects.get(pk=pkTrade)
+    except ObjectDoesNotExist:
+        return getError("There was no trade with id {}".format(pkTrade))
+
     if not user:
         return getAuthError()
     if not trade.recipient.user == user:
         return getAuthError()
 
     try:
-        trade = Trade.objects.get(pk=pkTrade)
-    except ObjectDoesNotExist:
-        return getError("There was no trade with id {}".format(pkTrade))
-    try:
-        trade.decline()
+        trade.delete()
         return JsonResponse({"success": "The trade was successfully declined"})
-    except Error as e:
+    except Exception as e:
         return getError("Something bad happened. Here's the error: {}".format(str(e)))
 
 @csrf_exempt
