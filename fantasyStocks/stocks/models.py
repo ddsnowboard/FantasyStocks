@@ -448,9 +448,9 @@ class Trade(models.Model):
         retval = {}
         retval['id'] = self.pk
         retval['recipientPlayer'] = self.recipient.pk
-        retval['recipientStocks'] = [s.pk for s in self.recipientStocks]
+        retval['recipientStocks'] = [s.pk for s in self.recipientStocks.all()]
         retval['senderPlayer'] = self.sender.pk
-        retval['senderStocks'] = [s.pk for s in self.senderStocks]
+        retval['senderStocks'] = [s.pk for s in self.senderStocks.all()]
         retval['floor'] = self.floor.pk
         retval['date'] = self.date.isoformat()
         return retval

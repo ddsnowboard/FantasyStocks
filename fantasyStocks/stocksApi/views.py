@@ -84,14 +84,14 @@ def viewPlayer(request, pkPlayer = None):
             if playerUser == user:
                 continue
             else:
-                p["receivedTrades"] = list(filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
+                p["receivedTrades"] = list(filter(lambda t: tradeInvolvesUser(Trade.objects.get(pk=t["id"]), playerUser),
                        p["receivedTrades"]))
-                p["sentTrades"] = list(filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
+                p["sentTrades"] = list(filter(lambda t: tradeInvolvesUser(Trade.objects.get(pk=t["id"]), playerUser),
                        p["sentTrades"]))
     else:
-        retval["receivedTrades"] = list(filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
+        retval["receivedTrades"] = list(filter(lambda t: tradeInvolvesUser(Trade.objects.get(pk=t["id"]), playerUser),
                 retval["receivedTrades"]))
-        retval["sentTrades"] =  list(filter(lambda pkT: tradeInvolvesUser(Trade.objects.get(pk=pkT), playerUser),
+        retval["sentTrades"] =  list(filter(lambda t: tradeInvolvesUser(Trade.objects.get(pk=t["id"]), playerUser),
                 retval["sentTrades"]))
 
     return JsonResponse(retval, safe=False)
