@@ -182,6 +182,14 @@ Accepts the given `stockSuggestion`. This needs a session id that belongs to the
 {"success": "The stockSuggestion was successfully accepted"}
 ```
 
+#### `POST /stockSuggestion/reject/`
+
+Rejects (ie, deletes) the given `stockSuggestion`. This needs a session id that belongs to the `Floor` owner, or else it will return an auth error. If it is successful, returns an object of the form:
+
+```
+{"success": "The stockSuggestion was successfully rejected"}
+```
+
 ### Auth
 
 The auth system will work based on logins and session ids. Session ids will be tied to a `User` object and will expire after a time. Except when the session id is meaningless, passing an expired session token will cause an error of the form:
