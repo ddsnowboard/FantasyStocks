@@ -27,7 +27,6 @@ def getParamError(lacking = None):
     return JsonResponse({"error": "You gave the wrong parameters", "wrongParams": lacking})
 
 
-@csrf_exempt
 def getUser(request):
     sessionId = request.GET.get("sessionId", None)
     if not sessionId:
@@ -43,7 +42,6 @@ def getUser(request):
         return None
 
 
-@csrf_exempt
 def getObject(klass, pk):
     if pk == None:
         if klass == User:
@@ -61,7 +59,6 @@ def getObject(klass, pk):
             return {"error": "That object could not be found"}
 
 
-@csrf_exempt
 def tradeInvolvesUser(oTrade, oUser):
     if oUser == None:
         return False
