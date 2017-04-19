@@ -144,7 +144,7 @@ Also, `Stock`s can only be created by the system, so a client cannot call `/stoc
     - One of `senderStocks` or `recipientStocks` must have something in it.
     - `date` cannot be passed
  - `StockSuggestion`s
-    - `date` is optional (and frankly discouraged), defaults to the current time
+    - `date` cannot be passed
 
 This returns the created object as if it had been requested at the `/view/` endpoint.
 
@@ -158,7 +158,7 @@ Deletes the given object. This also takes a session key, and will return an auth
 
 ### Special actions
 
-#### `POST /trade/accept/`
+#### `POST /trade/accept/[tradeId]`
 
 Accepts the given trade, automatically moving the stocks where they should go. This needs a session id that belongs to the recipient, or else it will return an auth error. If it is successful, returns an object of the form:
 
@@ -166,7 +166,7 @@ Accepts the given trade, automatically moving the stocks where they should go. T
 {"success": "The trade was successfully accepted"}
 ```
 
-#### `POST /trade/decline/`
+#### `POST /trade/decline/[tradeId]`
 
 Declines the given trade. This needs a session id that belongs to the recipient, or else it will return an auth error. If it is successful, returns an object of the form:
 
@@ -174,7 +174,7 @@ Declines the given trade. This needs a session id that belongs to the recipient,
 {"success": "The trade was successfully declined"}
 ```
 
-#### `POST /stockSuggestion/accept/`
+#### `POST /stockSuggestion/accept/[stockSuggestionId]`
 
 Accepts the given `stockSuggestion`. This needs a session id that belongs to the `Floor` owner, or else it will return an auth error. If it is successful, returns an object of the form:
 
@@ -182,7 +182,7 @@ Accepts the given `stockSuggestion`. This needs a session id that belongs to the
 {"success": "The stockSuggestion was successfully accepted"}
 ```
 
-#### `POST /stockSuggestion/reject/`
+#### `POST /stockSuggestion/reject/[stockSuggestionId]`
 
 Rejects (ie, deletes) the given `stockSuggestion`. This needs a session id that belongs to the `Floor` owner, or else it will return an auth error. If it is successful, returns an object of the form:
 
