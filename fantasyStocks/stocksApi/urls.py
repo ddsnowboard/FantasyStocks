@@ -26,8 +26,15 @@ urlpatterns = [
     
     url("floor/view/([0-9]+)", views.viewFloor, name="viewFloor"),
     url("floor/view/", views.viewFloor, name="viewAllFloors"),
+
     # "createFloor" was already taken
     url("floor/create/", views.createFloor, name="ApiCreateFloor"), 
+
+    url("trade/accept/([0-9]+)", views.acceptTrade, name="acceptTrade"),
+    url("trade/decline/([0-9]+)", views.declineTrade, name="declineTrade"),
+
+    url("stockSuggestion/accept/([0-9]+)", views.acceptStockSuggestion, name="acceptStockSuggestion"),
+    url("stockSuggestion/reject/([0-9]+)", views.rejectStockSuggestion, name="rejectStockSuggestion"),
 
     url("auth/getKey", views.getToken, name="getKey"),
 

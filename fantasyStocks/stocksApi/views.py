@@ -336,6 +336,67 @@ def createFloor(request):
     return JsonResponse(newFloor.toJSON())
 
 @csrf_exempt
+def acceptTrade(request, pkTrade):
+    try:
+        trade = Trade.objects.get(pk=pkTrade)
+    except ObjectDoesNotExist:
+        return getError("There was no trade with id {}".format(pkTrade))
+
+    user = getUser(request)
+    if not user:
+        return getAuthError()
+    if trade.recipient.user == user:
+        return getAuthError()
+
+    try:
+        trade.accept()
+        return JsonResponse({"success": "The trade was successfully accepted"})
+    except Error as e:
+        return getError("Something bad happened. Here's the error: {}".format(str(e)))
+
+@csrf_exempt
+def declineTrade(request, pkTrade):
+    user = getUser(request)
+    if not user:
+        return getAuthError()
+    if not trade.recipient.user == user:
+        return getAuthError()
+
+    try:
+        trade = Trade.objects.get(pk=pkTrade)
+    except ObjectDoesNotExist:
+        return getError("There was no trade with id {}".format(pkTrade))
+    try:
+        trade.decline()
+        return JsonResponse({"success": "The trade was successfully declined"})
+    except Error as e:
+        return getError("Something bad happened. Here's the error: {}".format(str(e)))
+
+@csrf_exempt
+def acceptStockSuggestion(request, pkSuggestion):
+    user = getUser(request)
+    try:
+        suggestion = StockSuggestion.objects.get(pk=pkSuggestion)
+    except ObjectDoesNotExist:
+        return getError("The StockSuggestion {} does not exist".format(pkSuggestion))
+    if not suggestion.floor.owner == user:
+        return getAuthError()
+    suggestion.accept()
+    return JsonResponse({"success": "The StockSuggestion was successfully accepted"})
+
+@csrf_exempt
+def rejectStockSuggestion(request, pkSuggestion):
+    user = getUser(request)
+    try:
+        suggestion = StockSuggestion.objects.get(pk=pkSuggestion)
+    except ObjectDoesNotExist:
+        return getError("The StockSuggestion {} does not exist".format(pkSuggestion))
+    if not suggestion.floor.owner == user:
+        return getAuthError()
+    suggestion.delete()
+    return JsonResponse({"success": "The StockSuggestion was successfully rejected"})
+
+@csrf_exempt
 def getToken(request):
     post = loads(request.body.decode("UTF-8"))
     if not (post.get('username', None) and post.get('password', None)):
