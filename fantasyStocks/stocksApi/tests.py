@@ -2,7 +2,7 @@ from datetime import datetime
 from django.test import TestCase, Client
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-from stocksApi.models import SessionId
+from stocksApi.models import SessionId, AndroidToken
 from stocks.models import *
 from json import loads, dumps
 from django.core.urlresolvers import reverse
@@ -633,13 +633,15 @@ class AndroidTests(TestCase):
         sessionId.save()
         c = Client()
         old_len = AndroidToken.objects.filter(user=user).count()
-        response = c.post(reverseWithSession("registerToken", sessionId), dumps({"registrationToken": FAKE_ANDROID_ID}))
+        response = c.post(reverseWithSession("registerToken", sessionId), dumps({"registrationToken": AndroidTests.FAKE_ANDROID_ID}), content_type="application/json")
 
         tokens = AndroidToken.objects.filter(user=user)
         self.assertTrue(tokens.count() > old_len)
         newToken = tokens.first()
-        self.assertEquals(newToken.token, FAKE_ANDROID_ID)
+        self.assertEquals(newToken.token, AndroidTests.FAKE_ANDROID_ID)
 
     def test_bad_register_token(self):
         # Check if there is no user
-        pass
+        c = Client()
+        response = c.post(reverse("registerToken"), dumps({"registrationToken": AndroidTests.FAKE_ANDROID_ID}), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))

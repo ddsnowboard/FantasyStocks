@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.http import JsonResponse
 from stocks.models import *
-from stocksApi.models import SessionId
+from stocksApi.models import SessionId, AndroidToken
 from json import loads
 
 def getError(message):
@@ -432,7 +432,7 @@ def getToken(request):
 def registerToken(request):
     post = loads(request.body.decode("UTF-8"))
     get = request.GET
-    user = getUser()
+    user = getUser(request)
     if not user:
         return getPermError()
 
