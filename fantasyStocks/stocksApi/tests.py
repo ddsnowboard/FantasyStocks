@@ -624,3 +624,22 @@ class CreationTests(TestCase):
 
         randomFloor.refresh_from_db()
         self.assertFalse(randomStock in randomFloor.stocks.all())
+
+class AndroidTests(TestCase):
+    FAKE_ANDROID_ID = "kajslfjoiehjfijlkfajsorijeifajsifjeoifjosjflkesajfoiewjfj";
+    def test_register_token(self):
+        user = User.objects.create_user(username=USERNAME, password=PASSWORD)
+        sessionId = SessionId(associated_user=user)
+        sessionId.save()
+        c = Client()
+        old_len = AndroidToken.objects.filter(user=user).count()
+        response = c.post(reverseWithSession("registerToken", sessionId), dumps({"registrationToken": FAKE_ANDROID_ID}))
+
+        tokens = AndroidToken.objects.filter(user=user)
+        self.assertTrue(tokens.count() > old_len)
+        newToken = tokens.first()
+        self.assertEquals(newToken.token, FAKE_ANDROID_ID)
+
+    def test_bad_register_token(self):
+        # Check if there is no user
+        pass
