@@ -137,7 +137,7 @@ class PlayerTestCase(StaticLiveServerTestCase):
         player = Player.objects.get(user=user, floor=floor)
         client = Client()
         client.force_login(user)
-        for i in [f for f in Floor.objects.all() if not f in [p for p in Player.objects.filter(user=user)]]:
+        for i in [f for f in Floor.objects.all() if not f in [p.floor for p in Player.objects.filter(user=user)]]:
             client.get(reverse("join", args=[i.pk]))
 
         response = client.get(reverse("joinFloor"))
@@ -145,6 +145,7 @@ class PlayerTestCase(StaticLiveServerTestCase):
         Player.objects.filter(user=user).delete()
         response = client.get(reverse("joinFloor"))
         self.assertTrue(response.context[-1]["floors_exist"])
+
     def test_scoring(self):
         floor = Floor.objects.all()[0]
         DEFAULT_PRICE = 5

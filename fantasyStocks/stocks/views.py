@@ -84,7 +84,6 @@ def create_floor(request):
         if form.is_valid():
             floor = form.save()
             floor.owner = request.user
-            newPlayer = Player.objects.create(user=request.user, floor=floor)
             floor.save()
             for s in floor.stocks.all():
                 floor.floorPlayer.stocks.add(s)

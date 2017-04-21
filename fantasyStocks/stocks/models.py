@@ -195,6 +195,12 @@ class Floor(models.Model):
             self.floorPlayer = newFloorPlayer
             super(Floor, self).save(*args, **kwargs)
 
+        if self.owner and not Player.objects.filter(user=self.owner, floor=self).exists():
+            # We also need to make a player on the floor for the owner the first time
+            newPlayer = Player(user=self.owner, floor=self)
+            newPlayer.save()
+            super(Floor, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.name
     def leaders(self):
