@@ -159,6 +159,20 @@ class ViewingTests(TestCase):
         response = c.get(reverseWithSession("viewStockSuggestion", goodSessionId, args=(goodSuggestion.pk, )))
         self.assertEquals(loads(response.content.decode("UTF-8")), loads(JsonResponse(goodSuggestion.toJSON()).content.decode("UTF-8")))
 
+    def test_hides_private_floors(self):
+        c = Client()
+        user = User.objects.all().first()
+        privateFloor = Floor(name="hiddenFloor", permissiveness="open", owner=user, public=False)
+        privateFloor.save()
+        response = c.get(reverse("viewAllFloors"))
+        floors = map(lambda x: Floor.objects.get(pk=x["id"]), loads(response.content.decode("UTF-8")))
+        for f in floors: 
+            self.assertTrue(f.public)
+        # Test shows private floors that user is on
+        sessionId = SessionId(associated_user=user)
+        sessionId.save()
+        response = c.get(reverseWithSession("viewAllFloors", sessionId))
+        self.assertTrue(privateFloor.pk in [f["id"] for f in loads(response.content.decode("UTF-8"))])
 
 class CreationTests(TestCase):
     fixtures = ["fixture.json"]

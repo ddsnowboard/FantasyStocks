@@ -138,7 +138,12 @@ def viewStockSuggestion(request, pkSuggestion = None):
 
 @csrf_exempt
 def viewFloor(request, pkFloor = None):
-    return JsonResponse(getObject(Floor, pkFloor), safe=False)
+    user = getUser(request)
+    userPk = user.pk if user else -1
+    floors = getObject(Floor, pkFloor)
+    if not pkFloor:
+        floors = list(filter(lambda x: x["public"] or x["owner"]["id"] == userPk, floors))
+    return JsonResponse(floors, safe=False)
 
 @csrf_exempt
 def createUser(request):
