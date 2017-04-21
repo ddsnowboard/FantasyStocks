@@ -3,6 +3,7 @@ import dateutil.parser
 from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from django.db import IntegrityError
 from django.http import JsonResponse
 from stocks.models import *
 from stocksApi.models import SessionId, AndroidToken
@@ -157,7 +158,10 @@ def createUser(request):
     else:
         return getParamError("username")
 
-    newUser = User.objects.create_user(**userDict)
+    try:
+        newUser = User.objects.create_user(**userDict)
+    except IntegrityError:
+        return getError("That username is already taken")
     return JsonResponse(userJSON(newUser))
 
 @csrf_exempt

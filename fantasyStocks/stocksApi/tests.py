@@ -167,10 +167,11 @@ class CreationTests(TestCase):
         email = "test@test.net"
         password = "thisisapassword"
         username = "test"
-        data = {"email": email, "password": password}
-        response = c.post(reverse("createUser"), dumps(data), content_type="applcation/json")
-        self.assertTrue("error" in response.content.decode("UTF-8"))
+        data = {}
+        data["email"] = email
+        data["password"] = password
         data["username"] = username
+
         response = c.post(reverse("createUser"), dumps(data), content_type="application/json")
 
         try:
@@ -179,6 +180,24 @@ class CreationTests(TestCase):
             self.assertTrue(False)
 
         self.assertEquals(loads(response.content.decode("UTF-8")), loads(JsonResponse(userJSON(newUser)).content.decode("UTF-8")))
+
+    def test_bad_create_user(self):
+        email = "test@test.net"
+        password = "thisisapassword"
+        username = "test"
+        c = Client()
+        data = {}
+
+        # Test demands username
+        data["email"] = email
+        data["password"] = password
+        response = c.post(reverse("createUser"), dumps(data), content_type="applcation/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
+
+        data["username"] = User.objects.all().first().username
+
+        response = c.post(reverse("createUser"), dumps(data), content_type="application/json")
+        self.assertTrue("error" in response.content.decode("UTF-8"))
 
     def test_create_player(self):
         c = Client()
