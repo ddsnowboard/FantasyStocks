@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.core.mail import send_mail
 from django.contrib import admin
 import stocks
+import stocksApi
 from stocks.models import Player, Floor, Stock, StockAPIError
 from django.http import HttpResponse
 import sys

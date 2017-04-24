@@ -14,7 +14,6 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 from urllib import request as py_request
 import json
 
-FLOOR_USER = User.objects.get(groups__name__exact="Floor")
 # IMPORTANT: Keep jQuery at the beginning or else it won't load first and bad stuff will happen.
 STANDARD_SCRIPTS = ["//code.jquery.com/jquery-1.11.3.min.js"]
 
@@ -85,13 +84,9 @@ def create_floor(request):
         if form.is_valid():
             floor = form.save()
             floor.owner = request.user
-            newPlayer = Player.objects.create(user=request.user, floor=floor)
-            newFloorPlayer = Player.objects.create(user=FLOOR_USER, floor=floor)
-            newFloorPlayer.save()
-            floor.floorPlayer = newFloorPlayer
             floor.save()
             for s in floor.stocks.all():
-                newFloorPlayer.stocks.add(s)
+                floor.floorPlayer.stocks.add(s)
             return redirect(reverse("dashboard"), permanent=False)
         else:
             outputDict["form"] = form
@@ -200,7 +195,7 @@ def editAccount(request):
 
 @login_required
 def editFloor(request, pkFloor=None):
-    scripts = STANDARD_SCRIPTS + [static("common.js"), reverse("editFloorJS",kwargs={"pkFloor": pkFloor})]
+    scripts = STANDARD_SCRIPTS + [static("common.js"), reverse("editFloorJS", kwargs={"pkFloor": pkFloor})]
     if not pkFloor:
         raise RuntimeError("You didn't pass in a floor.")
     try:

@@ -21,6 +21,20 @@ class StockAPIError(Exception):
 class TradeError(Exception):
     pass
 
+def userJSON(user):
+    retval = {}
+    retval['id'] = user.id
+    retval['username'] = user.username
+    retval['players'] = [p.toShortJSON() for p in Player.objects.filter(user=user)]
+    return retval
+
+def userShortJSON(user):
+    retval = {}
+    retval['id'] = user.id
+    retval['username'] = user.username
+    retval['players'] = [p.pk for p in Player.objects.filter(user=user)]
+    return retval
+
 class RemoteStockData:
     """
     An object that holds the data received when a stock is updated
@@ -52,6 +66,8 @@ class RemoteStockData:
 class Stock(models.Model):
     company_name = models.CharField(max_length=50, default="", blank=True)
     symbol = models.CharField(max_length=4)
+    # This 20 minute delta is there so that the update() method will actually get a new price the first time 
+    # it's called.
     last_updated = models.DateTimeField(default=timezone.now() - timedelta(minutes=20))
     image = models.ImageField(upload_to=get_upload_location, blank=True, default=settings.MEDIA_URL + "default")
     price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
@@ -91,6 +107,28 @@ class Stock(models.Model):
         return (self.price * ((self.price - self.last_price) / self.last_price)) * 100
     def format_for_json(self):
         return {"symbol": self.symbol, "name": self.company_name}
+
+    def toJSON(self):
+        retval = {}
+        retval['id'] = self.pk
+        retval['companyName'] = self.company_name
+        retval['symbol'] = self.symbol
+        retval['lastUpdated'] = self.last_updated
+        retval['price'] = self.price
+        retval['change'] = self.change
+        retval['stockSuggestions'] = [s.toShortJSON() for s in StockSuggestion.objects.filter(stock=self)]
+        return retval
+
+    def toShortJSON(self):
+        retval = {}
+        retval['id'] = self.pk
+        retval['companyName'] = self.company_name
+        retval['symbol'] = self.symbol
+        retval['lastUpdated'] = self.last_updated
+        retval['price'] = self.price
+        retval['change'] = self.change
+        retval['stockSuggestions'] = [s.pk for s in StockSuggestion.objects.filter(stock=self)]
+        return retval
 
     @staticmethod
     def remote_load_price(symbol):
@@ -147,6 +185,21 @@ class Floor(models.Model):
     floorPlayer = models.ForeignKey("Player", related_name="FloorPlayer", null=True)
     public = models.BooleanField(default=True)
     num_stocks = models.IntegerField(default=10)
+
+    def save(self, *args, **kwargs):
+        super(Floor, self).save(*args, **kwargs)
+        if self.floorPlayer == None:
+            floorUser = User.objects.get(groups__name__exact="Floor")
+            newFloorPlayer = Player.objects.create(user=floorUser, floor=self)
+            newFloorPlayer.save()
+            self.floorPlayer = newFloorPlayer
+            super(Floor, self).save(*args, **kwargs)
+
+        if self.owner and not Player.objects.filter(user=self.owner, floor=self).exists():
+            # We also need to make a player on the floor for the owner the first time
+            newPlayer = Player(user=self.owner, floor=self)
+            newPlayer.save()
+            super(Floor, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -229,6 +282,31 @@ class Floor(models.Model):
                 "name": self.name, "permissiveness": self.permissiveness, "pkOwner": self.owner.pk, 
                 "pkFloorPlayer": self.floorPlayer.pk, "public": self.public, "num_stocks": self.num_stocks}
 
+    def toJSON(self):
+        retval = {}
+        retval['id'] = self.pk
+        retval['name'] = self.name
+        retval['permissiveness'] = self.permissiveness
+        retval['owner'] = userShortJSON(self.owner)
+        retval['floorPlayer'] = self.floorPlayer.toShortJSON()
+        retval['public'] = self.public
+        retval['numStocks'] = self.num_stocks
+        retval['stocks'] = [s.toShortJSON() for s in self.stocks.all()]
+        return retval
+
+    def toShortJSON(self):
+        retval = {}
+        retval['id'] = self.pk
+        retval['name'] = self.name
+        retval['permissiveness'] = self.permissiveness
+        retval['owner'] = self.owner.pk
+        retval['floorPlayer'] = self.floorPlayer.pk
+        retval['public'] = self.public
+        retval['numStocks'] = self.num_stocks
+        retval['stocks'] = [s.pk for s in self.stocks.all()]
+        return retval
+
+
 class Player(models.Model):
     """
     This model represents a specific player on a specific floor. The player account is represented by a Django `User`
@@ -283,6 +361,32 @@ class Player(models.Model):
     def to_json(self):
         return {"pkUser": self.user.pk, "pkFloor": self.floor.pk, "stocks": ",".join([s.symbol for s in self.stocks.all()]), "points": self.points}
 
+    def toJSON(self):
+        retval = {}
+        retval['id'] = self.pk
+        retval['user'] = userShortJSON(self.user)
+        retval['floor'] = self.floor.toShortJSON()
+        retval['stocks'] = [s.toShortJSON() for s in self.stocks.all()]
+        retval['points'] = self.points
+        retval['isFloor'] = self.isFloor()
+        retval['sentTrades'] = [t.toShortJSON() for t in Trade.objects.filter(sender=self)]
+        retval['receivedTrades'] = [t.toShortJSON() for t in Trade.objects.filter(recipient=self)]
+        retval['isFloorOwner'] = self.floor.owner == self.user
+        return retval
+
+    def toShortJSON(self):
+        retval = {}
+        retval['id'] = self.pk
+        retval['user'] = self.user.pk
+        retval['floor'] = self.floor.pk
+        retval['stocks'] = [s.pk for s in self.stocks.all()]
+        retval['points'] = self.points
+        retval['isFloor'] = self.isFloor()
+        retval['sentTrades'] = [t.pk for t in Trade.objects.filter(sender=self)]
+        retval['receivedTrades'] = [t.pk for t in Trade.objects.filter(recipient=self)]
+        retval['isFloorOwner'] = self.floor.owner == self.user
+        return retval
+
 class Trade(models.Model):
     recipient = models.ForeignKey(Player)
     # recipientStocks and senderStocks are the stocks that those people have right now and will give away in the trade. 
@@ -335,6 +439,28 @@ class Trade(models.Model):
                 "other_stocks": ",".join(i.symbol for i in self.senderStocks.all())}
         return d
 
+    def toJSON(self):
+        retval = {}
+        retval['id'] = self.pk
+        retval['recipientPlayer'] = self.recipient.toShortJSON()
+        retval['recipientStocks'] = [s.toShortJSON() for s in self.recipientStocks.all()]
+        retval['senderPlayer'] = self.sender.toShortJSON()
+        retval['senderStocks'] = [s.toShortJSON() for s in self.senderStocks.all()]
+        retval['floor'] = self.floor.toShortJSON()
+        retval['date'] = self.date.isoformat()
+        return retval
+
+    def toShortJSON(self):
+        retval = {}
+        retval['id'] = self.pk
+        retval['recipientPlayer'] = self.recipient.pk
+        retval['recipientStocks'] = [s.pk for s in self.recipientStocks.all()]
+        retval['senderPlayer'] = self.sender.pk
+        retval['senderStocks'] = [s.pk for s in self.senderStocks.all()]
+        retval['floor'] = self.floor.pk
+        retval['date'] = self.date.isoformat()
+        return retval
+
 class StockSuggestion(models.Model):
     """
     This is what holds someone's request for a stock to be added to a permissive floor.
@@ -355,5 +481,31 @@ class StockSuggestion(models.Model):
                 self.requesting_player.stocks.add(self.stock)
                 self.requesting_player.save()
         self.delete()
+
+    def isValid(self):
+        if self.stock in self.floor.stocks.all():
+            return False
+        if not self.requesting_player.floor == self.floor:
+            return False
+        return True
+
     def __str__(self):
         return "{} wants {} added to {}".format(self.requesting_player.get_name(), self.stock, self.floor)
+
+    def toJSON(self):
+        retval = {}
+        retval['id'] = self.pk
+        retval['stock'] = self.stock.toShortJSON()
+        retval['requestingPlayer'] = self.requesting_player.toShortJSON()
+        retval['floor'] = self.floor.toShortJSON()
+        retval['date'] = self.date.isoformat()
+        return retval
+
+    def toShortJSON(self):
+        retval = {}
+        retval['id'] = self.pk
+        retval['stock'] = self.stock.pk
+        retval['requestingPlayer'] = self.requesting_player.pk
+        retval['floor'] = self.floor.pk
+        retval['date'] = self.date.isoformat()
+        return retval

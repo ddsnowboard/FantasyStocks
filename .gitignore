@@ -58,7 +58,10 @@ target/
 
 # virtual environment
 venv/*
+*activate.sh
 
 # undiffable files
 *.sqlite3
 tags
+
+
