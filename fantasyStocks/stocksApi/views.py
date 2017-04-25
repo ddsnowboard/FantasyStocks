@@ -96,7 +96,7 @@ def viewPlayer(request, pkPlayer = None):
 
 @csrf_exempt
 def viewStock(request, pkStock = None):
-    return JsonResponse(getObject(Stock, pkUser), safe=False)
+    return JsonResponse(getObject(Stock, pkStock), safe=False)
 
 @csrf_exempt
 def viewTrade(request, pkTrade = None):
