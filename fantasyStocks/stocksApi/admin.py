@@ -1,6 +1,9 @@
 from django.contrib import admin
 import stocksApi
 
+def deleteAllSessionIds(admin, request, queryset):
+    stocksApi.models.SessionId.objects.all().delete()
+deleteAllSessionIds.short_description = "Delete all session ids"
 # Register your models here.
 
 @admin.register(stocksApi.models.AndroidToken)
@@ -11,4 +14,4 @@ class AndroidTokenAdmin(admin.ModelAdmin):
 @admin.register(stocksApi.models.SessionId)
 class SessionIdAdmin(admin.ModelAdmin):
     fields = ("id_string", "associated_user", "exp_date")
-    actions = []
+    actions = [deleteAllSessionIds]
