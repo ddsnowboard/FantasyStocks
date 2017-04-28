@@ -6,6 +6,7 @@ from stocksApi.models import SessionId, AndroidToken
 from stocks.models import *
 from json import loads, dumps
 from django.core.urlresolvers import reverse
+from stocksApi.views import tradeInvolvesUser
 
 USERNAME = "user123"
 PASSWORD = "thePasswordIs"
@@ -65,6 +66,8 @@ class ViewingTests(TestCase):
 
     def test_all_players_blocks_trades(self):
         c = Client()
+        trade = getTrade()
+        trade.save()
         response = c.get(reverse("viewAllPlayers"))
         jsonObj = loads(response.content.decode("UTF-8"))
         for i in jsonObj:
@@ -80,8 +83,11 @@ class ViewingTests(TestCase):
         jsonObj = loads(response.content.decode("UTF-8"))
         for i in jsonObj:
             if i["id"] != player.id:
-                self.assertFalse(i["sentTrades"])
-                self.assertFalse(i["receivedTrades"])
+                self.assertFalse([i for i in i["sentTrades"] if not tradeInvolvesUser(Trade.objects.get(pk=i["id"]), player.user)])
+                self.assertFalse([i for i in i["receivedTrades"] if not tradeInvolvesUser(Trade.objects.get(pk=i["id"]), player.user)])
+
+                self.assertEquals([i for i in i["sentTrades"] if tradeInvolvesUser(Trade.objects.get(pk=i["id"]), player.user)], i["sentTrades"])
+                self.assertEquals([i for i in i["receivedTrades"] if tradeInvolvesUser(Trade.objects.get(pk=i["id"]), player.user)], i["receivedTrades"])
             else:
                 self.assertEquals(len(i["sentTrades"]),
                                   Trade.objects.filter(sender=player).count())
@@ -91,6 +97,8 @@ class ViewingTests(TestCase):
     
     def test_one_player_blocks_trades(self):
         c = Client() 
+        trade = getTrade()
+        trade.save()
         for p in Player.objects.all():
             session = SessionId(associated_user=p.user)
             session.save()
