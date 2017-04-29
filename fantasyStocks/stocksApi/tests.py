@@ -182,6 +182,15 @@ class ViewingTests(TestCase):
         response = c.get(reverseWithSession("viewAllFloors", sessionId))
         self.assertTrue(privateFloor.pk in [f["id"] for f in loads(response.content.decode("UTF-8"))])
 
+    def test_players_shows_floor_player(self):
+        c = Client()
+        floor = Floor.objects.all().first()
+        for p in Player.objects.filter(floor=floor):
+            response = c.get(reverse("viewPlayer", args=(p.pk, )))
+            if loads(response.content.decode("UTF-8"))["isFloor"]:
+                return
+        self.fail()
+
 class CreationTests(TestCase):
     fixtures = ["fixture.json"]
     def test_create_user(self):
