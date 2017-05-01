@@ -448,8 +448,9 @@ def registerToken(request):
     if not post.get("registrationToken", None):
         return getParamError("registrationToken")
     else:
-        token = AndroidToken(user=user, token=post["registrationToken"])
-        token.save()
+        if not AndroidToken.objects.filter(token=post["registrationToken"]):
+            token = AndroidToken(user=user, token=post["registrationToken"])
+            token.save()
         return JsonResponse({"success": "Your registration id was successfully registered with {}".format(user.username)})
 
 @csrf_exempt

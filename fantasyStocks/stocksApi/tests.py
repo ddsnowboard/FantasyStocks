@@ -690,6 +690,22 @@ class AndroidTests(TestCase):
         newToken = tokens.first()
         self.assertEquals(newToken.token, AndroidTests.FAKE_ANDROID_ID)
 
+    def test_register_token_twice(self):
+        user = User.objects.create_user(username=USERNAME, password=PASSWORD)
+        sessionId = SessionId(associated_user=user)
+        sessionId.save()
+        c = Client()
+        old_len = AndroidToken.objects.filter(user=user).count()
+        response = c.post(reverseWithSession("registerToken", sessionId), dumps({"registrationToken": AndroidTests.FAKE_ANDROID_ID}), content_type="application/json")
+
+        tokens = AndroidToken.objects.filter(user=user)
+        self.assertTrue(tokens.count() > old_len)
+        newToken = tokens.first()
+        self.assertEquals(newToken.token, AndroidTests.FAKE_ANDROID_ID)
+
+        response = c.post(reverseWithSession("registerToken", sessionId), dumps({"registrationToken": AndroidTests.FAKE_ANDROID_ID}), content_type="application/json")
+        self.assertTrue(AndroidToken.objects.filter(token=AndroidTests.FAKE_ANDROID_ID).count() == 1)
+
     def test_bad_register_token(self):
         # Check if there is no user
         c = Client()

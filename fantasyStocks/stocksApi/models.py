@@ -31,7 +31,7 @@ class AndroidToken(models.Model):
     TOKEN = settings.FCM_TOKEN
     FIREBASE_ID_KEY_LENGTH = 200
     user = models.ForeignKey(User, null=False)
-    token = models.CharField(max_length=FIREBASE_ID_KEY_LENGTH, null=False)
+    token = models.CharField(max_length=FIREBASE_ID_KEY_LENGTH, unique=True, null=False)
 
     @staticmethod
     def pingUser(user, title, message):
