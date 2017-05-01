@@ -229,6 +229,8 @@ This endpoint only demands the session id (in the GET querystring) and the `regi
 {"success": "Your registration id was successfully registered with [username]"}
 ```
 
+Note that the `registrationsToken`s are unique, but registering a token twice is not an error.
+
 #### `POST /android/deregister/`
 
 This endpoint takes the same data as the `/register/` endpoint, but it removes the relation between the `registrationToken` and the `User`.
