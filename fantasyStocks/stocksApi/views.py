@@ -76,21 +76,25 @@ def viewPlayer(request, pkPlayer = None):
     retval = getObject(Player, pkPlayer)
     user = getUser(request)
 
-    if type(retval) == type([]):
-        for p in retval:
-            playerUser = Player.objects.get(pk=p['id'])
-            if playerUser == user:
-                continue
-            else:
-                p["receivedTrades"] = list(filter(lambda t: tradeInvolvesUser(Trade.objects.get(pk=t["id"]), user),
-                       p["receivedTrades"]))
-                p["sentTrades"] = list(filter(lambda t: tradeInvolvesUser(Trade.objects.get(pk=t["id"]), user),
-                       p["sentTrades"]))
-    else:
-        retval["receivedTrades"] = list(filter(lambda t: tradeInvolvesUser(Trade.objects.get(pk=t["id"]), user),
-                retval["receivedTrades"]))
-        retval["sentTrades"] =  list(filter(lambda t: tradeInvolvesUser(Trade.objects.get(pk=t["id"]), user),
-                retval["sentTrades"]))
+    try: 
+        if type(retval) == type([]):
+            for p in retval:
+                playerUser = Player.objects.get(pk=p['id'])
+                if playerUser == user:
+                    continue
+                else:
+                    p["receivedTrades"] = list(filter(lambda t: tradeInvolvesUser(Trade.objects.get(pk=t["id"]), user),
+                           p["receivedTrades"]))
+                    p["sentTrades"] = list(filter(lambda t: tradeInvolvesUser(Trade.objects.get(pk=t["id"]), user),
+                           p["sentTrades"]))
+        else:
+            retval["receivedTrades"] = list(filter(lambda t: tradeInvolvesUser(Trade.objects.get(pk=t["id"]), user),
+                    retval["receivedTrades"]))
+            retval["sentTrades"] =  list(filter(lambda t: tradeInvolvesUser(Trade.objects.get(pk=t["id"]), user),
+                    retval["sentTrades"]))
+    except Trade.DoesNotExist:
+        # I thought I had seen the end of my pain. Then I encountered a race condition.
+        return viewPlayer(request, pkPlayer)
 
     return JsonResponse(retval, safe=False)
 
