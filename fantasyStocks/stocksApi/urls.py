@@ -5,7 +5,7 @@ from json import dumps
 from . import views
 
 urlpatterns = [
-    url("user/view/([0-9]+)/", views.viewUser, name="viewUser"),
+    url("user/view/([0-9]+)", views.viewUser, name="viewUser"),
     url("user/view/", views.viewUser, name="viewAllUsers"),
     url("user/create/", views.createUser, name="createUser"), 
     
