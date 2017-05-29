@@ -94,6 +94,7 @@ def viewPlayer(request, pkPlayer = None):
                     retval["sentTrades"]))
     except Trade.DoesNotExist:
         # I thought I had seen the end of my pain. Then I encountered a race condition.
+        # See github comment on commit a05383efd15951adcc33c2dc5cb4453fe38df885 for more information
         return viewPlayer(request, pkPlayer)
 
     return JsonResponse(retval, safe=False)
