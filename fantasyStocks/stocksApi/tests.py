@@ -711,3 +711,24 @@ class AndroidTests(TestCase):
         c = Client()
         response = c.post(reverse("registerToken"), dumps({"registrationToken": AndroidTests.FAKE_ANDROID_ID}), content_type="application/json")
         self.assertTrue("error" in response.content.decode("UTF-8"))
+
+class TesterTests(TestCase):
+    def test_get(self):
+        c = Client()
+        response = c.get(reverse("tester")+"?apples=pears&rocks=box")
+        expected = {"get": {"apples": "pears", "rocks": "box"}, "post": {}}
+        self.assertEquals(loads(response.content.decode("UTF-8")), expected)
+
+    def test_both(self):
+        c = Client()
+        expected_post = {"helicopter": "airplane", "seesaw": "hat"}
+        response = c.post(reverse("tester")+"?apples=pears&rocks=box", dumps(expected_post), content_type="application/json")
+        expected = {"get": {"apples": "pears", "rocks": "box"}, "post": expected_post}
+        self.assertEquals(loads(response.content.decode("UTF-8")), expected)
+
+    def test_post(self):
+        c = Client()
+        expected_post = {"helicopter": "airplane", "seesaw": "hat"}
+        response = c.post(reverse("tester"), dumps(expected_post), content_type="application/json")
+        expected = {"get": {}, "post": expected_post}
+        self.assertEquals(loads(response.content.decode("UTF-8")), expected)

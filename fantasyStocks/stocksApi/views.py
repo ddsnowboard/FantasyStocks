@@ -479,4 +479,14 @@ def deregisterToken(request):
 
 @csrf_exempt
 def tester(request):
-    return JsonResponse(loads(request.body.decode("UTF-8")) if request.body else dict(request.GET), safe=False)
+    ret = {}
+    if request.body:
+        ret["post"] = loads(request.body.decode("UTF-8"))
+    else:
+        ret["post"] = {}
+
+    if request.GET:
+        ret["get"] = dict(request.GET.items())
+    else:
+        ret["get"] = {}
+    return JsonResponse(ret, safe=False)
