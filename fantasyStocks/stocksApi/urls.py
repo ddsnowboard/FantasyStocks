@@ -38,8 +38,8 @@ urlpatterns = [
 
     url("auth/getKey", views.getToken, name="getKey"),
 
-    url("android/register/", views.registerToken, name="registerToken"), 
-    url("android/deregister/", views.deregisterToken, name="deregisterToken"), 
+    url("android/register/", views.registerAndroidToken, name="registerToken"), 
+    url("android/deregister/", views.deregisterAndroidToken, name="deregisterToken"), 
 
     url("test/", views.tester, name="tester")
 ]

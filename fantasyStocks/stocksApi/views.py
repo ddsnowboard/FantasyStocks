@@ -443,7 +443,7 @@ def getToken(request):
     return JsonResponse({"sessionId": newSessionId.id_string, "user": userJSON(user)})
 
 @csrf_exempt
-def registerToken(request):
+def registerAndroidToken(request):
     post = loads(request.body.decode("UTF-8"))
     get = request.GET
     user = getUser(request)
@@ -459,7 +459,7 @@ def registerToken(request):
         return JsonResponse({"success": "Your registration id was successfully registered with {}".format(user.username)})
 
 @csrf_exempt
-def deregisterToken(request):
+def deregisterAndroidToken(request):
     post = loads(request.body.decode("UTF-8"))
     get = request.GET
     user = getUser(request)
