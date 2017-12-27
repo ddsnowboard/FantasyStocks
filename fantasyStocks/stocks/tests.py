@@ -158,7 +158,9 @@ class PlayerTestCase(StaticLiveServerTestCase):
             s.update()
         for p in Player.objects.filter(floor=floor):
             if not p.isFloor():
-                self.assertAlmostEqual(p.points, reduce(lambda x, y: x + y, [s.get_score() for s in p.stocks.all()]), delta=10)
+                self.assertAlmostEqual(p.points,
+                                       reduce(lambda x, y: x + y,
+                                              [s.get_score() for s in p.stocks.all()]), delta=10)
         print("Finished! Took {} seconds!".format(time.clock() - start))
 
 class SuggestionTestCase(StaticLiveServerTestCase):

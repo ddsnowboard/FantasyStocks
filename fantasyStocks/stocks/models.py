@@ -5,11 +5,16 @@ from urllib import request
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from django.utils import timezone
-import csv
+import json
 from django.contrib.auth.models import User, Group
 from datetime import timedelta
 from django.conf import settings
 import sys
+from datetime import date
+from datetime import timedelta
+from csv import reader as csvreader
+
+from pprint import pprint
 
 # This gets the location for the image files for the Stock model. 
 def get_upload_location(instance, filename):
@@ -131,6 +136,11 @@ class Stock(models.Model):
         return retval
 
     @staticmethod
+    def getAPIKey():
+        from os import environ
+        return environ["ALPHAVANTAGE_KEY"]
+
+    @staticmethod
     def remote_load_price(symbol):
         """
         Given a symbol as a string, returns a RemoteStockData object with the given symbol's 
@@ -143,28 +153,56 @@ class Stock(models.Model):
 
         # This dict holds all the things we're getting from the API. The keys are the names, and the values
         # are the representations of those things for the API. See the docs (linked above)
-        INFO = {"price": "a", "name": "n", "symbol": "s", "change": "c1", "open": "o", "close": "p"}
-        URL = "http://finance.yahoo.com/d/quotes.csv?s={symbol}&f={info}"
-        url = URL.format(**{"symbol": symbol, "info": "".join(INFO.values())})
+
+        # This is the dumbest thing I've ever heard of 
+        SYMBOL_KEY = "1. symbol"
+        PRICE_KEY = "2. price"
+        URL = "https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&symbols={symbol}&apikey={key}"
+        url = URL.format(symbol=symbol, key=Stock.getAPIKey())
         try:
             response = request.urlopen(url).read().decode("UTF-8")
-        except HTTPError:
-            print("Got an HTTPError")
+        except HTTPError as e:
+            print("Got an HTTPError; was {}".format(e))
+            print("URL was {}".format(url))
             return Stock.remote_load_price(symbol)
 
-        # I know dicts aren't ordered, but for an unchanging dict, dict.keys() is guaranteed to match up to dict.values()
-        # Fun fact
-        data = {i:j for (i, j) in zip(INFO.keys(), list(csv.reader(response.split("\n")))[0])}
-        possible_prices = [data["price"], data["close"], data["open"]]
-        for i in possible_prices:
-            try:
-                price = float(i)
-            except ValueError:
-                continue
-            break
-        else:
-            raise StockAPIError("The stock {} has no price! Data is {}".format(symbol, str(data)))
-        return RemoteStockData(data["symbol"], data["name"], price, data["change"])
+        data = json.loads(response)
+        print("Symbol is {}".format(symbol))
+        pprint(data["Stock Quotes"])
+        quote = data["Stock Quotes"][0]
+        assert(quote[SYMBOL_KEY] == symbol)
+        price = float(quote[PRICE_KEY])
+        change = price - Stock.getYesterdaysPrice(symbol)
+        name = Stock.nameFromSymbol(symbol)
+        return RemoteStockData(quote[SYMBOL_KEY], name, price, change)
+
+    @staticmethod
+    def getYesterdaysPrice(symbol):
+        TIME_SERIES_DATA_KEY = "Time Series (Daily)"
+        CLOSE_PRICE_KEY = "4. close"
+        url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}".format(symbol, Stock.getAPIKey())
+        response = request.urlopen(url).read().decode("UTF-8")
+        jsonObj = json.loads(response)
+
+        todaysDate = date.today()
+        aDay = timedelta(days=1)
+        lastDate = todaysDate - aDay
+        isAWeekday = lambda x: x.weekday() <= 4
+        while not (isAWeekday(lastDate) and lastDate.isoformat() in jsonObj[TIME_SERIES_DATA_KEY]):
+            lastDate -= aDay
+        dateStr = lastDate.isoformat()
+        dayData = jsonObj[TIME_SERIES_DATA_KEY][dateStr]
+        return float(dayData[CLOSE_PRICE_KEY])
+    
+    @staticmethod
+    def nameFromSymbol(symbol):
+        FILE_PATH = "data/fullCompanyList.csv"
+        with open(FILE_PATH, "r") as f:
+            companies = csvreader(f)
+            for company in companies:
+                if company[0] == symbol:
+                    return company[1]
+        return None
 
 class Floor(models.Model):
     OPEN = "open"
