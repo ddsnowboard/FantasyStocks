@@ -88,6 +88,7 @@ class Stock(models.Model):
             price.apply(self)
             self.last_updated = timezone.now()
             self.save()
+            print("saved {}".format(self.symbol))
             # The database normalizes the input to two decimal places and makes 
             # sure that the negative and positive work on the dashboard, so I 
             # reload it here. With any luck, it's fast, but who knows. 
@@ -146,14 +147,6 @@ class Stock(models.Model):
         Given a symbol as a string, returns a RemoteStockData object with the given symbol's 
         name, price, and last change. 
         """
-        # This is the URL we will probably use. It returns CSV, but we'll just process it and 
-        # it'll come out just like it used to. That was a good decision. Also, I might be able to 
-        # do all the stocks at once now, which would be a lot faster. We'll see. 
-        # Also, here's docs: http://www.jarloo.com/yahoo_finance/
-
-        # This dict holds all the things we're getting from the API. The keys are the names, and the values
-        # are the representations of those things for the API. See the docs (linked above)
-
         # This is the dumbest thing I've ever heard of 
         SYMBOL_KEY = "1. symbol"
         PRICE_KEY = "2. price"
@@ -167,8 +160,6 @@ class Stock(models.Model):
             return Stock.remote_load_price(symbol)
 
         data = json.loads(response)
-        print("Symbol is {}".format(symbol))
-        pprint(data["Stock Quotes"])
         quote = data["Stock Quotes"][0]
         assert(quote[SYMBOL_KEY] == symbol)
         price = float(quote[PRICE_KEY])
