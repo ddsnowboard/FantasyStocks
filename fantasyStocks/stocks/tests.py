@@ -64,15 +64,15 @@ class TradeTestCase(TestCase):
         cls.otherUsers = createUsers(N)
         cls.testFloor = createFloor(cls.otherUsers[0])
 
+        cls.testUser = cls.otherUsers[0]
+        # I don't want to end up with a user in the list twice, as it were
+        cls.otherUsers = cls.otherUsers[1:]
+
         # We don't need to save this since we can get the players back whenever we want
         players = list(map(lambda u: Player(user=u, floor=cls.testFloor), cls.otherUsers))
 
         for p in players:
             p.save()
-
-        cls.testUser = cls.otherUsers[0]
-        # I don't want to end up with a user in the list twice, as it were
-        cls.otherUsers = cls.otherUsers[1:]
 
         cls.stocks = createStocks(N)
         cls.testFloor.stocks.add(*cls.stocks)
@@ -80,7 +80,7 @@ class TradeTestCase(TestCase):
         assignStocks(players, cls.stocks)
 
     def get_trade(self):
-        floor = cls.testFloor
+        floor = self.testFloor
         available_players = [p for p in Player.objects.filter(floor=floor) if not p.isFloor()]
         sender = available_players[0]
         recipient = available_players[1]
@@ -162,8 +162,11 @@ class TradeTestCase(TestCase):
         client = Client()
         client.force_login(trade.recipient.user)
         response = client.get(reverse("receivedTrade", kwargs={"pkTrade": trade.pk}))
+
+        # The code for these should return the same thing, so I am checking them for equality
         self.assertEqual(trade.toFormDict(), response.context[-1]["form"].data)
         self.assertContains(response, reverse("counterTrade", kwargs={"pkTrade": trade.pk, "pkFloor": trade.floor.pk}))
+
         response = client.get(reverse("counterTrade", kwargs={"pkTrade": trade.pk, "pkFloor": trade.floor.pk}))
         response = client.post(reverse("trade", kwargs={"pkCountering": trade.pk, "pkFloor": trade.floor.pk}), {"other_user": trade.sender.user.username, "user_stocks": ",".join(i.symbol for i in trade.recipientStocks.all()), "other_stocks": ",".join(i.symbol for i in trade.senderStocks.all())})
         self.assertRedirects(response, reverse("dashboard"))
@@ -173,31 +176,31 @@ class TradeTestCase(TestCase):
         self.assertEqual(list(newTrade.recipientStocks.all()), old_senderStocks)
 
     def test_add_stock(self):
-        floor = Floor.objects.all()[0]
-        for s in Stock.objects.all():
-            if not s in floor.stocks.all():
-                new_stock = s.symbol
-                break
-        self.assertNotEqual(new_stock, "")
-        new_stocks = ",".join([s.symbol for s in floor.stocks.all()] + [new_stock])
+        new_stock = Stock(symbol="SF")
+        new_stock.save()
+        floor = self.testFloor
+
+        new_stocks = ",".join([s.symbol for s in floor.stocks.all()] + [new_stock.symbol])
         form = EditFloorForm({"name": floor.name, "privacy": not floor.public, "number_of_stocks": floor.num_stocks, "stocks": new_stocks, "permissiveness": floor.permissiveness})
         self.assertTrue(form.is_valid())
         self.assertTrue(form.cleaned_data['stocks'])
         form.apply(floor)
-        stock = Stock.objects.get(symbol=new_stock)
+        stock = Stock.objects.get(symbol=new_stock.symbol)
         self.assertTrue(stock)
         self.assertIn(stock, floor.floorPlayer.stocks.all())
 
     def test_delete_stock(self):
         floor = Floor.objects.all()[0]
         stock_to_delete = choice(floor.stocks.all())
-        new_stocks = ','.join([s.symbol for s in floor.stocks.all() if not s.symbol == stock_to_delete.symbol])
+        new_stocks = ','.join(s.symbol for s in floor.stocks.all() if not s.pk == stock_to_delete.pk)
         form = EditFloorForm({"name": floor.name, "privacy": not floor.public, "number_of_stocks": floor.num_stocks, "stocks": new_stocks, "permissiveness": floor.permissiveness})
         self.assertIn(stock_to_delete, floor.stocks.all())
         self.assertTrue([p for p in Player.objects.filter(floor=floor) if stock_to_delete in p.stocks.all()])
         self.assertTrue(form.is_valid())
         self.assertTrue(form.cleaned_data['stocks'])
+
         form.apply(floor)
+
         self.assertNotIn(stock_to_delete, floor.stocks.all())
         self.assertFalse([p for p in Player.objects.filter(floor=floor) if stock_to_delete in p.stocks.all()])
 
