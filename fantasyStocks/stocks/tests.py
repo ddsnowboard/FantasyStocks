@@ -93,20 +93,22 @@ class TradeTestCase(TestCase):
 
     def test_self_trade(self):
         trade = self.get_trade()
+        trade.sender = trade.recipient
         recipient = trade.recipient
         sender = trade.sender
         floor = trade.floor
         senderStocks = list(trade.senderStocks.all())
         recipientStocks = list(trade.recipientStocks.all())
-        recipient = sender
-        for i in Stock.objects.all():
-            if not i in floor.stocks.all():
-                new_stock = i
-                break
+
+        # I know this is a magic number. We can go to space when all the problems we have on Earth are solved.
+        new_stock = Stock(symbol="SF")
+        new_stock.save()
+
         floor.stocks.add(new_stock)
         sender.stocks.add(new_stock)
         floor.save()
         sender.save()
+
         recipientStocks = [recipient.stocks.all().exclude(symbol=new_stock.symbol)[0]]
         senderStocks = [new_stock]
         trade.delete()
