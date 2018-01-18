@@ -88,7 +88,6 @@ class Stock(models.Model):
             price.apply(self)
             self.last_updated = timezone.now()
             self.save()
-            print("saved {}".format(self.symbol))
             # The database normalizes the input to two decimal places and makes 
             # sure that the negative and positive work on the dashboard, so I 
             # reload it here. With any luck, it's fast, but who knows. 
