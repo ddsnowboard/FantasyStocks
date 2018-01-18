@@ -39,7 +39,16 @@ def createUsers(n):
     return otherUsers
 
 def createFloor(owner):
-    testFloor = Floor(name="TestFloor")
+    def randomString(length):
+        from random import choice
+        import string
+        s = ""
+        for _ in range(length):
+            s += choice(string.ascii_letters)
+        return s
+
+    LENGTH = 5
+    testFloor = Floor(name="TestFloor" + randomString(LENGTH))
     testFloor.permissiveness = Floor.OPEN
     testFloor.owner = owner
     testFloor.save()
@@ -207,16 +216,41 @@ class TradeTestCase(TestCase):
         self.assertFalse([p for p in Player.objects.filter(floor=floor) if stock_to_delete in p.stocks.all()])
 
 class PlayerTestCase(TestCase):
-    fixtures = ["fixture.json"]
+
+    @classmethod
+    def setUpTestData(cls):
+        N = 10
+        cls.otherUsers = createUsers(N)
+        cls.testFloor = createFloor(cls.otherUsers[0])
+
+        cls.testUser = cls.otherUsers[0]
+        # I don't want to end up with a user in the list twice, as it were
+        cls.otherUsers = cls.otherUsers[1:]
+
+        # We don't need to save this since we can trivially get the players back whenever we want
+        players = list(map(lambda u: Player(user=u, floor=cls.testFloor), cls.otherUsers))
+
+        for p in players:
+            p.save()
+
+        cls.stocks = createStocks(N)
+        cls.testFloor.stocks.add(*cls.stocks)
+        cls.testFloor.save()
+        assignStocks(players, cls.stocks)
 
     def test_join_empty_floor(self):
-        floor = Floor.objects.all()[0]
-        user = User.objects.all().exclude(username="Floor")[0]
-        player = Player.objects.get(user=user, floor=floor)
+        # Make a new floor with nobody on it
+        floorOwner = self.otherUsers[1]
+        floor = createFloor(floorOwner)
+        user = self.otherUsers[0]
+
         client = Client()
         client.force_login(user)
-        for i in [f for f in Floor.objects.all() if not f in [p.floor for p in Player.objects.filter(user=user)]]:
-            client.get(reverse("join", args=[i.pk]))
+
+        self.assertNotIn(user, (p.user for p in Player.objects.filter(floor=floor)))
+
+        # Why is this a get? I don't think that's right...
+        client.get(reverse("join", args=[floor.pk]))
 
         response = client.get(reverse("joinFloor"))
         self.assertFalse(response.context[-1]["floors_exist"])
@@ -225,20 +259,25 @@ class PlayerTestCase(TestCase):
         self.assertTrue(response.context[-1]["floors_exist"])
 
     def test_scoring(self):
-        floor = Floor.objects.all()[0]
+        floor = self.testFloor
         DEFAULT_PRICE = 5
         start = time.clock()
         for p in Player.objects.all():
             p.points = 0
+            for s in p.stocks.all():
+                print("player {} has stock {}".format(p.user.username, s.symbol))
             p.save()
+
         for s in floor.stocks.all():
             s.price = DEFAULT_PRICE
             s.update()
+
         for p in Player.objects.filter(floor=floor):
             if not p.isFloor():
                 self.assertAlmostEqual(p.points,
                                        reduce(lambda x, y: x + y,
-                                              [s.get_score() for s in p.stocks.all()]), delta=10)
+                                              [s.get_score() for s in p.stocks.all()], 0), delta=10)
+
         print("Finished! Took {} seconds!".format(time.clock() - start))
 
 class SuggestionTestCase(TestCase):
