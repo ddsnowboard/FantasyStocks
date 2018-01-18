@@ -24,6 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 # One of these days, I should get a way to keep this safer while still having
 # in source control. Someday...
+# Use an env var. It's not that hard
 SECRET_KEY = '*imh(^2l3_!uoxr$z#((vovmj4xmqp*@p2&phrlqt7xyau*aqw'
 
 # SECURITY WARNING: don't run with debug turned on in production!

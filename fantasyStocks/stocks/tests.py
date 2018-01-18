@@ -64,29 +64,27 @@ def assignStocks(players, stocks):
     for p in players:
         p.save()
 
+def setUpClass(cls):
+    N = 10
+    cls.otherUsers = createUsers(N)
+    cls.testFloor = createFloor(cls.otherUsers[0])
+    cls.testUser = cls.otherUsers[0]
+    # I don't want to end up with a user in the list twice, as it were
+    cls.otherUsers = cls.otherUsers[1:]
+    # We don't need to save this since we can trivially get the players back whenever we want
+    players = list(map(lambda u: Player(user=u, floor=cls.testFloor), cls.otherUsers))
+    for p in players:
+        p.save()
+    cls.stocks = createStocks(N)
+    cls.testFloor.stocks.add(*cls.stocks)
+    cls.testFloor.save()
+    assignStocks(players, cls.stocks)
 
 class TradeTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        N = 10
-        cls.otherUsers = createUsers(N)
-        cls.testFloor = createFloor(cls.otherUsers[0])
-
-        cls.testUser = cls.otherUsers[0]
-        # I don't want to end up with a user in the list twice, as it were
-        cls.otherUsers = cls.otherUsers[1:]
-
-        # We don't need to save this since we can get the players back whenever we want
-        players = list(map(lambda u: Player(user=u, floor=cls.testFloor), cls.otherUsers))
-
-        for p in players:
-            p.save()
-
-        cls.stocks = createStocks(N)
-        cls.testFloor.stocks.add(*cls.stocks)
-        cls.testFloor.save()
-        assignStocks(players, cls.stocks)
+        setUpClass(cls)
 
     def get_trade(self):
         floor = self.testFloor
@@ -219,24 +217,7 @@ class PlayerTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        N = 10
-        cls.otherUsers = createUsers(N)
-        cls.testFloor = createFloor(cls.otherUsers[0])
-
-        cls.testUser = cls.otherUsers[0]
-        # I don't want to end up with a user in the list twice, as it were
-        cls.otherUsers = cls.otherUsers[1:]
-
-        # We don't need to save this since we can trivially get the players back whenever we want
-        players = list(map(lambda u: Player(user=u, floor=cls.testFloor), cls.otherUsers))
-
-        for p in players:
-            p.save()
-
-        cls.stocks = createStocks(N)
-        cls.testFloor.stocks.add(*cls.stocks)
-        cls.testFloor.save()
-        assignStocks(players, cls.stocks)
+        setUpClass(cls)
 
     def test_join_empty_floor(self):
         # Make a new floor with nobody on it
@@ -281,35 +262,40 @@ class PlayerTestCase(TestCase):
         print("Finished! Took {} seconds!".format(time.clock() - start))
 
 class SuggestionTestCase(TestCase):
-    fixtures = ["fixture.json"]
+
+    def setUpTestData(cls):
+        setUpClass(cls)
 
     def setUp(self):
-        self.floor = Floor.objects.all()[0]
-        self.floor.permissiveness = "permissive"
-        self.floor.save()
-        self.player = [p for p in Player.objects.filter(floor=self.floor) if not p.isFloor()][0]
-        self.user = self.player.user
-        for i in Stock.objects.all():
-            if not i in self.floor.stocks.all():
-                self.new_stock = i
-                break
-            else:
-                continue
-        self.form = TradeForm({"other_user": self.floor.floorPlayer.user.username, "other_stocks": self.new_stock.symbol, "user_stocks": ""})
-        if self.form.is_valid(pkFloor=self.floor.pk, user=self.user):
-            self.trade = self.form.to_trade(pkFloor=self.floor.pk, user=self.user)
+        self.new_stock = Stock(symbol="SF")
+        self.new_stock.save()
+
+        self.form = TradeForm({"other_user": self.testFloor.floorPlayer.user.username, "other_stocks": self.new_stock.symbol, "user_stocks": ""})
+        if self.form.is_valid(pkFloor=self.testFloor.pk, user=self.otherUsers[0]):
+            self.trade = self.form.to_trade(pkFloor=self.testFloor.pk, user=self.otherUsers[0])
         else:
             raise RuntimeError("There was an error in validation. {}".format(form.errors))
 
     def test_suggestions(self):
-        # If this fails, the trade isn't getting automatically accepted by the floor. 
+        """
+        If this fails, the trade isn't getting automatically accepted by the floor. 
+        """
+
+
+        # TODO: This needs to be read and understood and then fixed, if necessary
+
         self.assertQuerysetEqual(Trade.objects.all(), [])
+
         self.assertNotIn(self.new_stock, self.player.stocks.all())
         self.assertNotIn(self.new_stock, self.floor.stocks.all())
         self.assertNotEqual(StockSuggestion.objects.all(), [])
+
         self.assertNotIn(self.new_stock, self.floor.stocks.all())
+
         StockSuggestion.objects.filter(stock=self.new_stock)[0].accept()
+
         self.assertIn(self.new_stock, self.player.stocks.all())
+
         self.assertIn(self.new_stock, self.floor.stocks.all())
 
     def test_capped_suggestion(self):
