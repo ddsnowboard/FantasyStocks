@@ -245,8 +245,6 @@ class PlayerTestCase(TestCase):
         start = time.clock()
         for p in Player.objects.all():
             p.points = 0
-            for s in p.stocks.all():
-                print("player {} has stock {}".format(p.user.username, s.symbol))
             p.save()
 
         for s in floor.stocks.all():
@@ -263,8 +261,11 @@ class PlayerTestCase(TestCase):
 
 class SuggestionTestCase(TestCase):
 
+    @classmethod
     def setUpTestData(cls):
         setUpClass(cls)
+        cls.testFloor.permissiveness = "permissive"
+        cls.testFloor.save()
 
     def setUp(self):
         self.new_stock = Stock(symbol="SF")
@@ -277,77 +278,103 @@ class SuggestionTestCase(TestCase):
             raise RuntimeError("There was an error in validation. {}".format(form.errors))
 
     def test_suggestions(self):
-        """
-        If this fails, the trade isn't getting automatically accepted by the floor. 
-        """
-
-
-        # TODO: This needs to be read and understood and then fixed, if necessary
-
+        # Make sure that the trade was automatically accepted
         self.assertQuerysetEqual(Trade.objects.all(), [])
 
-        self.assertNotIn(self.new_stock, self.player.stocks.all())
-        self.assertNotIn(self.new_stock, self.floor.stocks.all())
+        # Make sure that the StockSuggestion wasn't automatically accepted
+        player = Player.objects.get(floor=self.testFloor, user=self.otherUsers[0])
+        self.assertNotIn(self.new_stock, player.stocks.all())
+        self.assertNotIn(self.new_stock, self.testFloor.stocks.all())
         self.assertNotEqual(StockSuggestion.objects.all(), [])
 
-        self.assertNotIn(self.new_stock, self.floor.stocks.all())
-
+        # Accept the only suggestion
         StockSuggestion.objects.filter(stock=self.new_stock)[0].accept()
 
-        self.assertIn(self.new_stock, self.player.stocks.all())
-
-        self.assertIn(self.new_stock, self.floor.stocks.all())
+        # Make sure the suggestion's acceptance worked like it was supposed to
+        self.assertIn(self.new_stock, player.stocks.all())
+        self.assertIn(self.new_stock, self.testFloor.stocks.all())
 
     def test_capped_suggestion(self):
-        SMALL_NUMBER = 2
-        self.floor.num_stocks = SMALL_NUMBER
-        self.floor.save()
-        self.player.stocks = [self.player.stocks.all()[0]]
-        suggestion = StockSuggestion.objects.all()[0]
-        for i in Player.objects.all():
-            if i != self.player and not i.isFloor():
-                otherPlayer = i
-                break
-            else:
-                continue
-        otherPlayer.stocks = [otherPlayer.stocks.all()[0]]
-        newTrade = Trade.objects.create(recipient=otherPlayer, floor=self.floor, sender=self.player)
-        newStock = otherPlayer.stocks.all()[0]
-        newTrade.recipientStocks.add(newStock)
+        """
+        Tests whether a player can get a stock suggested into their stable after they already have 
+        the maximum number of stocks available.
+        Imagine I'm capped at 2 stocks. I have 1 stock, then I ask the admin to accept a new stock onto the floor. 
+        While that is going through, I trade for a second stock instantly with someone else. Now I have two stocks, 
+        but the system owes me another, even though I can't have 3. What should it do? It should put the third 
+        stock on floor owned by no one. What does it do? Let's find out. 
+        """
+
+        ONE_MORE_THAN_ONE = 2
+
+        # Prepare
+        self.testFloor.num_stocks = ONE_MORE_THAN_ONE
+        self.testFloor.save()
+        # Based on the setup method, we are guaranteed that everyone has one and exactly one stock. 
+        # I think.
+
+        # We have to start at 1 because the floor has more than 1 and this test won't work
+        player = Player.objects.get(floor=self.testFloor, user=self.otherUsers[1])
+
+        stockToAdd = Stock(symbol="SF")
+        stockToAdd.save()
+
+        # Make the suggestion that will later be accepted
+        suggestion = StockSuggestion(stock=stockToAdd, requesting_player=player, floor=player.floor)
+        suggestion.save()
+
+        otherPlayer = Player.objects.get(floor=self.testFloor, user=self.otherUsers[2])
+        self.assertNotEqual(otherPlayer, player)
+
+        newTrade = Trade.objects.create(recipient=otherPlayer, floor=self.testFloor, sender=player)
+
+        # Give the first player the other player's one stock, leaving the first player with 2, the max
+        otherStock = otherPlayer.stocks.all()[0]
+        newTrade.recipientStocks.add(otherStock)
         newTrade.save()
         newTrade.verify()
         newTrade.accept()
+
         self.assertEqual(list(otherPlayer.stocks.all()), [])
-        self.assertIn(newStock, self.player.stocks.all())
-        self.assertEqual(self.player.stocks.count(), SMALL_NUMBER)
+        self.assertIn(otherStock, player.stocks.all())
+        self.assertEqual(player.stocks.count(), ONE_MORE_THAN_ONE)
+
         suggestion.accept()
-        self.assertNotIn(self.new_stock, self.player.stocks.all())
-        self.assertIn(self.new_stock, self.floor.stocks.all())
-        self.assertIn(self.new_stock, self.floor.floorPlayer.stocks.all())
+        self.assertNotIn(stockToAdd, player.stocks.all())
+        self.assertIn(stockToAdd, self.testFloor.stocks.all())
+        self.assertIn(stockToAdd, self.testFloor.floorPlayer.stocks.all())
 
 class UserTestCase(TestCase):
-    fixtures = ["fixture.json"]
+
+    @classmethod
+    def setUpTestData(cls):
+        setUpClass(cls)
 
     def test_login_page(self):
         USERNAME = "thisIsAUsername"
         PASSWORD = "thisISAPassword"
+
         user = User.objects.create_user(USERNAME, "test@test.net", PASSWORD)
-        player = Player(user=user, floor=Floor.objects.all()[0])
+        player = Player(user=user, floor=self.testFloor)
         player.save()
+
         client = Client()
+        # Make sure that you see the login page on first load
         origResponse = client.get(reverse("dashboard"), follow=True)
         self.assertTemplateUsed(origResponse, "index.html")
         self.assertTrue(origResponse.context[-1]["registrationForm"])
         self.assertTrue(origResponse.context[-1]["loginForm"])
+
+        # Make sure bad username and password works right
         response = client.post(origResponse.redirect_chain[-1][0], {"username": "notAusername", "password": "certainlynotapassword", "nextPage": reverse("dashboard")})
         self.assertFormError(response, "loginForm", None, "That username does not exist") 
 
+        # Make sure bad password works
         response = client.get(reverse("dashboard"), follow=True)
         response = client.post(origResponse.redirect_chain[-1][0], {"username": user.username, "password": "certainlynotapassword", "nextPage": reverse("dashboard")})
         self.assertFormError(response, "loginForm", None, "That is the wrong password") 
 
+        # Make sure logging in properly works
         response = client.get(reverse("dashboard"), follow=True)
-
         response = client.post(origResponse.redirect_chain[-1][0],
                                {"username": USERNAME, "password": PASSWORD, "nextPage": reverse("dashboard")}, follow=True)
         self.assertEqual(response.redirect_chain[-1][0], reverse("dashboard")) 
