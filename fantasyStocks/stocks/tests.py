@@ -28,12 +28,15 @@ def createStocks(n):
 
     return out
 
-def createUsers(n):
+def createFloorUser():
     floorUser = User.objects.create_user("Floor")
-    floorGroup = Group(name="Floor")
-    floorGroup.save()
+    floorGroup, _ = Group.objects.get_or_create(name="Floor")
     floorUser.groups.add(floorGroup)
     floorUser.save()
+    return floorUser
+
+def createUsers(n):
+    floorUser = createFloorUser()
     otherUsers = [User.objects.create_user("user{}".format(i)) for i in range(n)]
     map(lambda x: x.save(), otherUsers)
     return otherUsers
