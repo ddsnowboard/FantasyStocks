@@ -13,6 +13,7 @@ import sys
 from datetime import date
 from datetime import timedelta
 from csv import reader as csvreader
+from time import sleep
 
 from pprint import pprint
 
@@ -159,7 +160,13 @@ class Stock(models.Model):
             return Stock.remote_load_price(symbol)
 
         data = json.loads(response)
-        quote = data["Stock Quotes"][0]
+        if "Stock Quotes" in data:
+            quote = data["Stock Quotes"][0]
+        else:
+            print("It's angry now")
+            sleep(1)
+            return Stock.remote_load_price(symbol)
+
         assert(quote[SYMBOL_KEY] == symbol)
         price = float(quote[PRICE_KEY])
         change = price - Stock.getYesterdaysPrice(symbol)
