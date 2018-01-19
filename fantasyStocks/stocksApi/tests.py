@@ -7,35 +7,109 @@ from stocks.models import *
 from json import loads, dumps
 from django.core.urlresolvers import reverse
 from stocksApi.views import tradeInvolvesUser
+from concurrent.futures import ThreadPoolExecutor
 
-USERNAME = "user123"
-PASSWORD = "thePasswordIs"
+def createStocks(n):
+    # Create a bunch of stocks and return them
+    GOOD_STOCKS = ["MMM", "ABT", "ABBV", "ACN", "ATVI", "AYI", "ADBE", "AMD", "AAP", "AES", "AET", "AMG", "AFL", "A", "APD", "AKAM", "ALK", "ALB", "ARE", "ALXN", "ALGN", "ALLE", "AGN", "ADS", "LNT", "ALL", "GOOGL", "GOOG", "MO", "AMZN", "AEE", "AAL", "AEP", "AXP", "AIG", "AMT", "AWK", "AMP", "ABC", "AME", "AMGN", "APH", "APC", "ADI", "ANDV", "ANSS", "ANTM", "AON", "AOS", "APA", "AIV", "AAPL", "AMAT", "APTV", "ADM", "ARNC", "AJG", "AIZ", "T", "ADSK", "ADP", "AZO", "AVB", "AVY", "BHGE", "BLL", "BAC", "BK", "BCR", "BAX", "BBT", "BDX", "BBY", "BIIB", "BLK", "HRB", "BA", "BWA", "BXP", "BSX", "BHF", "BMY", "AVGO", "CHRW", "CA", "COG", "CDNS", "CPB", "COF", "CAH", "CBOE", "KMX", "CCL", "CAT", "CBG", "CBS", "CELG", "CNC", "CNP", "CTL", "CERN", "CF", "SCHW", "CHTR", "CHK", "CVX", "CMG", "CB", "CHD", "CI", "XEC", "CINF", "CTAS", "CSCO", "C", "CFG", "CTXS", "CLX", "CME", "CMS", "KO", "CTSH", "CL", "CMCSA", "CMA", "CAG", "CXO", "COP", "ED", "STZ", "COO", "GLW", "COST", "COTY", "CCI", "CSRA", "CSX", "CMI", "CVS", "DHI", "DHR", "DRI", "DVA", "DE", "DAL", "XRAY", "DVN", "DLR", "DFS", "DISCA", "DISCK", "DISH", "DG", "DLTR", "D", "DOV", "DWDP", "DPS", "DTE", "DRE", "DUK", "DXC", "ETFC", "EMN", "ETN", "EBAY", "ECL", "EIX", "EW", "EA", "EMR", "ETR", "EVHC", "EOG", "EQT", "EFX", "EQIX", "EQR", "ESS", "EL", "ES", "RE", "EXC", "EXPE", "EXPD", "ESRX", "EXR", "XOM", "FFIV", "FB", "FAST", "FRT", "FDX", "FIS", "FITB", "FE", "FISV", "FLIR", "FLS", "FLR", "FMC", "FL", "F", "FTV", "FBHS", "BEN", "FCX", "GPS", "GRMN", "IT", "GD", "GE", "GGP", "GIS", "GM", "GPC", "GILD", "GPN", "GS", "GT", "GWW", "HAL", "HBI", "HOG", "HRS", "HIG", "HAS", "HCA", "HCP", "HP", "HSIC", "HSY", "HES", "HPE", "HLT", "HOLX", "HD", "HON", "HRL", "HST", "HPQ", "HUM", "HBAN", "IDXX", "INFO", "ITW", "ILMN", "IR", "INTC", "ICE", "IBM", "INCY", "IP", "IPG", "IFF", "INTU", "ISRG", "IVZ", "IQV", "IRM", "JEC", "JBHT", "SJM", "JNJ", "JCI", "JPM", "JNPR", "KSU", "K", "KEY", "KMB", "KIM", "KMI", "KLAC", "KSS", "KHC", "KR", "LB", "LLL", "LH", "LRCX", "LEG", "LEN", "LUK", "LLY", "LNC", "LKQ", "LMT", "L", "LOW", "LYB", "MTB", "MAC", "M", "MRO", "MPC", "MAR", "MMC", "MLM", "MAS", "MA", "MAT", "MKC", "MCD", "MCK", "MDT", "MRK", "MET", "MTD", "MGM", "KORS", "MCHP", "MU", "MSFT", "MAA", "MHK", "TAP", "MDLZ", "MON", "MNST", "MCO", "MS", "MOS", "MSI", "MYL", "NDAQ", "NOV", "NAVI", "NTAP", "NFLX", "NWL", "NFX", "NEM", "NWSA", "NWS", "NEE", "NLSN", "NKE", "NI", "NBL", "JWN", "NSC", "NTRS", "NOC", "NCLH", "NRG", "NUE", "NVDA", "ORLY", "OXY", "OMC", "OKE", "ORCL", "PCAR", "PKG", "PH", "PDCO", "PAYX", "PYPL", "PNR", "PBCT", "PEP", "PKI", "PRGO", "PFE", "PCG", "PM", "PSX", "PNW", "PXD", "PNC", "RL", "PPG", "PPL", "PX", "PCLN", "PFG", "PG", "PGR", "PLD", "PRU", "PEG", "PSA", "PHM", "PVH", "QRVO", "PWR", "QCOM", "DGX", "RRC", "RJF", "RTN", "O", "RHT", "REG", "REGN", "RF", "RSG", "RMD", "RHI", "ROK", "COL", "ROP", "ROST", "RCL", "CRM", "SBAC", "SCG", "SLB", "SNI", "STX", "SEE", "SRE", "SHW", "SIG", "SPG", "SWKS", "SLG", "SNA", "SO", "LUV", "SPGI", "SWK", "SBUX", "STT", "SRCL", "SYK", "STI", "SYMC", "SYF", "SNPS", "SYY", "TROW", "TPR", "TGT", "TEL", "FTI", "TXN", "TXT", "TMO", "TIF", "TWX", "TJX", "TMK", "TSS", "TSCO", "TDG", "TRV", "TRIP", "FOXA", "FOX", "TSN", "UDR", "ULTA", "USB", "UA", "UAA", "UNP", "UAL", "UNH", "UPS", "URI", "UTX", "UHS", "UNM", "VFC", "VLO", "VAR", "VTR", "VRSN", "VRSK", "VZ", "VRTX", "VIAB", "V", "VNO", "VMC", "WMT", "WBA", "DIS", "WM", "WAT", "WEC", "WFC", "HCN", "WDC", "WU", "WRK", "WY", "WHR", "WMB", "WLTW", "WYN", "WYNN", "XEL", "XRX", "XLNX", "XL", "XYL", "YUM", "ZBH", "ZION", "ZTS"]
+    if n > len(GOOD_STOCKS):
+        raise Exception("You can't have {} stocks".format(n))
 
-def getTrade():
-        floor = Floor.objects.all().first()
-        player1 = Player.objects.filter(floor=floor).first()
-        player2 = Player.objects.filter(floor=floor).last()
-        randomTrade = Trade(sender=player1, recipient=player2, floor=floor)
-        randomTrade.save()
-        randomTrade.senderStocks.add(player1.stocks.all().first())
-        randomTrade.recipientStocks.add(player2.stocks.all().first())
+    out = [Stock(symbol=sym) for sym in GOOD_STOCKS[:n]]
+    # I thought this would be unnecessary, but I was wrong 
+    for s in out: 
+        s.save()
 
-        return randomTrade
+    with ThreadPoolExecutor() as pool:
+        pool.map(lambda x: x.force_update(), out)
+
+    return out
+
+def createFloorUser():
+    floorUser = User.objects.create_user("Floor")
+    floorGroup, _ = Group.objects.get_or_create(name="Floor")
+    floorUser.groups.add(floorGroup)
+    floorUser.save()
+    return floorUser
+
+def createUsers(n):
+    floorUser = createFloorUser()
+    otherUsers = [User.objects.create_user("user{}".format(i)) for i in range(n)]
+    map(lambda x: x.save(), otherUsers)
+    return otherUsers
+
+def createTrade(floor):
+    USERNAME = "username"
+    players = [p for p in Player.objects.all() if not p.isFloor()]
+    player1 = players[0]
+    player2 = players[1]
+    assert player1 != player2
+    randomTrade = Trade(sender=player1, recipient=player2, floor=floor)
+    randomTrade.save()
+
+    print(player1)
+    randomTrade.senderStocks.add(player1.stocks.all().first())
+    randomTrade.recipientStocks.add(player2.stocks.all().first())
+    return randomTrade
 
 def reverseWithSession(name, sessionId, **kwargs):
     url = reverse(name, **kwargs)
     return url + "?sessionId={}".format(sessionId.id_string)
 
-class AuthTests(TestCase):
-    fixtures = ["fixture.json"]
+def makeUser(username):
+    PASSWORD = "apples"
+    retval = User.objects.create_user(username, "thisisanaddress@koolaid.church", PASSWORD)
+    retval.save()
+    return retval
 
-    def makeUser(self):
-        retval = User.objects.create_user(USERNAME, "thisisanaddress@koolaid.church", PASSWORD)
-        return retval
+def createFloor(owner):
+    def randomString(length):
+        from random import choice
+        import string
+        s = ""
+        for _ in range(length):
+            s += choice(string.ascii_letters)
+        return s
+
+    LENGTH = 5
+    testFloor = Floor(name="TestFloor" + randomString(LENGTH))
+    testFloor.permissiveness = Floor.OPEN
+    testFloor.owner = owner
+    testFloor.save()
+    return testFloor
+
+def setUpClass(cls):
+    N = 10
+    cls.otherUsers = createUsers(N)
+    cls.testFloor = createFloor(cls.otherUsers[0])
+    cls.testUser = cls.otherUsers[0]
+    # I don't want to end up with a user in the list twice, as it were
+    cls.otherUsers = cls.otherUsers[1:]
+    # We don't need to save this since we can trivially get the players back whenever we want
+    players = list(map(lambda u: Player(user=u, floor=cls.testFloor), cls.otherUsers))
+    for p in players:
+        p.save()
+    cls.stocks = createStocks(N)
+    cls.testFloor.stocks.add(*cls.stocks)
+    cls.testFloor.save()
+    assignStocks(players, cls.stocks)
+
+def assignStocks(players, stocks):
+    from itertools import cycle
+    playerCycle = cycle(players)
+
+    for p, s in zip(playerCycle, stocks):
+        p.stocks.add(s)
+
+    for p in players:
+        p.save()
+
+
+class AuthTests(TestCase):
 
     def test_get_session_id(self):
         c = Client()
-        user = self.makeUser()
+        user = makeUser()
         response = c.post("/api/v1/auth/getKey", dumps({"username": USERNAME, "password": PASSWORD}), content_type="application/json")
         jsonObj = loads(response.content.decode("utf-8"))
         self.assertEquals(jsonObj["user"]["id"], user.pk)
@@ -44,21 +118,27 @@ class AuthTests(TestCase):
         self.assertFalse(ids[0].is_expired())
 
 class ViewingTests(TestCase):
-    fixtures = ["fixture.json"]
     def __init__(self, *args, **kwargs):
         TestCase.__init__(self, *args, **kwargs)
         self.maxDiff = None
 
+    @classmethod
+    def setUpTestData(cls):
+        setUpClass(cls)
+
     def test_view_simple(self):
+        USERNAME = "melvyn"
         c = Client()
-        user = User.objects.first()
+        user = makeUser(USERNAME)
+
         response = c.get(reverse("viewUser", args=(user.pk, )))
         jsonObj = loads(response.content.decode("UTF-8"))
         self.assertEquals(jsonObj, userJSON(user))
 
     def test_bad_view(self):
         c = Client()
-        badPk = User.objects.all().order_by("pk").last().pk + 1
+        user1 = makeUser("melvyn")
+        badPk = user1.pk + 1
         response = c.get(reverse("viewUser", args=(badPk, )))
         jsonObj = loads(response.content.decode("UTF-8"))
         if not "error" in jsonObj:
@@ -66,8 +146,10 @@ class ViewingTests(TestCase):
 
     def test_all_players_blocks_trades(self):
         c = Client()
-        trade = getTrade()
-        trade.save()
+        player1 = Player.objects.get(user=self.otherUsers[0])
+        player2 = Player.objects.get(user=self.otherUsers[1])
+
+        trade = createTrade(self.testFloor)
         response = c.get(reverse("viewAllPlayers"))
         jsonObj = loads(response.content.decode("UTF-8"))
         for i in jsonObj:
@@ -75,12 +157,13 @@ class ViewingTests(TestCase):
             self.assertFalse(i["receivedTrades"])
 
 
-
-        player = Player.objects.all().first()
-        session = SessionId(associated_user=player.user)
+        session = SessionId(associated_user=player1.user)
         session.save()
+
         response = c.get(reverseWithSession("viewAllPlayers", session))
         jsonObj = loads(response.content.decode("UTF-8"))
+
+        # Make sure the user can see trades for himself and himself only
         for i in jsonObj:
             if i["id"] != player.id:
                 self.assertFalse([i for i in i["sentTrades"] if not tradeInvolvesUser(Trade.objects.get(pk=i["id"]), player.user)])
@@ -95,10 +178,9 @@ class ViewingTests(TestCase):
                 self.assertEquals(len(i["receivedTrades"]),
                                   Trade.objects.filter(recipient=player).count())
     
-    def test_one_player_blocks_trades(self):
+    def test_view_one_player(self):
         c = Client() 
-        trade = getTrade()
-        trade.save()
+        trade = createTrade(self.testFloor)
         for p in Player.objects.all():
             session = SessionId(associated_user=p.user)
             session.save()
@@ -106,20 +188,24 @@ class ViewingTests(TestCase):
             self.assertEquals(loads(response.content.decode("UTF-8")), loads(JsonResponse(p.toJSON()).content.decode("UTF-8")))
 
     def test_no_user_breaks_trade(self):
+        """
+        Make sure than an unauthenticated user can't read trades
+        """
+
         c = Client()
         response = c.get(reverse("viewAllTrades"))
         self.assertTrue("error" in response.content.decode("UTF-8"))
 
-        randomTrade = getTrade()
+        randomTrade = createTrade(self.testFloor)
         randomTrade.save()
 
         response = c.get(reverse("viewTrade", args=(randomTrade.pk, )))
         self.assertTrue("error" in response.content.decode("UTF-8"))
 
         otherPlayer = Player.objects.all(). \
-        exclude(pk=randomTrade.sender.pk). \
-        exclude(pk=randomTrade.recipient.pk). \
-        filter(floor=randomTrade.floor).first() 
+            exclude(pk=randomTrade.sender.pk). \
+            exclude(pk=randomTrade.recipient.pk). \
+            filter(floor=randomTrade.floor).first() 
 
         id = SessionId(associated_user=otherPlayer.user)
         id.save()
@@ -129,9 +215,9 @@ class ViewingTests(TestCase):
 
     def test_only_shows_right_trades(self):
         c = Client()
-        trade = getTrade()
+        trade = createTrade(self.testFloor)
         trade.save()
-        otherTrade = getTrade()
+        otherTrade = createTrade()
         otherPlayer = Player.objects.all().exclude(pk=trade.sender.pk).exclude(pk=trade.recipient.pk).filter(floor=trade.floor).first()
         otherTrade.sender = otherPlayer
         otherTrade.senderStocks.clear()
@@ -150,9 +236,15 @@ class ViewingTests(TestCase):
         response = c.get(reverse("viewAllStockSuggestions"))
         self.assertTrue("error" in response.content.decode("UTF-8"))
 
-        permissiveFloor = Floor.objects.filter(permissiveness="permissive").first()
+        permissiveFloor = self.testFloor
+        permissiveFloor.permissiveness = "permissive"
+        permissiveFloor.save()
         owner = permissiveFloor.owner
-        goodSuggestion = StockSuggestion(stock=next(x for x in Stock.objects.all() if x not in permissiveFloor.stocks.all()), floor=permissiveFloor, requesting_player=Player.objects.all().filter(floor=permissiveFloor).exclude(user__pk=owner.pk).first())
+        newStock = Stock(symbol="SF")
+        newStock.save()
+        goodSuggestion = StockSuggestion(stock=newStock, 
+                                         floor=self.testFloor,
+                                         requesting_player=Player.objects.filter(floor=self.testFloor).exclude(user=owner).first())
         goodSuggestion.save()
         goodSessionId = SessionId(associated_user=owner)
         goodSessionId.save()
@@ -543,7 +635,7 @@ class CreationTests(TestCase):
         self.assertTrue("error" in response.content.decode("UTF-8"))
 
     def test_accept_trade(self):
-        trade = getTrade()
+        trade = createTrade()
         sender = trade.sender
         recipient = trade.recipient
         originalSenderStocks = list(sender.stocks.all())
@@ -572,7 +664,7 @@ class CreationTests(TestCase):
         self.assertEquals(set(recipient.stocks.all()), set(originalSenderStocks))
 
     def test_bad_accept_trade(self):
-        trade = getTrade()
+        trade = createTrade()
         sender = trade.sender
         recipient = trade.recipient
         originalSenderStocks = list(sender.stocks.all())
