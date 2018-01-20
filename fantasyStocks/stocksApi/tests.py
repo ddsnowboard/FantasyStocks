@@ -38,16 +38,12 @@ def createUsers(n):
     map(lambda x: x.save(), otherUsers)
     return otherUsers
 
-def createTrade(floor):
+def createTrade(player1, player2, floor):
     USERNAME = "username"
-    players = [p for p in Player.objects.all() if not p.isFloor()]
-    player1 = players[0]
-    player2 = players[1]
     assert player1 != player2
     randomTrade = Trade(sender=player1, recipient=player2, floor=floor)
     randomTrade.save()
 
-    print(player1)
     randomTrade.senderStocks.add(player1.stocks.all().first())
     randomTrade.recipientStocks.add(player2.stocks.all().first())
     return randomTrade
@@ -93,6 +89,8 @@ def setUpClass(cls):
     cls.testFloor.stocks.add(*cls.stocks)
     cls.testFloor.save()
     assignStocks(players, cls.stocks)
+    for p in players:
+        print(list(p.stocks.all()))
 
 def assignStocks(players, stocks):
     from itertools import cycle
@@ -148,8 +146,9 @@ class ViewingTests(TestCase):
         c = Client()
         player1 = Player.objects.get(user=self.otherUsers[0])
         player2 = Player.objects.get(user=self.otherUsers[1])
+        print("player1 has {}".format(list(player1.stocks.all())))
 
-        trade = createTrade(self.testFloor)
+        trade = createTrade(player1, player2, self.testFloor)
         response = c.get(reverse("viewAllPlayers"))
         jsonObj = loads(response.content.decode("UTF-8"))
         for i in jsonObj:
@@ -165,22 +164,24 @@ class ViewingTests(TestCase):
 
         # Make sure the user can see trades for himself and himself only
         for i in jsonObj:
-            if i["id"] != player.id:
-                self.assertFalse([i for i in i["sentTrades"] if not tradeInvolvesUser(Trade.objects.get(pk=i["id"]), player.user)])
-                self.assertFalse([i for i in i["receivedTrades"] if not tradeInvolvesUser(Trade.objects.get(pk=i["id"]), player.user)])
+            if i["id"] != player1.id:
+                self.assertFalse([i for i in i["sentTrades"] if not tradeInvolvesUser(Trade.objects.get(pk=i["id"]), player1.user)])
+                self.assertFalse([i for i in i["receivedTrades"] if not tradeInvolvesUser(Trade.objects.get(pk=i["id"]), player1.user)])
 
-                self.assertEquals([i for i in i["sentTrades"] if tradeInvolvesUser(Trade.objects.get(pk=i["id"]), player.user)], i["sentTrades"])
-                self.assertEquals([i for i in i["receivedTrades"] if tradeInvolvesUser(Trade.objects.get(pk=i["id"]), player.user)], i["receivedTrades"])
+                self.assertEquals([i for i in i["sentTrades"] if tradeInvolvesUser(Trade.objects.get(pk=i["id"]), player1.user)], i["sentTrades"])
+                self.assertEquals([i for i in i["receivedTrades"] if tradeInvolvesUser(Trade.objects.get(pk=i["id"]), player1.user)], i["receivedTrades"])
             else:
                 self.assertEquals(len(i["sentTrades"]),
-                                  Trade.objects.filter(sender=player).count())
+                                  Trade.objects.filter(sender=player1).count())
 
                 self.assertEquals(len(i["receivedTrades"]),
-                                  Trade.objects.filter(recipient=player).count())
+                                  Trade.objects.filter(recipient=player1).count())
     
     def test_view_one_player(self):
         c = Client() 
-        trade = createTrade(self.testFloor)
+        player1 = Player.objects.get(user=self.otherUsers[0])
+        player2 = Player.objects.get(user=self.otherUsers[1])
+        trade = createTrade(player1, player2, self.testFloor)
         for p in Player.objects.all():
             session = SessionId(associated_user=p.user)
             session.save()
@@ -196,7 +197,8 @@ class ViewingTests(TestCase):
         response = c.get(reverse("viewAllTrades"))
         self.assertTrue("error" in response.content.decode("UTF-8"))
 
-        randomTrade = createTrade(self.testFloor)
+        garbagePlayers = [Player.objects.get(user=u) for u in self.otherUsers[:2]]
+        randomTrade = createTrade(*garbagePlayers, self.testFloor)
         randomTrade.save()
 
         response = c.get(reverse("viewTrade", args=(randomTrade.pk, )))
@@ -215,10 +217,13 @@ class ViewingTests(TestCase):
 
     def test_only_shows_right_trades(self):
         c = Client()
-        trade = createTrade(self.testFloor)
+        garbagePlayers = [Player.objects.get(user=u) for u in self.otherUsers[:2]]
+        trade = createTrade(*garbagePlayers, self.testFloor)
         trade.save()
-        otherTrade = createTrade()
-        otherPlayer = Player.objects.all().exclude(pk=trade.sender.pk).exclude(pk=trade.recipient.pk).filter(floor=trade.floor).first()
+
+        otherGarbagePlayers = [Player.objects.get(user=u) for u in self.otherUsers[2:4]]
+        otherTrade = createTrade(*otherGarbagePlayers, self.testFloor)
+        otherPlayer = Player.objects.get(user=self.otherUsers[5])
         otherTrade.sender = otherPlayer
         otherTrade.senderStocks.clear()
         otherTrade.senderStocks.add(otherPlayer.stocks.all().first())
