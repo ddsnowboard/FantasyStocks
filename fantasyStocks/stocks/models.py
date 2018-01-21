@@ -120,8 +120,8 @@ class Stock(models.Model):
         retval['companyName'] = self.company_name
         retval['symbol'] = self.symbol
         retval['lastUpdated'] = self.last_updated
-        retval['price'] = self.price
-        retval['change'] = self.change
+        retval['price'] = float(self.price)
+        retval['change'] = float(self.change)
         retval['stockSuggestions'] = [s.toShortJSON() for s in StockSuggestion.objects.filter(stock=self)]
         return retval
 
@@ -131,8 +131,8 @@ class Stock(models.Model):
         retval['companyName'] = self.company_name
         retval['symbol'] = self.symbol
         retval['lastUpdated'] = self.last_updated
-        retval['price'] = self.price
-        retval['change'] = self.change
+        retval['price'] = float(self.price)
+        retval['change'] = float(self.change)
         retval['stockSuggestions'] = [s.pk for s in StockSuggestion.objects.filter(stock=self)]
         return retval
 

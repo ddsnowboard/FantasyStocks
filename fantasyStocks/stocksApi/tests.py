@@ -9,6 +9,9 @@ from django.core.urlresolvers import reverse
 from stocksApi.views import tradeInvolvesUser
 from concurrent.futures import ThreadPoolExecutor
 
+USERNAME = "username"
+PASSWORD = "apples"
+
 def createStocks(n):
     # Create a bunch of stocks and return them
     GOOD_STOCKS = ["MMM", "ABT", "ABBV", "ACN", "ATVI", "AYI", "ADBE", "AMD", "AAP", "AES", "AET", "AMG", "AFL", "A", "APD", "AKAM", "ALK", "ALB", "ARE", "ALXN", "ALGN", "ALLE", "AGN", "ADS", "LNT", "ALL", "GOOGL", "GOOG", "MO", "AMZN", "AEE", "AAL", "AEP", "AXP", "AIG", "AMT", "AWK", "AMP", "ABC", "AME", "AMGN", "APH", "APC", "ADI", "ANDV", "ANSS", "ANTM", "AON", "AOS", "APA", "AIV", "AAPL", "AMAT", "APTV", "ADM", "ARNC", "AJG", "AIZ", "T", "ADSK", "ADP", "AZO", "AVB", "AVY", "BHGE", "BLL", "BAC", "BK", "BCR", "BAX", "BBT", "BDX", "BBY", "BIIB", "BLK", "HRB", "BA", "BWA", "BXP", "BSX", "BHF", "BMY", "AVGO", "CHRW", "CA", "COG", "CDNS", "CPB", "COF", "CAH", "CBOE", "KMX", "CCL", "CAT", "CBG", "CBS", "CELG", "CNC", "CNP", "CTL", "CERN", "CF", "SCHW", "CHTR", "CHK", "CVX", "CMG", "CB", "CHD", "CI", "XEC", "CINF", "CTAS", "CSCO", "C", "CFG", "CTXS", "CLX", "CME", "CMS", "KO", "CTSH", "CL", "CMCSA", "CMA", "CAG", "CXO", "COP", "ED", "STZ", "COO", "GLW", "COST", "COTY", "CCI", "CSRA", "CSX", "CMI", "CVS", "DHI", "DHR", "DRI", "DVA", "DE", "DAL", "XRAY", "DVN", "DLR", "DFS", "DISCA", "DISCK", "DISH", "DG", "DLTR", "D", "DOV", "DWDP", "DPS", "DTE", "DRE", "DUK", "DXC", "ETFC", "EMN", "ETN", "EBAY", "ECL", "EIX", "EW", "EA", "EMR", "ETR", "EVHC", "EOG", "EQT", "EFX", "EQIX", "EQR", "ESS", "EL", "ES", "RE", "EXC", "EXPE", "EXPD", "ESRX", "EXR", "XOM", "FFIV", "FB", "FAST", "FRT", "FDX", "FIS", "FITB", "FE", "FISV", "FLIR", "FLS", "FLR", "FMC", "FL", "F", "FTV", "FBHS", "BEN", "FCX", "GPS", "GRMN", "IT", "GD", "GE", "GGP", "GIS", "GM", "GPC", "GILD", "GPN", "GS", "GT", "GWW", "HAL", "HBI", "HOG", "HRS", "HIG", "HAS", "HCA", "HCP", "HP", "HSIC", "HSY", "HES", "HPE", "HLT", "HOLX", "HD", "HON", "HRL", "HST", "HPQ", "HUM", "HBAN", "IDXX", "INFO", "ITW", "ILMN", "IR", "INTC", "ICE", "IBM", "INCY", "IP", "IPG", "IFF", "INTU", "ISRG", "IVZ", "IQV", "IRM", "JEC", "JBHT", "SJM", "JNJ", "JCI", "JPM", "JNPR", "KSU", "K", "KEY", "KMB", "KIM", "KMI", "KLAC", "KSS", "KHC", "KR", "LB", "LLL", "LH", "LRCX", "LEG", "LEN", "LUK", "LLY", "LNC", "LKQ", "LMT", "L", "LOW", "LYB", "MTB", "MAC", "M", "MRO", "MPC", "MAR", "MMC", "MLM", "MAS", "MA", "MAT", "MKC", "MCD", "MCK", "MDT", "MRK", "MET", "MTD", "MGM", "KORS", "MCHP", "MU", "MSFT", "MAA", "MHK", "TAP", "MDLZ", "MON", "MNST", "MCO", "MS", "MOS", "MSI", "MYL", "NDAQ", "NOV", "NAVI", "NTAP", "NFLX", "NWL", "NFX", "NEM", "NWSA", "NWS", "NEE", "NLSN", "NKE", "NI", "NBL", "JWN", "NSC", "NTRS", "NOC", "NCLH", "NRG", "NUE", "NVDA", "ORLY", "OXY", "OMC", "OKE", "ORCL", "PCAR", "PKG", "PH", "PDCO", "PAYX", "PYPL", "PNR", "PBCT", "PEP", "PKI", "PRGO", "PFE", "PCG", "PM", "PSX", "PNW", "PXD", "PNC", "RL", "PPG", "PPL", "PX", "PCLN", "PFG", "PG", "PGR", "PLD", "PRU", "PEG", "PSA", "PHM", "PVH", "QRVO", "PWR", "QCOM", "DGX", "RRC", "RJF", "RTN", "O", "RHT", "REG", "REGN", "RF", "RSG", "RMD", "RHI", "ROK", "COL", "ROP", "ROST", "RCL", "CRM", "SBAC", "SCG", "SLB", "SNI", "STX", "SEE", "SRE", "SHW", "SIG", "SPG", "SWKS", "SLG", "SNA", "SO", "LUV", "SPGI", "SWK", "SBUX", "STT", "SRCL", "SYK", "STI", "SYMC", "SYF", "SNPS", "SYY", "TROW", "TPR", "TGT", "TEL", "FTI", "TXN", "TXT", "TMO", "TIF", "TWX", "TJX", "TMK", "TSS", "TSCO", "TDG", "TRV", "TRIP", "FOXA", "FOX", "TSN", "UDR", "ULTA", "USB", "UA", "UAA", "UNP", "UAL", "UNH", "UPS", "URI", "UTX", "UHS", "UNM", "VFC", "VLO", "VAR", "VTR", "VRSN", "VRSK", "VZ", "VRTX", "VIAB", "V", "VNO", "VMC", "WMT", "WBA", "DIS", "WM", "WAT", "WEC", "WFC", "HCN", "WDC", "WU", "WRK", "WY", "WHR", "WMB", "WLTW", "WYN", "WYNN", "XEL", "XRX", "XLNX", "XL", "XYL", "YUM", "ZBH", "ZION", "ZTS"]
@@ -39,7 +42,6 @@ def createUsers(n):
     return otherUsers
 
 def createTrade(player1, player2, floor):
-    USERNAME = "username"
     assert player1 != player2
     randomTrade = Trade(sender=player1, recipient=player2, floor=floor)
     randomTrade.save()
@@ -53,7 +55,6 @@ def reverseWithSession(name, sessionId, **kwargs):
     return url + "?sessionId={}".format(sessionId.id_string)
 
 def makeUser(username):
-    PASSWORD = "apples"
     retval = User.objects.create_user(username, "thisisanaddress@koolaid.church", PASSWORD)
     retval.save()
     return retval
@@ -89,8 +90,6 @@ def setUpClass(cls):
     cls.testFloor.stocks.add(*cls.stocks)
     cls.testFloor.save()
     assignStocks(players, cls.stocks)
-    for p in players:
-        print(list(p.stocks.all()))
 
 def assignStocks(players, stocks):
     from itertools import cycle
@@ -104,10 +103,9 @@ def assignStocks(players, stocks):
 
 
 class AuthTests(TestCase):
-
     def test_get_session_id(self):
         c = Client()
-        user = makeUser()
+        user = makeUser(USERNAME)
         response = c.post("/api/v1/auth/getKey", dumps({"username": USERNAME, "password": PASSWORD}), content_type="application/json")
         jsonObj = loads(response.content.decode("utf-8"))
         self.assertEquals(jsonObj["user"]["id"], user.pk)
@@ -125,7 +123,6 @@ class ViewingTests(TestCase):
         setUpClass(cls)
 
     def test_view_simple(self):
-        USERNAME = "melvyn"
         c = Client()
         user = makeUser(USERNAME)
 
@@ -146,7 +143,6 @@ class ViewingTests(TestCase):
         c = Client()
         player1 = Player.objects.get(user=self.otherUsers[0])
         player2 = Player.objects.get(user=self.otherUsers[1])
-        print("player1 has {}".format(list(player1.stocks.all())))
 
         trade = createTrade(player1, player2, self.testFloor)
         response = c.get(reverse("viewAllPlayers"))
@@ -289,7 +285,10 @@ class ViewingTests(TestCase):
         self.fail()
 
 class CreationTests(TestCase):
-    fixtures = ["fixture.json"]
+    @classmethod
+    def setUpTestData(cls):
+        setUpClass(cls)
+
     def test_create_user(self):
         c = Client()
         email = "test@test.net"
@@ -305,7 +304,7 @@ class CreationTests(TestCase):
         try:
             newUser = User.objects.get(email=email)
         except ObjectDoesNotExist:
-            self.assertTrue(False)
+            self.fail()
 
         self.assertEquals(loads(response.content.decode("UTF-8")), loads(JsonResponse(userJSON(newUser)).content.decode("UTF-8")))
 
@@ -393,13 +392,14 @@ class CreationTests(TestCase):
         sessionId = SessionId(associated_user=u)
         sessionId.save()
 
-        floor = Floor.objects.all().first()
+        floor = self.testFloor
 
         player1 = Player(user=u, floor=floor)
         player1.save()
         stocksToReturn = list(player1.stocks.all())
+        assert len(stocksToReturn) == 0
 
-        player2 = Player.objects.filter(floor=floor).exclude(user=u).first()
+        player2 = Player.objects.get(floor=floor, user=self.otherUsers[2])
         stocksToSend = list(player2.stocks.all())
 
         data = {}
@@ -424,14 +424,14 @@ class CreationTests(TestCase):
         sessionId = SessionId(associated_user=u)
         sessionId.save()
 
-        # Creating an ideal data dict
-        floor = Floor.objects.all().first()
+        floor = self.testFloor
 
         player1 = Player(user=u, floor=floor)
         player1.save()
         stocksToReturn = list(player1.stocks.all())
+        assert len(stocksToReturn) == 0
 
-        player2 = Player.objects.filter(floor=floor).exclude(user=u).first()
+        player2 = Player.objects.get(floor=floor, user=self.otherUsers[2])
         stocksToSend = list(player2.stocks.all())
 
         idealData = {}
@@ -566,8 +566,11 @@ class CreationTests(TestCase):
         sessionId = SessionId(associated_user=u)
         sessionId.save()
 
-        randomFloor = Floor.objects.filter(permissiveness="permissive").first()
-        stockToSuggest = Stock.objects.all().exclude(pk__in=map(lambda s: s.pk, randomFloor.stocks.all())).first()
+        randomFloor = self.testFloor
+        randomFloor.permissiveness = "permissive"
+        randomFloor.save()
+        stockToSuggest = Stock(symbol="SF")
+        stockToSuggest.save()
         player = Player(floor=randomFloor, user=u)
         player.save()
 
@@ -588,8 +591,13 @@ class CreationTests(TestCase):
         sessionId = SessionId(associated_user=u)
         sessionId.save()
 
-        randomFloor = Floor.objects.filter(permissiveness="permissive").first()
-        stockToSuggest = Stock.objects.all().exclude(pk__in=map(lambda s: s.pk, randomFloor.stocks.all())).first()
+        randomFloor = self.testFloor
+        randomFloor.permissiveness = "permissive"
+        randomFloor.save()
+
+        stockToSuggest = Stock(symbol="SF")
+        stockToSuggest.save()
+
         player = Player(floor=randomFloor, user=u)
         player.save()
 
@@ -614,7 +622,9 @@ class CreationTests(TestCase):
 
         # Test wrong floor
         data = idealData.copy()
-        requestingPlayer = Player.objects.all().exclude(floor=randomFloor).first()
+        differentFloor = createFloor(self.otherUsers[1])
+        differentFloor.save()
+        requestingPlayer = Player.objects.filter(floor=differentFloor).first()
         data["requestingPlayer"] = requestingPlayer.pk
         otherSession = SessionId(associated_user=requestingPlayer.user)
         otherSession.save()
@@ -640,7 +650,10 @@ class CreationTests(TestCase):
         self.assertTrue("error" in response.content.decode("UTF-8"))
 
     def test_accept_trade(self):
-        trade = createTrade()
+        floor = self.testFloor
+        player1 = Player.objects.get(user=self.otherUsers[1], floor=floor)
+        player2 = Player.objects.get(user=self.otherUsers[2], floor=floor)
+        trade = createTrade(player1, player2, floor)
         sender = trade.sender
         recipient = trade.recipient
         originalSenderStocks = list(sender.stocks.all())
@@ -669,7 +682,10 @@ class CreationTests(TestCase):
         self.assertEquals(set(recipient.stocks.all()), set(originalSenderStocks))
 
     def test_bad_accept_trade(self):
-        trade = createTrade()
+        floor = self.testFloor
+        player1 = Player.objects.get(user=self.otherUsers[1], floor=floor)
+        player2 = Player.objects.get(user=self.otherUsers[2], floor=floor)
+        trade = createTrade(player1, player2, floor)
         sender = trade.sender
         recipient = trade.recipient
         originalSenderStocks = list(sender.stocks.all())
@@ -694,7 +710,10 @@ class CreationTests(TestCase):
         self.assertTrue("error" in response.content.decode("UTF-8"))
 
     def test_decline_trade(self):
-        trade = getTrade()
+        floor = self.testFloor
+        player1 = Player.objects.get(user=self.otherUsers[1], floor=floor)
+        player2 = Player.objects.get(user=self.otherUsers[2], floor=floor)
+        trade = createTrade(player1, player2, floor)
         sender = trade.sender
         recipient = trade.recipient
         originalSenderStocks = list(sender.stocks.all())
@@ -723,8 +742,10 @@ class CreationTests(TestCase):
         self.assertEquals(set(recipient.stocks.all()), set(originalRecipientStocks))
 
     def test_accept_suggestion(self):
-        randomFloor = Floor.objects.all().first()
-        randomStock = Stock.objects.all().exclude(pk__in=map(lambda x: x.pk, randomFloor.stocks.all())).first()
+        randomFloor = self.testFloor
+        randomStock = Stock(symbol="SF")
+        randomStock.save()
+
         u = User.objects.create_user(username=USERNAME, password=PASSWORD)
         player = Player(floor=randomFloor, user=u)
         player.save()
@@ -748,8 +769,9 @@ class CreationTests(TestCase):
         self.assertTrue(randomStock in randomFloor.stocks.all())
 
     def test_reject_suggestion(self):
-        randomFloor = Floor.objects.all().first()
-        randomStock = Stock.objects.all().exclude(pk__in=map(lambda x: x.pk, randomFloor.stocks.all())).first()
+        randomFloor = self.testFloor
+        randomStock = Stock(symbol="SF")
+        randomStock.save()
         u = User.objects.create_user(username=USERNAME, password=PASSWORD)
         player = Player(floor=randomFloor, user=u)
         player.save()
