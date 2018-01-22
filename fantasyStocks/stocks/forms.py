@@ -68,6 +68,7 @@ class StockChoiceField(forms.Field):
         if not len(set(symbols)) == len(symbols):
             raise ValidationError("There was a duplicate stock!")
         for i in symbols:
+            # TODO: This shouldn't be written like this. This is ridiculous.
             s = Stock.objects.filter(symbol=i)
             if s:
                 s = s[0]
@@ -79,7 +80,7 @@ class StockChoiceField(forms.Field):
                 # Unless it's not real...
                 except StockAPIError:
                     raise ValidationError
-
+                # Do I really need this line?
                 s.save()
             out.append(s)
         return out
