@@ -1,6 +1,10 @@
+html {
+    --base-color: #29ad5e;
+}
+
 .titlebar {
     height: 50px;
-    background-color: #29ad5e;
+    background-color: var(--base-color);
     font-family: monospace;
 }
 .logo {
@@ -355,4 +359,12 @@ img.instructions {
 
 .slyLink {
     color: inherit;
+}
+
+#footer {
+    position: relative;
+    padding: 10px;
+    text-align: right;
+    font-size: .8em;
+    font-family: monospace;
 }
