@@ -216,11 +216,11 @@ class Floor(models.Model):
     name = models.CharField(max_length=35, unique=True)
     stocks = models.ManyToManyField(Stock)
     permissiveness = models.CharField(max_length=15, choices=PERMISSIVENESS_CHOICES, default=PERMISSIVE)
-    owner = models.ForeignKey(User, null=True)
+    owner = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
 
     # By passsing the model for this as a string, we can make it be dynamically set and 
     # thus get around the fact that we haven't actually defined that class yet (it's below)
-    floorPlayer = models.ForeignKey("Player", related_name="FloorPlayer", null=True)
+    floorPlayer = models.ForeignKey("Player", on_delete=models.PROTECT, related_name="FloorPlayer", null=True)
     public = models.BooleanField(default=True)
     num_stocks = models.IntegerField(default=10)
 
@@ -351,8 +351,8 @@ class Player(models.Model):
     object, which this references. Setting these as ForeignKeys as opposed to something else will cause this object to be 
     deleted if the it's `User` object or its floor is deleted. 
     """
-    user = models.ForeignKey(User)
-    floor = models.ForeignKey("Floor")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    floor = models.ForeignKey("Floor", on_delete=models.CASCADE)
     stocks = models.ManyToManyField(Stock, blank=True)
     points = models.IntegerField(default=0)
     def __str__(self):
@@ -426,11 +426,11 @@ class Player(models.Model):
         return retval
 
 class Trade(models.Model):
-    recipient = models.ForeignKey(Player)
+    recipient = models.ForeignKey(Player, on_delete=models.CASCADE)
     # recipientStocks and senderStocks are the stocks that those people have right now and will give away in the trade. 
     recipientStocks = models.ManyToManyField(Stock, related_name="receivingPlayerStocks")
-    floor = models.ForeignKey(Floor)
-    sender = models.ForeignKey(Player, related_name="sendingPlayer")
+    floor = models.ForeignKey(Floor, on_delete=models.CASCADE)
+    sender = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="sendingPlayer")
     senderStocks = models.ManyToManyField(Stock)
     date = models.DateTimeField(default=timezone.now)
     def __str__(self):
@@ -503,9 +503,9 @@ class StockSuggestion(models.Model):
     """
     This is what holds someone's request for a stock to be added to a permissive floor.
     """
-    stock = models.ForeignKey(Stock)
-    requesting_player = models.ForeignKey(Player)
-    floor = models.ForeignKey(Floor)
+    stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    requesting_player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    floor = models.ForeignKey(Floor, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     def accept(self):
         if not self.stock in self.floor.stocks.all():

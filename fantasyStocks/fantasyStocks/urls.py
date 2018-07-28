@@ -13,18 +13,20 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import include, url
+from django.urls import include, path
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from stocks import stockUrls, views
 from stocksApi import urls as apiUrls
 from django.views.generic import RedirectView
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
+
+from django.contrib.admin import site
 
 urlpatterns = static(settings.STATIC_URL) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + [
-        url(r'^admin/', include(admin.site.urls), name="admin"),
-        url(r"^stocks/", include(stockUrls), name="stocks"),
-        url(r"^api/v1/", include(apiUrls), name="api"),
-        url(r"^$", RedirectView.as_view(url="stocks/", permanent=True), name="redirect")
+        path("admin/", site.urls, name="admin"),
+        path("stocks/", include(stockUrls), name="stocks"),
+        path("api/v1/", include(apiUrls), name="api"),
+        path("", RedirectView.as_view(url="stocks/", permanent=True), name="redirect")
         ]

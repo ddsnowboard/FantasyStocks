@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, hashers
 from django.contrib.auth.views import logout_then_login
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
@@ -251,6 +251,7 @@ def receivedTrade(request, pkTrade):
         "floor": trade.floor, 
         "userPlayer": trade.recipient})
 
+# TODO: All these should be posts
 @login_required
 def rejectTrade(request, pkTrade):
     Trade.objects.get(pk=pkTrade).delete()
@@ -294,12 +295,9 @@ def receivedTradeJavaScript(request):
 def userList(request):
     return HttpResponse(json.dumps([{"username": u.username if u.username else u.email, "email": u.email} for u in User.objects.all()]), content_type="text/json")
 
-def stockLookup(request, query=None, key=None, user=None, pkFloor=None):
+def stockLookup(request, pkPlayer=None, username=None, pkFloor=None):
     # This if branch is depricated
-    if query:
-        STOCK_URL = "http://dev.markitondemand.com/Api/v2/Lookup/json?input={}"
-        return HttpResponse(py_request.urlopen(STOCK_URL.format(query)), content_type="text/json")
-    elif key:
+    if key:
         # If given a primary key, this function returns a JSON list of all the stocks that that player owns.
         return HttpResponse(json.dumps([s.format_for_json() for s in Player.objects.get(pk=key).stocks.all()]), content_type="text/json")
     elif user and pkFloor:
@@ -315,13 +313,17 @@ def stockLookup(request, query=None, key=None, user=None, pkFloor=None):
 def renderStockWidgetJavascript(request, identifier=None, pkPlayer=None):
     if not identifier:
         raise RuntimeError("You didn't pass in a valid identifier. God only knows how that happened.")
-    if not pkPlayer:
-        return render(request, "stockWidget.js", {"class_name" : forms.StockWidget().HTML_CLASS, "id": identifier})
-    return render(request, "stockWidget.js", {"id": identifier, "class_name" : forms.StockWidget().HTML_CLASS, "player": player })
+    templateDict = {"class_name" : forms.StockWidget().HTML_CLASS, "id": identifier}
+    if pkPlayer:
+        templateDict["player"] = player
+    return render(request, "stockWidget.js", templateDict)
+
 def tradeFormJavaScript(request):
     return render(request, "trade.js")
+
 def tradeCommonJavaScript(request):
     return render(request, "tradeCommon.js")
+
 def editFloorJavaScript(request, pkFloor=None):
     return render(request, "editFloor.js", {"floor": Floor.objects.get(pk=pkFloor)})
 
@@ -334,7 +336,7 @@ def deletePlayer(request, pkPlayer=None):
         return redirect(reverse("dashboard"), permanent=False)
 
 @login_required
-def acceptSuggestion(request, pkSuggestion=None, delete=None):
+def acceptSuggestion(request, pkSuggestion=None):
     if not pkSuggestion:
         raise RuntimeError("You didn't give me a suggestion. God only knows how that happened.")
     elif delete:

@@ -21,7 +21,7 @@ def getExpirationDate():
 class SessionId(models.Model):
     id_string = models.CharField(max_length=SESSION_ID_LENGTH, unique=True, default=generateRandomId, null=False)
     exp_date = models.DateTimeField(default=getExpirationDate, null=False)
-    associated_user = models.ForeignKey(User)
+    associated_user = models.ForeignKey(User, on_delete=models.CASCADE)
     
     def is_expired(self):
         return datetime.now(timezone.utc) > self.exp_date
@@ -30,7 +30,7 @@ class AndroidToken(models.Model):
     URL = "https://fcm.googleapis.com/fcm/send"
     TOKEN = settings.FCM_TOKEN
     FIREBASE_ID_KEY_LENGTH = 200
-    user = models.ForeignKey(User, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     token = models.CharField(max_length=FIREBASE_ID_KEY_LENGTH, unique=True, null=False)
 
     @staticmethod

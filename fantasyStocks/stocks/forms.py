@@ -5,7 +5,7 @@ from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.urls import reverse_lazy, reverse
 from stocks.models import Floor, Stock, StockAPIError, StockSuggestion
 from django.core.exceptions import ValidationError
 from stocks.models import Floor, Player, Trade

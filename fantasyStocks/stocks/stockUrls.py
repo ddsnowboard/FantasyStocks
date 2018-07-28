@@ -2,65 +2,64 @@
 
 from stocks import views
 from django.http import HttpResponse
-from django.conf.urls import url, patterns, include
+from django.urls import path, include
 
 urlpatterns = [
-            url("^instructions/$", views.instructions, name="instructions"),
-            url("^login/$", views.login, name="loginpage"),
-            url("^thisisalongurlforloggingoutbutitdoesntmatterbcmagic/$", views.logout, name="mylogout"), 
-            url("^auth/", include('django.contrib.auth.urls'), name="auth"),
-            url("^$", views.index, name="home"), 
-            url("^dashboard/$", views.dashboard, name="dashboard"),
-            url("^createfloor/$", views.create_floor, name="createFloor"), 
-            url("^joinfloor/$", views.join_floor, name="joinFloor"),
-            url("^joinAFloor/floor/([0-9]+)/$", views.join, name="join"), 
-            url("^stockLookupURL/stock/(.+?)/$", views.stockLookup, name="lookup"), 
-            url("^stockLookupURL/$", views.stockLookup, name="prefetch"), 
-            url("^stockLookupURL/user/(?P<key>[0-9]+)/$", views.stockLookup, name="prefetch"), 
-            url("^stockLookupURL/user/(?P<user>[A-Za-z0-9]+)/(?P<pkFloor>[0-9]+)/$", views.stockLookup, name="prefetch"), 
-            url("^thisCANbAEASAReallyHardURL/(?P<identifier>[A-Za-z0-9_]+)/(?P<pkPlayer>[A-Za-z0-9]+)/$", views.renderStockWidgetJavascript, name="stockWidgetJavascript"), 
-            url("^thisCANbAEASAReallyHardURL/(?P<identifier>[A-Za-z0-9_]+)/$", views.renderStockWidgetJavascript, name="stockWidgetJavascript"), 
-            url("^trade/floor/(?P<pkFloor>[0-9]+)/$", views.trade, name="trade"), 
-            url("^trade/floor/(?P<pkFloor>[0-9]+)/counter/(?P<pkCountering>[0-9]+)/$", views.trade, name="trade"), 
-            url("^trade/player/(?P<pkPlayer>[0-9]+)/floor/(?P<pkFloor>[0-9]+)/$", views.trade, name="trade"), 
-            url("^trade/floor/(?P<pkFloor>[0-9]+)/stock/(?P<pkStock>[0-9]+)/$", views.trade, name="trade"), 
-            url("^playerFieldJavaScript/(?P<identifier>[A-Za-z0-9]+)/$", views.playerFieldJavascript, name="playerFieldJS"), 
-            url("^userList/$", views.userList, name="users"), 
-            url("^tradeFormJavaScript/$", views.tradeFormJavaScript, name="tradeFormJavaScript"), 
-            url("^receivedTrade/(?P<pkTrade>[0-9]+)/$", views.receivedTrade, name="receivedTrade"),
-            url("^youWillNeverGuessThisURLHAHahahhahaha/$", views.receivedTradeJavaScript, name="receivedTradeJavascript"), 
-            url("^counterATrade/(?P<pkTrade>[0-9]+)/floor/(?P<pkFloor>[0-9]+)/$", views.counterTrade, name="counterTrade"), 
-            url("^acceptATrade/(?P<pkTrade>[0-9]+)/$", views.acceptTrade, name="acceptTrade"), 
-            url("^rejectATrade/(?P<pkTrade>[0-9]+)/$", views.rejectTrade, name="rejectTrade"), 
-            url("^deletePlayerFromFloor/pkPlayer/(?P<pkPlayer>[0-9]+)/$", views.deletePlayer, name="deletePlayer"),
-            url("^acceptAStockSuggestion/pkSuggestion/(?P<pkSuggestion>[0-9]+)/(?P<delete>del/?)?", views.acceptSuggestion, name="acceptStock"), 
-            url("^user/(?P<pkUser>[0-9]+)/$", views.userPage, name="userPage"), 
-            url("^editUser/$", views.editAccount, name="editUser"), 
-            url("^editFloor/floor/(?P<pkFloor>[0-9]+)/$", views.editFloor, name="editFloor"), 
-            url("^changePassword/$", views.changePassword, name="myChangePassword"), 
-            url("^deleteAFloor/floor/(?P<pkFloor>[0-9]+)/$", views.deleteFloor, name="deleteFloor"), 
-            url("^editFloorjavascript/floor/(?P<pkFloor>[0-9]+)/$", views.editFloorJavaScript, name="editFloorJS"), 
-            url("^playerJSON/player/(?P<pkPlayer>[0-9]+)/$", views.playerJson, name="playerJson"), 
-            url("^floorJSON/floor/(?P<pkFloor>[0-9]+)/$", views.floorJSON, name="floorJSON"), 
-            url("^tradeCommonJavaScript/$", views.tradeCommonJavaScript, name="tradeCommonJavaScript"), 
-            url("^joinFloorJavaScript/$", views.joinFloorJavaScript, name="joinFloorJavaScript"), 
-            url("^getFloorsJSON/$", views.floorsJSON, name="floorsJson"), 
-            url("^dashboardJavaScript/$", views.dashboardJavaScript, name="dashboardJavaScript"), 
-            url("^getStockPrice/stock/(?P<symbol>[A-Za-z]+)/$", views.getStockPrice, name="stockPrice"), 
-            url("^stockBoardJavaScript/$", views.getStockBoardJavaScript, name="stockBoardJavaScript"), 
-            url("^floorPlayers/floor/(?P<pkFloor>[0-9]+)/$", views.getPlayersOnFloor, name="floorPlayers"),
-            url("^blankPage/$", lambda request: HttpResponse(""), name="blank"),
+            path("instructions/", views.instructions, name="instructions"),
+            path("login/", views.login, name="loginpage"),
+            path("thisisalongurlforloggingoutbutitdoesntmatterbcmagic/", views.logout, name="mylogout"), 
+            path("auth/", include('django.contrib.auth.urls'), name="auth"),
+            path("", views.index, name="home"), 
+            path("dashboard/", views.dashboard, name="dashboard"),
+            path("createfloor/", views.create_floor, name="createFloor"), 
+            path("joinfloor/", views.join_floor, name="joinFloor"),
+            path("joinAFloor/floor/<int:pkFloor/", views.join, name="join"), 
+            path("stockLookupURL/", views.stockLookup, name="prefetch"), 
+            path("stockLookupURL/user/<int:pkPlayer>/", views.stockLookup, name="prefetch"), 
+            path("stockLookupURL/user/<username>/<int:pkFloor>/", views.stockLookup, name="prefetch"), 
+            path("thisCANbAEASAReallyHardURL/<identifier>/<int:pkPlayer>/", views.renderStockWidgetJavascript, name="stockWidgetJavascript"), 
+            path("thisCANbAEASAReallyHardURL/<identifier>/", views.renderStockWidgetJavascript, name="stockWidgetJavascript"), 
+            path("trade/floor/<int:pkFloor>/", views.trade, name="trade"), 
+            path("trade/floor/<int:pkFloor>/counter/<int:pkCountering>/", views.trade, name="trade"), 
+            path("trade/player/<int:pkPlayer>/floor/<int:pkFloor>/", views.trade, name="trade"), 
+            path("trade/floor/<int:pkFloor>/stock/<int:pkStock>/", views.trade, name="trade"), 
+            path("playerFieldJavaScript/<identifier>/", views.playerFieldJavascript, name="playerFieldJS"), 
+            path("userList/", views.userList, name="users"), 
+            path("tradeFormJavaScript/", views.tradeFormJavaScript, name="tradeFormJavaScript"), 
+            path("receivedTrade/<int:pkTrade>/", views.receivedTrade, name="receivedTrade"),
+            path("youWillNeverGuessThisURLHAHahahhahaha/", views.receivedTradeJavaScript, name="receivedTradeJavascript"), 
+            path("counterATrade/<int:pkTrade>/floor/<int:pkFloor>/", views.counterTrade, name="counterTrade"), 
+            path("acceptATrade/<int:pkTrade>/", views.acceptTrade, name="acceptTrade"), 
+            path("rejectATrade/<int:pkTrade>/", views.rejectTrade, name="rejectTrade"), 
+            path("deletePlayerFromFloor/pkPlayer/<int:pkPlayer>/", views.deletePlayer, name="deletePlayer"),
+            path("acceptAStockSuggestion/pkSuggestion/<int:pkSuggestion>/", views.acceptSuggestion, name="acceptStock"), 
+            path("user/<int:pkUser>/", views.userPage, name="userPage"), 
+            path("editUser/", views.editAccount, name="editUser"), 
+            path("editFloor/floor/<int:pkFloor>/", views.editFloor, name="editFloor"), 
+            path("changePassword/", views.changePassword, name="myChangePassword"), 
+            path("deleteAFloor/floor/<int:pkFloor>/", views.deleteFloor, name="deleteFloor"), 
+            path("editFloorjavascript/floor/<int:pkFloor>/", views.editFloorJavaScript, name="editFloorJS"), 
+            path("playerJSON/player/<int:pkPlayer>/", views.playerJson, name="playerJson"), 
+            path("floorJSON/floor/<int:pkFloor>/", views.floorJSON, name="floorJSON"), 
+            path("tradeCommonJavaScript/", views.tradeCommonJavaScript, name="tradeCommonJavaScript"), 
+            path("joinFloorJavaScript/", views.joinFloorJavaScript, name="joinFloorJavaScript"), 
+            path("getFloorsJSON/", views.floorsJSON, name="floorsJson"), 
+            path("dashboardJavaScript/", views.dashboardJavaScript, name="dashboardJavaScript"), 
+            path("getStockPrice/stock/<symbol>/", views.getStockPrice, name="stockPrice"), 
+            path("stockBoardJavaScript/", views.getStockBoardJavaScript, name="stockBoardJavaScript"), 
+            path("floorPlayers/floor/<int:pkFloor>/", views.getPlayersOnFloor, name="floorPlayers"),
+            path("blankPage/", lambda request: HttpResponse(""), name="blank"),
         ]
 
 
 # I'm going to have to make forms for all these eventually. I guess I'll keep them here 
 # so I have them.
 #
-# ^login/$ [name='login']
-# ^logout/$ [name='logout']
-# ^password_change/$ [name='password_change']
-# ^password_change/done/$ [name='password_change_done']
-# ^password_reset/$ [name='password_reset']
-# ^password_reset/done/$ [name='password_reset_done']
-# ^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$ [name='password_reset_confirm']
-# ^reset/done/$ [name='password_reset_complete']
+# ^login/ [name='login']
+# ^logout/ [name='logout']
+# ^password_change/ [name='password_change']
+# ^password_change/done/ [name='password_change_done']
+# ^password_reset/ [name='password_reset']
+# ^password_reset/done/ [name='password_reset_done']
+# ^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/ [name='password_reset_confirm']
+# ^reset/done/ [name='password_reset_complete']
